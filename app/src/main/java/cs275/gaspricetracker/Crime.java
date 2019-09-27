@@ -9,9 +9,15 @@ public class Crime {
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
+    private String mSuspect;
+    private String mNumber;
 
     public Crime() {
-        mId = UUID.randomUUID();
+        this(UUID.randomUUID());
+    }
+
+    public Crime(UUID id) {
+        mId = id;
         mDate = new Date();
     }
 
@@ -41,5 +47,21 @@ public class Crime {
 
     public void setSolved(boolean solved) {
         mSolved = solved;
+    }
+
+    public String getSuspect() {
+        return mSuspect;
+    }
+
+    public void setSuspect(String suspect) {
+        mSuspect = suspect;
+    }
+
+    public String getSuspectNumber() {
+        return mNumber;
+    }
+
+    public void setSuspectNumber(String number) {
+        mNumber = number;
     }
 }
