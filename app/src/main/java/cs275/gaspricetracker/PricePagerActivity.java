@@ -12,48 +12,48 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimePagerActivity extends AppCompatActivity {
+public class PricePagerActivity extends AppCompatActivity {
 
     private static final String EXTRA_CRIME_ID =
-            "cs275.gaspricetracker.crime_id";
+            "cs275.gaspricetracker.price_id";
 
     private ViewPager mViewPager;
-    private List<Crime> mCrimes;
+    private List<Price> mPrices;
 
-    public static Intent newIntent(Context packageContext, UUID crimeId) {
-        Intent intent = new Intent(packageContext, CrimePagerActivity.class);
-        intent.putExtra(EXTRA_CRIME_ID, crimeId);
+    public static Intent newIntent(Context packageContext, UUID priceId) {
+        Intent intent = new Intent(packageContext, PricePagerActivity.class);
+        intent.putExtra(EXTRA_CRIME_ID, priceId);
         return intent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crime_pager);
+        setContentView(R.layout.activity_price_pager);
 
-        UUID crimeId = (UUID) getIntent()
+        UUID priceId = (UUID) getIntent()
                 .getSerializableExtra(EXTRA_CRIME_ID);
 
-        mViewPager = (ViewPager) findViewById(R.id.crime_view_pager);
+        mViewPager = (ViewPager) findViewById(R.id.price_view_pager);
 
-        mCrimes = CrimeLab.get(this).getCrimes();
+        mPrices = PriceLab.get(this).getPrices();
         FragmentManager fragmentManager = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager) {
 
             @Override
             public Fragment getItem(int position) {
-                Crime crime = mCrimes.get(position);
-                return CrimeFragment.newInstance(crime.getId());
+                Price price = mPrices.get(position);
+                return PriceFragment.newInstance(price.getId());
             }
 
             @Override
             public int getCount() {
-                return mCrimes.size();
+                return mPrices.size();
             }
         });
 
-        for (int i = 0; i < mCrimes.size(); i++) {
-            if (mCrimes.get(i).getId().equals(crimeId)) {
+        for (int i = 0; i < mPrices.size(); i++) {
+            if (mPrices.get(i).getId().equals(priceId)) {
                 mViewPager.setCurrentItem(i);
                 break;
             }
