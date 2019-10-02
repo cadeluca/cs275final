@@ -12,9 +12,9 @@ import java.util.UUID;
 
 import static cs275.gaspricetracker.database.CrimeDbSchema.CrimeTable.*;
 
-public class CrimeCursorWrapper extends CursorWrapper {
+public class PriceCursorWrapper extends CursorWrapper {
 
-    public CrimeCursorWrapper(Cursor cursor) {
+    public PriceCursorWrapper(Cursor cursor) {
         super(cursor);
     }
 

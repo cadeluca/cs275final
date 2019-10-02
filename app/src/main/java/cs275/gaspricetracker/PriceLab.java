@@ -9,7 +9,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import cs275.gaspricetracker.database.CrimeBaseHelper;
-import cs275.gaspricetracker.database.CrimeCursorWrapper;
+import cs275.gaspricetracker.database.PriceCursorWrapper;
 import cs275.gaspricetracker.database.CrimeDbSchema.CrimeTable;
 
 import java.util.ArrayList;
@@ -18,46 +18,46 @@ import java.util.UUID;
 
 import static cs275.gaspricetracker.database.CrimeDbSchema.CrimeTable.Cols.*;
 
-public class CrimeLab {
-    private static CrimeLab sCrimeLab;
+public class PriceLab {
+    private static PriceLab sPriceLab;
     private Context mContext;
     private SQLiteDatabase mDatabase;
 
-    public static CrimeLab get(Context context) {
-        if (sCrimeLab == null) {
-            sCrimeLab = new CrimeLab(context);
+    public static PriceLab get(Context context) {
+        if (sPriceLab == null) {
+            sPriceLab = new PriceLab(context);
         }
 
-        return sCrimeLab;
+        return sPriceLab;
     }
 
-    private CrimeLab(Context context) {
+    private PriceLab(Context context) {
         mContext = context.getApplicationContext();
         mDatabase = new CrimeBaseHelper(mContext)
                 .getWritableDatabase();
 
     }
 
-    public void addCrime(Crime c) {
-        ContentValues values = getContentValues(c);
+    public void addCrime(Price p) {
+        ContentValues values = getContentValues(p);
         mDatabase.insert(CrimeTable.NAME, null, values);
     }
 
-    public List<Crime> getCrimes() {
-        List<Crime> crimes = new ArrayList<>();
-        try (CrimeCursorWrapper cursor = queryCrimes(null, null)) {
+    public List<Price> getPrices() {
+        List<Price> prices = new ArrayList<>();
+        try (PriceCursorWrapper cursor = queryCrimes(null, null)) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                crimes.add(cursor.getCrime());
+                prices.add(cursor.getCrime());
                 cursor.moveToNext();
             }
         }
-        return crimes;
+        return prices;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public Crime getCrime(UUID id) {
-        try (CrimeCursorWrapper cursor = queryCrimes(
+    public Price getPrice(UUID id) {
+        try (PriceCursorWrapper cursor = queryCrimes(
                 CrimeTable.Cols.UUID + " = ?",
                 new String[]{id.toString()}
         )) {
@@ -65,19 +65,19 @@ public class CrimeLab {
                 return null;
             }
             cursor.moveToFirst();
-            return cursor.getCrime();
+            return cursor.getPrice();
         }
     }
 
-    public void updateCrime(Crime crime) {
-        String uuidString = crime.getId().toString();
-        ContentValues values = getContentValues(crime);
+    public void updateCrime(Price price) {
+        String uuidString = price.getId().toString();
+        ContentValues values = getContentValues(price);
         mDatabase.update(CrimeTable.NAME, values,
                 CrimeTable.Cols.UUID + " = ?",
                 new String[]{uuidString});
     }
 
-    private CrimeCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
+    private PriceCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 CrimeTable.NAME,
                 null, // Columns - null selects all columns
@@ -87,16 +87,16 @@ public class CrimeLab {
                 null, // having
                 null  // orderBy
         );
-        return new CrimeCursorWrapper(cursor);
+        return new PriceCursorWrapper(cursor);
     }
 
-    private static ContentValues getContentValues(Crime crime) {
+    private static ContentValues getContentValues(Price price) {
         ContentValues values = new ContentValues();
-        values.put(UUID, crime.getId().toString());
-        values.put(TITLE, crime.getTitle());
-        values.put(DATE, crime.getDate().getTime());
-        values.put(SOLVED, crime.isSolved() ? 1 : 0);
-        values.put(CrimeTable.Cols.SUSPECT, crime.getSuspect());
+        values.put(UUID, price.getId().toString());
+        values.put(TITLE, price.getTitle());
+        values.put(DATE, price.getDate().getTime());
+        values.put(SOLVED, price.isSolved() ? 1 : 0);
+        values.put(CrimeTable.Cols.SUSPECT, price.getSuspect());
 
         return values;
     }
