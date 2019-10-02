@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">GasPriceTracker</string>
-    <string name="price_title_hint">Enter a title for the price.</string>
-    <string name="price_title_label">Title</string>
+    <string name="app_name">Gas Price Tracker</string>
+    <string name="price_title_hint">Enter the name of the gas station.</string>
+    <string name="price_title_label">Gas Station Name</string>
     <string name="price_details_label">Details</string>
     <string name="price_solved_label">Solved</string>
     <string name="date_picker_title">Date of price:</string>
@@ -12,7 +12,7 @@
     <string name="price_suspect_text">Choose Suspect</string>
     <string name="price_report_text">Send price Report</string>
     <string name="price_report">%1$s!
-    The price was discovered on %2$s. %3$s, and %4$s
+    The price was reported on %2$s. %3$s, and %4$s
   </string>
     <string name="price_report_solved">The case is solved</string>
     <string name="price_report_unsolved">The case is not solved</string>
