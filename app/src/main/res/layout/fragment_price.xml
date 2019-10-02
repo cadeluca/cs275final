@@ -9,48 +9,48 @@
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_title_label"/>
+        android:text="@string/price_title_label"/>
 
     <EditText
-        android:id="@+id/crime_title"
+        android:id="@+id/price_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/crime_title_hint"/>
+        android:hint="@string/price_title_hint"/>
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_details_label"/>
+        android:text="@string/price_details_label"/>
 
     <Button
-        android:id="@+id/crime_date"
+        android:id="@+id/price_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <CheckBox
-        android:id="@+id/crime_solved"
+        android:id="@+id/price_solved"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_solved_label"/>
+        android:text="@string/price_solved_label"/>
 
     <Button
-        android:id="@+id/crime_suspect"
+        android:id="@+id/price_suspect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_suspect_text"
+        android:text="@string/price_suspect_text"
         />
     <Button
-        android:id="@+id/crime_report"
+        android:id="@+id/price_report"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_report_text"
+        android:text="@string/price_report_text"
         />
     <Button
-        android:id="@+id/crime_call"
+        android:id="@+id/price_call"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_call_text"
+        android:text="@string/price_call_text"
         />
 
 </LinearLayout>
