@@ -1,5 +1,5 @@
 package cs275.gaspricetracker;
-​
+
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,24 +18,24 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.text.format.DateFormat;
-​
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-​
+
 import java.util.Date;
 import java.util.UUID;
-​
-        ​
+
+
 public class PriceFragment extends Fragment {
-​
+
     private static final String ARG_PRICE_ID = "price_id";
     private static final String DIALOG_DATE = "DialogDate";
-​
+
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
-​
+
     private Price mPrice;
     private EditText mTitleField;
     private Button mDateButton;
@@ -43,16 +43,16 @@ public class PriceFragment extends Fragment {
     private Button mReportButton;
     private Button mSuspectButton;
     private Button mCallButton;
-​
+
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_PRICE_ID, priceId);
-​
+
         PriceFragment fragment = new PriceFragment();
         fragment.setArguments(args);
         return fragment;
     }
-​
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,31 +60,31 @@ public class PriceFragment extends Fragment {
         UUID priceId = (UUID) getArguments().getSerializable(ARG_PRICE_ID);
         mPrice = PriceLab.get(getActivity()).getPrice(priceId);
     }
-​
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_price, container, false);
-​
+
         mTitleField = (EditText) v.findViewById(R.id.price_title);
         mTitleField.setText(mPrice.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-​
+
             }
-​
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mPrice.setTitle(s.toString());
             }
-​
+
             @Override
             public void afterTextChanged(Editable s) {
-​
+
             }
         });
-​
+
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
         mDateButton.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +97,7 @@ public class PriceFragment extends Fragment {
                 dialog.show(manager, DIALOG_DATE);
             }
         });
-​
+
         mSolvedCheckbox = (CheckBox) v.findViewById(R.id.price_solved);
         mSolvedCheckbox.setChecked(mPrice.isSolved());
         mSolvedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -106,7 +106,7 @@ public class PriceFragment extends Fragment {
                 mPrice.setSolved(isChecked);
             }
         });
-​
+
         mReportButton = (Button) v.findViewById(R.id.price_report);
         mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +120,7 @@ public class PriceFragment extends Fragment {
                 PriceFragment.this.startActivity(i);
             }
         });
-​
+
         final Intent pickContact = new Intent(Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
         mSuspectButton = (Button) v.findViewById(R.id.price_suspect);
@@ -130,13 +130,13 @@ public class PriceFragment extends Fragment {
                 PriceFragment.this.startActivityForResult(pickContact, REQUEST_CONTACT);
             }
         });
-​
+
         PackageManager packageManager = getActivity().getPackageManager();
         if (packageManager.resolveActivity(pickContact,
                 PackageManager.MATCH_DEFAULT_ONLY) == null) {
             mSuspectButton.setEnabled(false);
         }
-​
+
         mCallButton = (Button) v.findViewById(R.id.price_call);
         if (mPrice.getSuspect() == null) {
             mCallButton.setEnabled(false);
@@ -154,24 +154,24 @@ public class PriceFragment extends Fragment {
                 }
             }
         });
-​
+
         return v;
     }
-​
+
     @Override
     public void onPause() {
         super.onPause();
-​
+
         PriceLab.get(getActivity())
                 .updatePrice(mPrice);
     }
-​
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-​
+
         if (requestCode == REQUEST_DATE) {
             Date date = (Date) data
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
@@ -190,7 +190,7 @@ public class PriceFragment extends Fragment {
             Cursor c = getActivity().getContentResolver()
                     .query(contactUri, queryFields, null, null, null);
             String suspectId;
-​
+
             try {
                 // Double-check that you actually got results
                 if (c.getCount() == 0) {
@@ -208,14 +208,14 @@ public class PriceFragment extends Fragment {
             } finally {
                 c.close();
             }
-​
+
             contactUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
             queryFields = new String[] {ContactsContract.CommonDataKinds.Phone.NUMBER};
             c = getActivity().getContentResolver()
                     .query(contactUri, queryFields,
                             ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ? ",
                             new String[] {suspectId}, null);
-​
+
             try {
                 if (c.getCount() == 0) {
                     return;
@@ -228,11 +228,11 @@ public class PriceFragment extends Fragment {
             }
         }
     }
-​
+
     private void updateDate() {
         mDateButton.setText(mPrice.getDate().toString());
     }
-​
+
     private String getPriceReport() {
         String solvedString = null;
         if (mPrice.isSolved()) {
