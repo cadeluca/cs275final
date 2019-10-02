@@ -3,7 +3,7 @@ package cs275.gaspricetracker;
 import java.util.Date;
 import java.util.UUID;
 
-public class Crime {
+public class Price {
 
     private UUID mId;
     private String mTitle;
@@ -12,11 +12,11 @@ public class Crime {
     private String mSuspect;
     private String mNumber;
 
-    public Crime() {
+    public Price() {
         this(UUID.randomUUID());
     }
 
-    public Crime(UUID id) {
+    public Price(UUID id) {
         mId = id;
         mDate = new Date();
     }
