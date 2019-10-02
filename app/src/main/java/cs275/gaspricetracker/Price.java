@@ -12,6 +12,10 @@ public class Price {
     private String mSuspect;
     private String mNumber;
 
+    private String mLocation;
+    private float mGasPrice;
+
+
     public Price() {
         this(UUID.randomUUID());
     }
@@ -63,5 +67,21 @@ public class Price {
 
     public void setSuspectNumber(String number) {
         mNumber = number;
+    }
+
+    public String getLocation() {
+        return mLocation;
+    }
+
+    public void setLocation(String location) {
+        this.mLocation = location;
+    }
+
+    public float getGasPrice() {
+        return mGasPrice;
+    }
+
+    public void setGasPrice(float gasPrice) {
+        this.mGasPrice = gasPrice;
     }
 }
