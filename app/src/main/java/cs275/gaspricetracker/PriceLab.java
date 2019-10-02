@@ -8,15 +8,15 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import cs275.gaspricetracker.database.CrimeBaseHelper;
+import cs275.gaspricetracker.database.PriceBaseHelper;
 import cs275.gaspricetracker.database.PriceCursorWrapper;
-import cs275.gaspricetracker.database.CrimeDbSchema.CrimeTable;
+import cs275.gaspricetracker.database.PriceDbSchema.PriceTable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static cs275.gaspricetracker.database.CrimeDbSchema.CrimeTable.Cols.*;
+import static cs275.gaspricetracker.database.PriceDbSchema.PriceTable.Cols.*;
 
 public class PriceLab {
     private static PriceLab sPriceLab;
@@ -33,22 +33,22 @@ public class PriceLab {
 
     private PriceLab(Context context) {
         mContext = context.getApplicationContext();
-        mDatabase = new CrimeBaseHelper(mContext)
+        mDatabase = new PriceBaseHelper(mContext)
                 .getWritableDatabase();
 
     }
 
-    public void addCrime(Price p) {
+    public void addPrice(Price p) {
         ContentValues values = getContentValues(p);
-        mDatabase.insert(CrimeTable.NAME, null, values);
+        mDatabase.insert(PriceTable.NAME, null, values);
     }
 
     public List<Price> getPrices() {
         List<Price> prices = new ArrayList<>();
-        try (PriceCursorWrapper cursor = queryCrimes(null, null)) {
+        try (PriceCursorWrapper cursor = queryPrices(null, null)) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                prices.add(cursor.getCrime());
+                prices.add(cursor.getPrice());
                 cursor.moveToNext();
             }
         }
@@ -57,8 +57,8 @@ public class PriceLab {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public Price getPrice(UUID id) {
-        try (PriceCursorWrapper cursor = queryCrimes(
-                CrimeTable.Cols.UUID + " = ?",
+        try (PriceCursorWrapper cursor = queryPrices(
+                PriceTable.Cols.UUID + " = ?",
                 new String[]{id.toString()}
         )) {
             if (cursor.getCount() == 0) {
@@ -69,17 +69,17 @@ public class PriceLab {
         }
     }
 
-    public void updateCrime(Price price) {
+    public void updatePrice(Price price) {
         String uuidString = price.getId().toString();
         ContentValues values = getContentValues(price);
-        mDatabase.update(CrimeTable.NAME, values,
-                CrimeTable.Cols.UUID + " = ?",
+        mDatabase.update(PriceTable.NAME, values,
+                PriceTable.Cols.UUID + " = ?",
                 new String[]{uuidString});
     }
 
-    private PriceCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
+    private PriceCursorWrapper queryPrices(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
-                CrimeTable.NAME,
+                PriceTable.NAME,
                 null, // Columns - null selects all columns
                 whereClause,
                 whereArgs,
@@ -96,7 +96,7 @@ public class PriceLab {
         values.put(TITLE, price.getTitle());
         values.put(DATE, price.getDate().getTime());
         values.put(SOLVED, price.isSolved() ? 1 : 0);
-        values.put(CrimeTable.Cols.SUSPECT, price.getSuspect());
+        values.put(PriceTable.Cols.SUSPECT, price.getSuspect());
 
         return values;
     }

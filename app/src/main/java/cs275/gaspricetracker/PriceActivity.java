@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 
-import cs275.gaspricetracker.CrimeFragment;
+import cs275.gaspricetracker.PriceFragment;
 import cs275.gaspricetracker.SingleFragmentActivity;
 
 public class PriceActivity extends SingleFragmentActivity {

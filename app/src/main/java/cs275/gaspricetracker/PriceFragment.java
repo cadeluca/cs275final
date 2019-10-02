@@ -1,5 +1,5 @@
 package cs275.gaspricetracker;
-
+​
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,156 +18,164 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.text.format.DateFormat;
-
+​
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
+​
 import java.util.Date;
 import java.util.UUID;
-
-
-public class CrimeFragment extends Fragment {
-
-    private static final String ARG_CRIME_ID = "crime_id";
+​
+        ​
+public class PriceFragment extends Fragment {
+​
+    private static final String ARG_PRICE_ID = "price_id";
     private static final String DIALOG_DATE = "DialogDate";
-
+​
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
-
-    private Crime mCrime;
+​
+    private Price mPrice;
     private EditText mTitleField;
     private Button mDateButton;
     private CheckBox mSolvedCheckbox;
     private Button mReportButton;
     private Button mSuspectButton;
     private Button mCallButton;
-
-    public static CrimeFragment newInstance(UUID crimeId) {
+​
+    public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
-        args.putSerializable(ARG_CRIME_ID, crimeId);
-
-        CrimeFragment fragment = new CrimeFragment();
+        args.putSerializable(ARG_PRICE_ID, priceId);
+​
+        PriceFragment fragment = new PriceFragment();
         fragment.setArguments(args);
         return fragment;
     }
-
+​
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
-        mCrime = PriceLab.get(getActivity()).getPrice(crimeId);
+        UUID priceId = (UUID) getArguments().getSerializable(ARG_PRICE_ID);
+        mPrice = PriceLab.get(getActivity()).getPrice(priceId);
     }
-
+​
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_price, container, false);
-
+​
         mTitleField = (EditText) v.findViewById(R.id.price_title);
-        mTitleField.setText(mCrime.getTitle());
+        mTitleField.setText(mPrice.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+​
             }
-
+​
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCrime.setTitle(s.toString());
+                mPrice.setTitle(s.toString());
             }
-
+​
             @Override
             public void afterTextChanged(Editable s) {
-
+​
             }
         });
-
+​
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
         mDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v14) {
-                FragmentManager manager = CrimeFragment.this.getFragmentManager();
+                FragmentManager manager = PriceFragment.this.getFragmentManager();
                 DatePickerFragment dialog = DatePickerFragment
-                        .newInstance(mCrime.getDate());
-                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                        .newInstance(mPrice.getDate());
+                dialog.setTargetFragment(PriceFragment.this, REQUEST_DATE);
                 dialog.show(manager, DIALOG_DATE);
             }
         });
-
+​
         mSolvedCheckbox = (CheckBox) v.findViewById(R.id.price_solved);
-        mSolvedCheckbox.setChecked(mCrime.isSolved());
-        mSolvedCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> mCrime.setSolved(isChecked));
-
+        mSolvedCheckbox.setChecked(mPrice.isSolved());
+        mSolvedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mPrice.setSolved(isChecked);
+            }
+        });
+​
         mReportButton = (Button) v.findViewById(R.id.price_report);
         mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v13) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_TEXT, CrimeFragment.this.getCrimeReport());
+                i.putExtra(Intent.EXTRA_TEXT, PriceFragment.this.getPriceReport());
                 i.putExtra(Intent.EXTRA_SUBJECT,
-                        CrimeFragment.this.getString(R.string.crime_report_subject));
-                i = Intent.createChooser(i, CrimeFragment.this.getString(R.string.send_report));
-                CrimeFragment.this.startActivity(i);
+                        PriceFragment.this.getString(R.string.price_report_subject));
+                i = Intent.createChooser(i, PriceFragment.this.getString(R.string.send_report));
+                PriceFragment.this.startActivity(i);
             }
         });
-
+​
         final Intent pickContact = new Intent(Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
         mSuspectButton = (Button) v.findViewById(R.id.price_suspect);
         mSuspectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v12) {
-                CrimeFragment.this.startActivityForResult(pickContact, REQUEST_CONTACT);
+                PriceFragment.this.startActivityForResult(pickContact, REQUEST_CONTACT);
             }
         });
-
+​
         PackageManager packageManager = getActivity().getPackageManager();
         if (packageManager.resolveActivity(pickContact,
                 PackageManager.MATCH_DEFAULT_ONLY) == null) {
             mSuspectButton.setEnabled(false);
         }
-
+​
         mCallButton = (Button) v.findViewById(R.id.price_call);
-        if (mCrime.getSuspect() == null) {
+        if (mPrice.getSuspect() == null) {
             mCallButton.setEnabled(false);
             mCallButton.setText(R.string.call_suspect);
         } else {
-            mCallButton.setText(getString(R.string.crime_call_text, mCrime.getSuspect()));
+            mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
         }
-        mCallButton.setOnClickListener(v1 -> {
-            if (mCrime.getSuspectNumber() != null) {
-                Intent intent = new Intent(Intent.ACTION_DIAL,
-                        Uri.parse("tel:" + mCrime.getSuspectNumber()));
-                startActivity(intent);
+        mCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v1) {
+                if (mPrice.getSuspectNumber() != null) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL,
+                            Uri.parse("tel:" + mPrice.getSuspectNumber()));
+                    PriceFragment.this.startActivity(intent);
+                }
             }
         });
-
+​
         return v;
     }
-
+​
     @Override
     public void onPause() {
         super.onPause();
-
+​
         PriceLab.get(getActivity())
-                .updateCrime(mCrime);
+                .updatePrice(mPrice);
     }
-
+​
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-
+​
         if (requestCode == REQUEST_DATE) {
             Date date = (Date) data
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            mCrime.setDate(date);
+            mPrice.setDate(date);
             updateDate();
         } else if (requestCode == REQUEST_CONTACT && data != null) {
             Uri contactUri = data.getData();
@@ -181,7 +190,7 @@ public class CrimeFragment extends Fragment {
             Cursor c = getActivity().getContentResolver()
                     .query(contactUri, queryFields, null, null, null);
             String suspectId;
-
+​
             try {
                 // Double-check that you actually got results
                 if (c.getCount() == 0) {
@@ -192,55 +201,55 @@ public class CrimeFragment extends Fragment {
                 c.moveToFirst();
                 String suspect = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 suspectId = c.getString(c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                mCrime.setSuspect(suspect);
+                mPrice.setSuspect(suspect);
                 mSuspectButton.setText(suspect);
                 mCallButton.setEnabled(true);
-                mCallButton.setText(getString(R.string.crime_call_text, mCrime.getSuspect()));
+                mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
             } finally {
                 c.close();
             }
-
+​
             contactUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
             queryFields = new String[] {ContactsContract.CommonDataKinds.Phone.NUMBER};
             c = getActivity().getContentResolver()
                     .query(contactUri, queryFields,
                             ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ? ",
                             new String[] {suspectId}, null);
-
+​
             try {
                 if (c.getCount() == 0) {
                     return;
                 }
                 c.moveToFirst();
                 String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                mCrime.setSuspectNumber(number);
+                mPrice.setSuspectNumber(number);
             } finally {
                 c.close();
             }
         }
     }
-
+​
     private void updateDate() {
-        mDateButton.setText(mCrime.getDate().toString());
+        mDateButton.setText(mPrice.getDate().toString());
     }
-
-    private String getCrimeReport() {
+​
+    private String getPriceReport() {
         String solvedString = null;
-        if (mCrime.isSolved()) {
-            solvedString = getString(R.string.crime_report_solved);
+        if (mPrice.isSolved()) {
+            solvedString = getString(R.string.price_report_solved);
         } else {
-            solvedString = getString(R.string.crime_report_unsolved);
+            solvedString = getString(R.string.price_report_unsolved);
         }
         String dateFormat = "EEE, MMM dd";
-        String dateString = DateFormat.format(dateFormat, mCrime.getDate()).toString();
-        String suspect = mCrime.getSuspect();
+        String dateString = DateFormat.format(dateFormat, mPrice.getDate()).toString();
+        String suspect = mPrice.getSuspect();
         if (suspect == null) {
-            suspect = getString(R.string.crime_report_no_suspect);
+            suspect = getString(R.string.price_report_no_suspect);
         } else {
-            suspect = getString(R.string.crime_report_suspect, suspect);
+            suspect = getString(R.string.price_report_suspect, suspect);
         }
-        String report = getString(R.string.crime_report,
-                mCrime.getTitle(), dateString, solvedString, suspect);
+        String report = getString(R.string.price_report,
+                mPrice.getTitle(), dateString, solvedString, suspect);
         return report;
     }
 }
