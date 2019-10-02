@@ -7,7 +7,6 @@ import android.database.CursorWrapper;
 import cs275.gaspricetracker.Price;
 import cs275.gaspricetracker.database.PriceDbSchema.PriceTable;
 
-import java.sql.Wrapper;
 import java.util.Date;
 import java.util.UUID;
 

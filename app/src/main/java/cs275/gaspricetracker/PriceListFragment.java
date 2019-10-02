@@ -38,10 +38,10 @@ public class PriceListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_Price_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_price_list, container, false);
 
         mPriceRecyclerView = (RecyclerView) view
-                .findViewById(R.id.Price_recycler_view);
+                .findViewById(R.id.price_recycler_view);
         mPriceRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         if (savedInstanceState != null) {
@@ -68,7 +68,7 @@ public class PriceListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_Price_list, menu);
+        inflater.inflate(R.menu.fragment_price_list, menu);
 
         MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
         if (mSubtitleVisible) {
@@ -81,11 +81,11 @@ public class PriceListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.new_Price:
-                Price Price = new Price();
-                PriceLab.get(getActivity()).addPrice(Price);
+            case R.id.new_price:
+                Price price = new Price();
+                PriceLab.get(getActivity()).addPrice(price);
                 Intent intent = PricePagerActivity
-                        .newIntent(getActivity(), Price.getId());
+                        .newIntent(getActivity(), price.getId());
                 startActivity(intent);
                 return true;
             case R.id.show_subtitle:
@@ -99,9 +99,9 @@ public class PriceListFragment extends Fragment {
     }
 
     private void updateSubtitle() {
-        PriceLab PriceLab = PriceLab.get(getActivity());
-        int PriceCount = PriceLab.getPrices().size();
-        String subtitle = getString(R.string.subtitle_format, PriceCount);
+        PriceLab priceLab = PriceLab.get(getActivity());
+        int priceCount = priceLab.getPrices().size();
+        String subtitle = getString(R.string.subtitle_format, priceCount);
 
         if (!mSubtitleVisible) {
             subtitle = null;
@@ -112,14 +112,14 @@ public class PriceListFragment extends Fragment {
     }
 
     private void updateUI() {
-        PriceLab PriceLab = PriceLab.get(getActivity());
-        List<Price> Prices = PriceLab.getPrices();
+        PriceLab priceLab = PriceLab.get(getActivity());
+        List<Price> prices = priceLab.getPrices();
 
         if (mAdapter == null) {
-            mAdapter = new PriceAdapter(Prices);
+            mAdapter = new PriceAdapter(prices);
             mPriceRecyclerView.setAdapter(mAdapter);
         } else {
-            mAdapter.setPrices(Prices);
+            mAdapter.setPrices(prices);
             mAdapter.notifyDataSetChanged();
         }
 
@@ -136,19 +136,19 @@ public class PriceListFragment extends Fragment {
         private ImageView mSolvedImageView;
 
         public PriceHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_Price, parent, false));
+            super(inflater.inflate(R.layout.list_item_price, parent, false));
             itemView.setOnClickListener(this);
 
-            mTitleTextView = (TextView) itemView.findViewById(R.id.Price_title);
-            mDateTextView = (TextView) itemView.findViewById(R.id.Price_date);
-            mSolvedImageView = (ImageView) itemView.findViewById(R.id.Price_solved);
+            mTitleTextView = (TextView) itemView.findViewById(R.id.price_title);
+            mDateTextView = (TextView) itemView.findViewById(R.id.price_date);
+            mSolvedImageView = (ImageView) itemView.findViewById(R.id.price_solved);
         }
 
-        public void bind(Price Price) {
-            mPrice = Price;
+        public void bind(Price price) {
+            mPrice = price;
             mTitleTextView.setText(mPrice.getTitle());
             mDateTextView.setText(mPrice.getDate().toString());
-            mSolvedImageView.setVisibility(Price.isSolved() ? View.VISIBLE : View.GONE);
+            mSolvedImageView.setVisibility(price.isSolved() ? View.VISIBLE : View.GONE);
         }
 
         @Override
@@ -162,8 +162,8 @@ public class PriceListFragment extends Fragment {
 
         private List<Price> mPrices;
 
-        public PriceAdapter(List<Price> Prices) {
-            mPrices = Prices;
+        public PriceAdapter(List<Price> prices) {
+            mPrices = prices;
         }
 
         @Override
@@ -174,8 +174,8 @@ public class PriceListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(PriceHolder holder, int position) {
-            Price Price = mPrices.get(position);
-            holder.bind(Price);
+            Price price = mPrices.get(position);
+            holder.bind(price);
         }
 
         @Override
@@ -183,8 +183,8 @@ public class PriceListFragment extends Fragment {
             return mPrices.size();
         }
 
-        public void setPrices(List<Price> Prices) {
-            mPrices = Prices;
+        public void setPrices(List<Price> prices) {
+            mPrices = prices;
         }
     }
 }
