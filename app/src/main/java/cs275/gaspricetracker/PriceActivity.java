@@ -9,11 +9,11 @@ import android.os.Bundle;
 import cs275.gaspricetracker.CrimeFragment;
 import cs275.gaspricetracker.SingleFragmentActivity;
 
-public class CrimeActivity extends SingleFragmentActivity {
+public class PriceActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        return new CrimeFragment();
+        return new PriceFragment();
     }
 
 }
