@@ -1,8 +1,8 @@
 package cs275.gaspricetracker.database;
 
-public class CrimeDbSchema {
-    public static final class CrimeTable {
-        public static final String NAME = "crimes";
+public class PriceDbSchema {
+    public static final class PriceTable {
+        public static final String NAME = "price";
 
         public static final class Cols {
             public static final String UUID = "uuid";
