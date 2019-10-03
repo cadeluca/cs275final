@@ -11,6 +11,7 @@
     <string name="subtitle_format">%1$d prices</string>
     <string name="price_suspect_text">Choose Suspect</string>
     <string name="report_prices_text">Report prices</string>
+    <string name="share_price_text">Share this price</string>
     <string name="price_report">%1$s!
     The price was reported on %2$s. %3$s, and %4$s
   </string>

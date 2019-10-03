@@ -28,29 +28,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <CheckBox
-        android:id="@+id/price_solved"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/price_solved_label"/>
+<!--    <CheckBox-->
+<!--        android:id="@+id/price_solved"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/price_solved_label"/>-->
 
+<!--    <Button-->
+<!--        android:id="@+id/price_suspect"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/price_suspect_text"-->
+<!--        />-->
     <Button
-        android:id="@+id/price_suspect"
+        android:id="@+id/price_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/price_suspect_text"
+        android:text="@string/share_price_text"
         />
-    <Button
-        android:id="@+id/price_report"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/report_prices_text"
-        />
-    <Button
-        android:id="@+id/price_call"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/price_call_text"
-        />
+<!--    <Button-->
+<!--        android:id="@+id/price_call"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/price_call_text"-->
+<!--        />-->
 
 </LinearLayout>

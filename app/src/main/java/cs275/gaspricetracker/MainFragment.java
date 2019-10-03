@@ -1,47 +1,27 @@
 package cs275.gaspricetracker;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
-import java.util.Date;
-import java.util.UUID;
 
 
 public class MainFragment extends Fragment {
 
-    private static final int REQUEST_DATE = 0;
-    private static final int REQUEST_CONTACT = 1;
-
     private Button mViewButton;
     private Button mReportButton;
 
-    public static MainFragment newInstance() {
-        Bundle args = new Bundle();
-        MainFragment fragment = new MainFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
+//    public static MainFragment newInstance() {
+//        Bundle args = new Bundle();
+//        MainFragment fragment = new MainFragment();
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,30 +33,23 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mViewButton = (Button) v.findViewById(R.id.view_prices);
-        mViewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PriceListActivity.class);
-                startActivity(intent);
-            }
+        mViewButton = v.findViewById(R.id.view_prices);
+        mViewButton.setOnClickListener(v1 -> {
+            Intent intent = new Intent(getActivity(), PriceListActivity.class);
+            startActivity(intent);
         });
 
+        mReportButton = v.findViewById(R.id.report_prices);
+        mReportButton.setOnClickListener(v2 -> {
+            // create a new price
+            Price price = new Price();
 
-        // todo:
-        //  Report Button should launch the report activity
-        mReportButton = (Button) v.findViewById(R.id.report_prices);
-        mReportButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            // add the price to the PriceLab
+            PriceLab.get(getActivity()).addPrice(price);
 
-                // create a new price
-                Price price = new Price();
-                PriceLab.get(getActivity()).addPrice(price);
-                Intent intent = PricePagerActivity
-                        .newIntent(getActivity(), price.getId());
-                startActivity(intent);
-            }
+            // Intent for the price pager and launch the activity
+            Intent intent = PricePagerActivity.newIntent(getActivity(), price.getId());
+            startActivity(intent);
         });
 
         return v;

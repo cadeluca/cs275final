@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.app.Activity;
 import android.content.Intent;
@@ -22,7 +21,6 @@ import android.text.format.DateFormat;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.Date;
 import java.util.UUID;
@@ -40,14 +38,13 @@ public class PriceFragment extends Fragment {
     private EditText mTitleField;
     private Button mDateButton;
     private CheckBox mSolvedCheckbox;
-    private Button mReportButton;
+    private Button mSharePriceButton;
     private Button mSuspectButton;
     private Button mCallButton;
 
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_PRICE_ID, priceId);
-
         PriceFragment fragment = new PriceFragment();
         fragment.setArguments(args);
         return fragment;
@@ -57,7 +54,6 @@ public class PriceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // temporary fake id
         UUID priceId = (UUID) getArguments().getSerializable(ARG_PRICE_ID);
         mPrice = PriceLab.get(getActivity()).getPrice(priceId);
     }
@@ -66,13 +62,11 @@ public class PriceFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_price, container, false);
-
         mTitleField = (EditText) v.findViewById(R.id.price_title);
         mTitleField.setText(mPrice.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -88,28 +82,33 @@ public class PriceFragment extends Fragment {
 
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
-        mDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v14) {
-                FragmentManager manager = PriceFragment.this.getFragmentManager();
-                DatePickerFragment dialog = DatePickerFragment
-                        .newInstance(mPrice.getDate());
-                dialog.setTargetFragment(PriceFragment.this, REQUEST_DATE);
-                dialog.show(manager, DIALOG_DATE);
-            }
-        });
 
-        mSolvedCheckbox = (CheckBox) v.findViewById(R.id.price_solved);
-        mSolvedCheckbox.setChecked(mPrice.isSolved());
-        mSolvedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mPrice.setSolved(isChecked);
-            }
-        });
+        // disabled date picker
 
-        mReportButton = (Button) v.findViewById(R.id.price_report);
-        mReportButton.setOnClickListener(new View.OnClickListener() {
+//        mDateButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v14) {
+//                FragmentManager manager = PriceFragment.this.getFragmentManager();
+//                DatePickerFragment dialog = DatePickerFragment
+//                        .newInstance(mPrice.getDate());
+//                dialog.setTargetFragment(PriceFragment.this, REQUEST_DATE);
+//                dialog.show(manager, DIALOG_DATE);
+//            }
+//        });
+
+        // disabled check box
+
+//        mSolvedCheckbox = (CheckBox) v.findViewById(R.id.price_solved);
+//        mSolvedCheckbox.setChecked(mPrice.isSolved());
+//        mSolvedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                mPrice.setSolved(isChecked);
+//            }
+//        });
+
+        mSharePriceButton = (Button) v.findViewById(R.id.price_share);
+        mSharePriceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v13) {
                 Intent i = new Intent(Intent.ACTION_SEND);
@@ -122,39 +121,43 @@ public class PriceFragment extends Fragment {
             }
         });
 
-        final Intent pickContact = new Intent(Intent.ACTION_PICK,
-                ContactsContract.Contacts.CONTENT_URI);
-        mSuspectButton = (Button) v.findViewById(R.id.price_suspect);
-        mSuspectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v12) {
-                PriceFragment.this.startActivityForResult(pickContact, REQUEST_CONTACT);
-            }
-        });
+        // disabled contact selection
 
-        PackageManager packageManager = getActivity().getPackageManager();
-        if (packageManager.resolveActivity(pickContact,
-                PackageManager.MATCH_DEFAULT_ONLY) == null) {
-            mSuspectButton.setEnabled(false);
-        }
+//        final Intent pickContact = new Intent(Intent.ACTION_PICK,
+//                ContactsContract.Contacts.CONTENT_URI);
+//        mSuspectButton = (Button) v.findViewById(R.id.price_suspect);
+//        mSuspectButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v12) {
+//                PriceFragment.this.startActivityForResult(pickContact, REQUEST_CONTACT);
+//            }
+//        });
 
-        mCallButton = (Button) v.findViewById(R.id.price_call);
-        if (mPrice.getSuspect() == null) {
-            mCallButton.setEnabled(false);
-            mCallButton.setText(R.string.call_suspect);
-        } else {
-            mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
-        }
-        mCallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v1) {
-                if (mPrice.getSuspectNumber() != null) {
-                    Intent intent = new Intent(Intent.ACTION_DIAL,
-                            Uri.parse("tel:" + mPrice.getSuspectNumber()));
-                    PriceFragment.this.startActivity(intent);
-                }
-            }
-        });
+//        PackageManager packageManager = getActivity().getPackageManager();
+//        if (packageManager.resolveActivity(pickContact,
+//                PackageManager.MATCH_DEFAULT_ONLY) == null) {
+//            mSuspectButton.setEnabled(false);
+//        }
+
+        // disabled call button
+
+//        mCallButton = (Button) v.findViewById(R.id.price_call);
+//        if (mPrice.getSuspect() == null) {
+//            mCallButton.setEnabled(false);
+//            mCallButton.setText(R.string.call_suspect);
+//        } else {
+//            mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
+//        }
+//        mCallButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v1) {
+//                if (mPrice.getSuspectNumber() != null) {
+//                    Intent intent = new Intent(Intent.ACTION_DIAL,
+//                            Uri.parse("tel:" + mPrice.getSuspectNumber()));
+//                    PriceFragment.this.startActivity(intent);
+//                }
+//            }
+//        });
 
         return v;
     }
@@ -162,9 +165,7 @@ public class PriceFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
-        PriceLab.get(getActivity())
-                .updatePrice(mPrice);
+        PriceLab.get(getActivity()).updatePrice(mPrice);
     }
 
     @Override
