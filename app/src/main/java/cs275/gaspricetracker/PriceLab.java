@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 
 import cs275.gaspricetracker.database.PriceBaseHelper;
 import cs275.gaspricetracker.database.PriceCursorWrapper;
+import cs275.gaspricetracker.database.PriceDbSchema;
 import cs275.gaspricetracker.database.PriceDbSchema.PriceTable;
 
 import java.util.ArrayList;
@@ -42,6 +43,15 @@ public class PriceLab {
         ContentValues values = getContentValues(p);
         mDatabase.insert(PriceTable.NAME, null, values);
     }
+
+    public void deletePrice (Price p) {
+        mDatabase.delete(
+                PriceDbSchema.PriceTable.NAME,
+                PriceDbSchema.PriceTable.Cols.UUID + " = ?",
+                new String[] {p.getId().toString()}
+        );
+    }
+
 
     public List<Price> getPrices() {
         List<Price> prices = new ArrayList<>();
