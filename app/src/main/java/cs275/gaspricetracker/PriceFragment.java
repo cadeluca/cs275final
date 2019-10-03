@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.text.format.DateFormat;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -41,6 +43,8 @@ public class PriceFragment extends Fragment {
     private Button mSharePriceButton;
     private Button mSuspectButton;
     private Button mCallButton;
+    private EditText mPriceInput;
+    private TextView mPriceDisplay;
 
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
@@ -159,6 +163,31 @@ public class PriceFragment extends Fragment {
 //            }
 //        });
 
+
+        // for the price display, to make it easy I tried creating an input in which
+        // the user simply types the price without having to press the decimal, but it
+        // would require hiding the input field. In the meantime, I can add an input that
+        // requires putting in the decimal by hand.
+        mPriceDisplay = (TextView) v.findViewById(R.id.price_display);
+        mPriceInput = (EditText) v.findViewById(R.id.price_input);
+        mPriceInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                mPriceDisplay.setText(addCurrencySign(charSequence.toString()));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
+
         return v;
     }
 
@@ -253,5 +282,24 @@ public class PriceFragment extends Fragment {
         String report = getString(R.string.price_report,
                 mPrice.getTitle(), dateString, solvedString, suspect);
         return report;
+    }
+
+    private String addCurrencySign(String digits) {
+        String amount = "$";
+
+        // Amount length greater than 2 means we need to add a decimal point
+        if (digits.length() > 2) {
+            String dollar = digits.substring(0, digits.length() - 2); // Pound part
+            String cents = digits.substring(digits.length() - 2); // Pence part
+            amount += dollar + "." + cents;
+        }
+        else if (digits.length() == 1) {
+            amount += "0.0" + digits;
+        }
+        else if (digits.length() == 2) {
+            amount += "0." + digits;
+        }
+
+        return amount;
     }
 }

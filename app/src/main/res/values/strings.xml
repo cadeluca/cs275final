@@ -26,4 +26,5 @@
     <string name="price_title">Price Title</string>
     <string name="price_date">Price Date</string>
     <string name="view_prices_text">View Prices</string>
+    <string name="price_hint">0.00</string>
 </resources>
