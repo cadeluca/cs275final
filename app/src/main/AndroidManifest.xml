@@ -7,7 +7,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PriceListActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -17,6 +17,7 @@
             android:name=".PricePagerActivity"
             android:parentActivityName=".PriceListActivity">
         </activity>
+        <activity android:name=".PriceListActivity"></activity>
     </application>
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />

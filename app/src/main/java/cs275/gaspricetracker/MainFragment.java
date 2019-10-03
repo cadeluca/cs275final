@@ -59,11 +59,8 @@ public class MainFragment extends Fragment {
         mViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v14) {
-//                FragmentManager manager = MainFragment.this.getFragmentManager();
-//                DatePickerFragment dialog = DatePickerFragment
-//                        .newInstance(mPrice.getDate());
-//                dialog.setTargetFragment(MainFragment.this, REQUEST_DATE);
-//                dialog.show(manager, DIALOG_DATE);
+                Intent intent = new Intent(getActivity(), PriceListActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -74,13 +71,8 @@ public class MainFragment extends Fragment {
         mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v13) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-//                i.setType("text/plain");
-//                i.putExtra(Intent.EXTRA_TEXT, MainFragment.this.getPriceReport());
-//                i.putExtra(Intent.EXTRA_SUBJECT,
-//                        MainFragment.this.getString(R.string.price_report_subject));
-//                i = Intent.createChooser(i, MainFragment.this.getString(R.string.send_report));
-                MainFragment.this.startActivity(i);
+//                Intent intent = new Intent(getActivity(), PriceActivity.class);
+//                startActivity(intent);
             }
         });
 
@@ -90,69 +82,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
-
-        if (requestCode == REQUEST_DATE) {
-            Date date = (Date) data
-                    .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            mPrice.setDate(date);
-            updateDate();
-        } else if (requestCode == REQUEST_CONTACT && data != null) {
-            Uri contactUri = data.getData();
-            // Specify which fields you want your query to return
-            // values for.
-            String[] queryFields = new String[]{
-                    ContactsContract.Contacts.LOOKUP_KEY,
-                    ContactsContract.Contacts.DISPLAY_NAME
-            };
-            // Perform your query - the contactUri is like a "where"
-            // clause here
-            Cursor c = getActivity().getContentResolver()
-                    .query(contactUri, queryFields, null, null, null);
-            String suspectId;
-
-            try {
-                // Double-check that you actually got results
-                if (c.getCount() == 0) {
-                    return;
-                }
-                // Pull out the first column of the first row of data -
-                // that is your suspect's name.
-                c.moveToFirst();
-                String suspect = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                suspectId = c.getString(c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                mPrice.setSuspect(suspect);
-                mSuspectButton.setText(suspect);
-                mCallButton.setEnabled(true);
-                mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
-            } finally {
-                c.close();
-            }
-
-            contactUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-            queryFields = new String[] {ContactsContract.CommonDataKinds.Phone.NUMBER};
-            c = getActivity().getContentResolver()
-                    .query(contactUri, queryFields,
-                            ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ? ",
-                            new String[] {suspectId}, null);
-
-            try {
-                if (c.getCount() == 0) {
-                    return;
-                }
-                c.moveToFirst();
-                String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                mPrice.setSuspectNumber(number);
-            } finally {
-                c.close();
-            }
-        }
     }
 
 }

@@ -130,7 +130,6 @@ public class PriceListFragment extends Fragment {
             implements View.OnClickListener {
 
         private Price mPrice;
-
         private TextView mTitleTextView;
         private TextView mDateTextView;
         private ImageView mSolvedImageView;
