@@ -10,7 +10,7 @@
     <string name="hide_subtitle">Hide Subtitle</string>
     <string name="subtitle_format">%1$d prices</string>
     <string name="price_suspect_text">Choose Suspect</string>
-    <string name="price_report_text">Send price Report</string>
+    <string name="report_prices_text">Report prices</string>
     <string name="price_report">%1$s!
     The price was reported on %2$s. %3$s, and %4$s
   </string>
@@ -22,6 +22,7 @@
     <string name="send_report">Send price report via</string>
     <string name="price_call_text">Call: %s</string>
     <string name="call_suspect">Call suspect</string>
-    <string name="price_title">price Title</string>
-    <string name="price_date">price Date</string>
+    <string name="price_title">Price Title</string>
+    <string name="price_date">Price Date</string>
+    <string name="view_prices_text">View Prices</string>
 </resources>

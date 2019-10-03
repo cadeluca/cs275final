@@ -44,7 +44,7 @@
         android:id="@+id/price_report"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/price_report_text"
+        android:text="@string/report_prices_text"
         />
     <Button
         android:id="@+id/price_call"
