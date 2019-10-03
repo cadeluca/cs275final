@@ -53,12 +53,10 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // todo:
-        //  View Button should launch the view prices activity
         mViewButton = (Button) v.findViewById(R.id.view_prices);
         mViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v14) {
+            public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), PriceListActivity.class);
                 startActivity(intent);
             }
@@ -70,9 +68,14 @@ public class MainFragment extends Fragment {
         mReportButton = (Button) v.findViewById(R.id.report_prices);
         mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v13) {
-//                Intent intent = new Intent(getActivity(), PriceActivity.class);
-//                startActivity(intent);
+            public void onClick(View v) {
+
+                // create a new price
+                Price price = new Price();
+                PriceLab.get(getActivity()).addPrice(price);
+                Intent intent = PricePagerActivity
+                        .newIntent(getActivity(), price.getId());
+                startActivity(intent);
             }
         });
 

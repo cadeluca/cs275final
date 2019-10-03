@@ -14,9 +14,7 @@ import java.util.UUID;
 
 public class PricePagerActivity extends AppCompatActivity {
 
-    private static final String EXTRA_CRIME_ID =
-            "cs275.gaspricetracker.price_id";
-
+    private static final String EXTRA_CRIME_ID = "cs275.gaspricetracker.price_id";
     private ViewPager mViewPager;
     private List<Price> mPrices;
 

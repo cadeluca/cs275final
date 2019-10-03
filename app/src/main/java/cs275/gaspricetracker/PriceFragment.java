@@ -57,6 +57,7 @@ public class PriceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // temporary fake id
         UUID priceId = (UUID) getArguments().getSerializable(ARG_PRICE_ID);
         mPrice = PriceLab.get(getActivity()).getPrice(priceId);
     }
