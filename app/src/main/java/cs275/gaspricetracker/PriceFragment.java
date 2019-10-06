@@ -1,24 +1,20 @@
 package cs275.gaspricetracker;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.ContactsContract;
-import android.text.format.DateFormat;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -31,7 +27,6 @@ import java.util.UUID;
 public class PriceFragment extends Fragment {
 
     private static final String ARG_PRICE_ID = "price_id";
-    private static final String DIALOG_DATE = "DialogDate";
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
@@ -39,12 +34,8 @@ public class PriceFragment extends Fragment {
     private Price mPrice;
     private EditText mTitleField;
     private Button mDateButton;
-    private CheckBox mSolvedCheckbox;
     private Button mSharePriceButton;
-    private Button mSuspectButton;
-    private Button mCallButton;
     private EditText mPriceInput;
-    private TextView mPriceDisplay;
 
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
@@ -164,11 +155,11 @@ public class PriceFragment extends Fragment {
 //        });
 
 
-        // for the price display, to make it easy I tried creating an input in which
-        // the user simply types the price without having to press the decimal, but it
-        // would require hiding the input field. In the meantime, I can add an input that
-        // requires putting in the decimal by hand.
-        mPriceDisplay = (TextView) v.findViewById(R.id.price_display);
+        // todo:
+        //  for the price display, to make it easy I tried creating an input in which
+        //  the user simply types the price without having to press the decimal, but it
+        //  would require hiding the input field. In the meantime, I can add an input that
+        //  requires putting in the decimal by hand.
         mPriceInput = (EditText) v.findViewById(R.id.price_input);
         mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -177,7 +168,6 @@ public class PriceFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mPriceDisplay.setText(addCurrencySign(charSequence.toString()));
             }
 
             @Override
@@ -185,8 +175,6 @@ public class PriceFragment extends Fragment {
 
             }
         });
-
-
 
         return v;
     }
@@ -233,9 +221,6 @@ public class PriceFragment extends Fragment {
                 String suspect = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 suspectId = c.getString(c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                 mPrice.setSuspect(suspect);
-                mSuspectButton.setText(suspect);
-                mCallButton.setEnabled(true);
-                mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
             } finally {
                 c.close();
             }
@@ -284,8 +269,15 @@ public class PriceFragment extends Fragment {
         return report;
     }
 
+    /**
+     * Takes in an input string and coverts it to a $_.__ formatted string
+     * @param digits the string (from charSequence) from a view/edit
+     * @return formatted string
+     */
     private String addCurrencySign(String digits) {
         String amount = "$";
+        // remove any non numeric chars
+        digits = digits.replace(".", "");
 
         // Amount length greater than 2 means we need to add a decimal point
         if (digits.length() > 2) {

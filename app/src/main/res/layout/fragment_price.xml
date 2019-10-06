@@ -15,7 +15,8 @@
         android:id="@+id/price_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/price_title_hint"/>
+        android:hint="@string/price_title_hint"
+        android:inputType="text" />
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
@@ -23,49 +24,37 @@
         android:layout_height="wrap_content"
         android:text="@string/price_details_label"/>
 
-    <EditText
-        android:id="@+id/price_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/price_hint"
-        android:inputType="numberDecimal"
-        />
 
-    <TextView
-        android:id="@+id/price_display"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
-        />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="$" />
+
+        <EditText
+            android:id="@+id/price_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/price_hint"
+            android:inputType="numberDecimal" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/price_date"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        />
 
-<!--    <CheckBox-->
-<!--        android:id="@+id/price_solved"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/price_solved_label"/>-->
-
-<!--    <Button-->
-<!--        android:id="@+id/price_suspect"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/price_suspect_text"-->
-<!--        />-->
     <Button
         android:id="@+id/price_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/share_price_text"
         />
-<!--    <Button-->
-<!--        android:id="@+id/price_call"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/price_call_text"-->
-<!--        />-->
 
 </LinearLayout>

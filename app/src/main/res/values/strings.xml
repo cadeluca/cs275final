@@ -2,7 +2,7 @@
     <string name="app_name">Gas Price Tracker</string>
     <string name="price_title_hint">Enter the name of the gas station.</string>
     <string name="price_title_label">Gas Station Name</string>
-    <string name="price_details_label">Details</string>
+    <string name="price_details_label">Price</string>
     <string name="price_solved_label">Solved</string>
     <string name="date_picker_title">Date of price:</string>
     <string name="new_price">New price</string>
@@ -19,8 +19,8 @@
     <string name="price_report_unsolved">The case is not solved</string>
     <string name="price_report_no_suspect">there is no suspect.</string>
     <string name="price_report_suspect">the suspect is %s.</string>
-    <string name="price_report_subject">CriminalIntent price Report</string>
-    <string name="send_report">Send price report via</string>
+    <string name="price_report_subject">GasPriceTracker Price Report</string>
+    <string name="send_report">Share this price via</string>
     <string name="price_call_text">Call: %s</string>
     <string name="call_suspect">Call suspect</string>
     <string name="price_title">Price Title</string>
