@@ -1,7 +1,6 @@
 package cs275.gaspricetracker;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,7 +12,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -24,7 +22,6 @@ public class NewPriceFragment extends Fragment {
     private EditText mTitleField;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +35,7 @@ public class NewPriceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_new_price, container, false);
 
-        mTitleField = (EditText) v.findViewById(R.id.price_title);
+        mTitleField = v.findViewById(R.id.price_title);
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -55,7 +52,7 @@ public class NewPriceFragment extends Fragment {
             }
         });
 
-        mSavePriceButton = (Button) v.findViewById(R.id.price_save);
+        mSavePriceButton = v.findViewById(R.id.price_save);
         mSavePriceButton.setOnClickListener(view -> {
             // add the price to the PriceLab
             PriceLab.get(getActivity()).addPrice(mPrice);
@@ -63,7 +60,7 @@ public class NewPriceFragment extends Fragment {
             Toast toast = Toast.makeText(getContext(), "Added price successfully!", Toast.LENGTH_SHORT);
             toast.show();
 
-            // go to main
+            // go back to main
             Intent intent = new Intent(getContext(), MainActivity.class);
             startActivity(intent);
         });
