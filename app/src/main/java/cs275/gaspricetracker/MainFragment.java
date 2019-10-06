@@ -16,6 +16,7 @@ public class MainFragment extends Fragment {
 
     private Button mViewButton;
     private Button mReportButton;
+    private Button mPriceMapButton;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +27,8 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
+
+        mPriceMapButton  = v.findViewById(R.id.view_map);
 
         mViewButton = v.findViewById(R.id.view_prices);
         mViewButton.setOnClickListener(v1 -> {
