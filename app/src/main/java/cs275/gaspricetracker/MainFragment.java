@@ -29,6 +29,10 @@ public class MainFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
 
         mPriceMapButton  = v.findViewById(R.id.view_map);
+        mPriceMapButton.setOnClickListener(v1 -> {
+            Intent intent = new Intent(getActivity(), PriceMapActivity.class);
+            startActivity(intent);
+        });
 
         mViewButton = v.findViewById(R.id.view_prices);
         mViewButton.setOnClickListener(v1 -> {

@@ -30,4 +30,5 @@
     <string name="submit_price">Submit Price</string>
     <string name="edit_price_text">Confirm edit</string>
     <string name="view_price_map">View Price Map</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
