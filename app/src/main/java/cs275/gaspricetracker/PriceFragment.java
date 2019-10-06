@@ -78,30 +78,6 @@ public class PriceFragment extends Fragment {
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
 
-        // disabled date picker
-
-//        mDateButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v14) {
-//                FragmentManager manager = PriceFragment.this.getFragmentManager();
-//                DatePickerFragment dialog = DatePickerFragment
-//                        .newInstance(mPrice.getDate());
-//                dialog.setTargetFragment(PriceFragment.this, REQUEST_DATE);
-//                dialog.show(manager, DIALOG_DATE);
-//            }
-//        });
-
-        // disabled check box
-
-//        mSolvedCheckbox = (CheckBox) v.findViewById(R.id.price_solved);
-//        mSolvedCheckbox.setChecked(mPrice.isSolved());
-//        mSolvedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                mPrice.setSolved(isChecked);
-//            }
-//        });
-
         mSharePriceButton = (Button) v.findViewById(R.id.price_share);
         mSharePriceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,50 +92,10 @@ public class PriceFragment extends Fragment {
             }
         });
 
-        // disabled contact selection
-
-//        final Intent pickContact = new Intent(Intent.ACTION_PICK,
-//                ContactsContract.Contacts.CONTENT_URI);
-//        mSuspectButton = (Button) v.findViewById(R.id.price_suspect);
-//        mSuspectButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v12) {
-//                PriceFragment.this.startActivityForResult(pickContact, REQUEST_CONTACT);
-//            }
-//        });
-
-//        PackageManager packageManager = getActivity().getPackageManager();
-//        if (packageManager.resolveActivity(pickContact,
-//                PackageManager.MATCH_DEFAULT_ONLY) == null) {
-//            mSuspectButton.setEnabled(false);
-//        }
-
-        // disabled call button
-
-//        mCallButton = (Button) v.findViewById(R.id.price_call);
-//        if (mPrice.getSuspect() == null) {
-//            mCallButton.setEnabled(false);
-//            mCallButton.setText(R.string.call_suspect);
-//        } else {
-//            mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
-//        }
-//        mCallButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v1) {
-//                if (mPrice.getSuspectNumber() != null) {
-//                    Intent intent = new Intent(Intent.ACTION_DIAL,
-//                            Uri.parse("tel:" + mPrice.getSuspectNumber()));
-//                    PriceFragment.this.startActivity(intent);
-//                }
-//            }
-//        });
-
 
         // todo:
-        //  for the price display, to make it easy I tried creating an input in which
-        //  the user simply types the price without having to press the decimal, but it
-        //  would require hiding the input field. In the meantime, I can add an input that
-        //  requires putting in the decimal by hand.
+        //  for the price display, right now it is a straightforward text input, but I would
+        //  like to add some automatic formatting for the user
         mPriceInput = (EditText) v.findViewById(R.id.price_input);
         mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
