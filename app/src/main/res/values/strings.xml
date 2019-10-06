@@ -27,4 +27,6 @@
     <string name="price_date">Price Date</string>
     <string name="view_prices_text">View Prices</string>
     <string name="price_hint">0.00</string>
+    <string name="submit_price">Submit Price</string>
+    <string name="edit_price_text">Confirm edit</string>
 </resources>

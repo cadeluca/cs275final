@@ -57,4 +57,11 @@
         android:text="@string/share_price_text"
         />
 
+    <Button
+        android:id="@+id/price_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_price_text"
+        />
+
 </LinearLayout>

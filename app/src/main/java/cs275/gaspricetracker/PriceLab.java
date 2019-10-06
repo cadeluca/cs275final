@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -40,6 +41,9 @@ public class PriceLab {
 
     public void addPrice(Price p) {
         ContentValues values = getContentValues(p);
+        // todo: change this so that there is a temporary price in memory,
+        //  then if a submit button is pressed we do this
+        Log.i("myTag", "add price called");
         mDatabase.insert(PriceTable.NAME, null, values);
     }
 
@@ -75,6 +79,7 @@ public class PriceLab {
         mDatabase.update(PriceTable.NAME, values,
                 PriceTable.Cols.UUID + " = ?",
                 new String[]{uuidString});
+        Log.d("myTag", "update price called");
     }
 
     private PriceCursorWrapper queryPrices(String whereClause, String[] whereArgs) {

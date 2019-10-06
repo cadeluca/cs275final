@@ -10,11 +10,13 @@ import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -35,6 +37,7 @@ public class PriceFragment extends Fragment {
     private EditText mTitleField;
     private Button mDateButton;
     private Button mSharePriceButton;
+    private Button mSaveEditsButton;
     private EditText mPriceInput;
 
     public static PriceFragment newInstance(UUID priceId) {
@@ -79,19 +82,23 @@ public class PriceFragment extends Fragment {
         updateDate();
 
         mSharePriceButton = (Button) v.findViewById(R.id.price_share);
-        mSharePriceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v13) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_TEXT, PriceFragment.this.getPriceReport());
-                i.putExtra(Intent.EXTRA_SUBJECT,
-                        PriceFragment.this.getString(R.string.price_report_subject));
-                i = Intent.createChooser(i, PriceFragment.this.getString(R.string.send_report));
-                PriceFragment.this.startActivity(i);
-            }
+        mSharePriceButton.setOnClickListener(v13 -> {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_TEXT, PriceFragment.this.getPriceReport());
+            i.putExtra(Intent.EXTRA_SUBJECT,
+                    PriceFragment.this.getString(R.string.price_report_subject));
+            i = Intent.createChooser(i, PriceFragment.this.getString(R.string.send_report));
+            PriceFragment.this.startActivity(i);
         });
 
+        mSaveEditsButton = (Button) v.findViewById(R.id.price_edit);
+        mSaveEditsButton.setOnClickListener(view -> {
+            Log.d("myTag", "Clicked saved edits");
+            PriceLab.get(getActivity()).updatePrice(mPrice);
+            Toast toast = Toast.makeText(getContext(), "Edited price successfully!", Toast.LENGTH_SHORT);
+            toast.show();
+        });
 
         // todo:
         //  for the price display, right now it is a straightforward text input, but I would
@@ -118,7 +125,8 @@ public class PriceFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        PriceLab.get(getActivity()).updatePrice(mPrice);
+//        PriceLab.get(getActivity()).updatePrice(mPrice);
+        Log.d("myTag", "on pause called");
     }
 
     @Override
@@ -230,4 +238,5 @@ public class PriceFragment extends Fragment {
 
         return amount;
     }
+
 }

@@ -2,6 +2,7 @@ package cs275.gaspricetracker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +16,6 @@ public class MainFragment extends Fragment {
 
     private Button mViewButton;
     private Button mReportButton;
-
-//    public static MainFragment newInstance() {
-//        Bundle args = new Bundle();
-//        MainFragment fragment = new MainFragment();
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,14 +35,7 @@ public class MainFragment extends Fragment {
 
         mReportButton = v.findViewById(R.id.report_prices);
         mReportButton.setOnClickListener(v2 -> {
-            // create a new price
-            Price price = new Price();
-
-            // add the price to the PriceLab
-            PriceLab.get(getActivity()).addPrice(price);
-
-            // Intent for the price pager and launch the activity
-            Intent intent = PricePagerActivity.newIntent(getActivity(), price.getId());
+            Intent intent = new Intent(getContext(), NewPriceActivity.class);
             startActivity(intent);
         });
 

@@ -2,6 +2,7 @@ package cs275.gaspricetracker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -82,10 +83,7 @@ public class PriceListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_price:
-                Price price = new Price();
-                PriceLab.get(getActivity()).addPrice(price);
-                Intent intent = PricePagerActivity
-                        .newIntent(getActivity(), price.getId());
+                Intent intent = new Intent(getContext(), NewPriceActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.show_subtitle:

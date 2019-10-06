@@ -17,6 +17,7 @@
             android:name=".PricePagerActivity"
             android:parentActivityName=".PriceListActivity">
         </activity>
+        <activity android:name=".NewPriceActivity"></activity>
         <activity android:name=".PriceListActivity"></activity>
     </application>
     <uses-permission android:name="android.permission.CALL_PHONE" />
