@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cs275.gaspricetracker">
+
+    <uses-feature android:name="android.hardware.camera"
+        />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,6 +21,15 @@
             android:name=".PricePagerActivity"
             android:parentActivityName=".PriceListActivity">
         </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="cs275.gaspricetracker.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/files"/>
+        </provider>
         <activity android:name=".PriceListActivity"></activity>
     </application>
     <uses-permission android:name="android.permission.CALL_PHONE" />
