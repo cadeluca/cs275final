@@ -1,28 +1,26 @@
 package cs275.gaspricetracker;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.ContactsContract;
-import android.text.format.DateFormat;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.Date;
 import java.util.UUID;
@@ -31,7 +29,6 @@ import java.util.UUID;
 public class PriceFragment extends Fragment {
 
     private static final String ARG_PRICE_ID = "price_id";
-    private static final String DIALOG_DATE = "DialogDate";
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
@@ -39,15 +36,13 @@ public class PriceFragment extends Fragment {
     private Price mPrice;
     private EditText mTitleField;
     private Button mDateButton;
-    private CheckBox mSolvedCheckbox;
-    private Button mReportButton;
-    private Button mSuspectButton;
-    private Button mCallButton;
+    private Button mSharePriceButton;
+    private Button mSaveEditsButton;
+    private EditText mPriceInput;
 
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_PRICE_ID, priceId);
-
         PriceFragment fragment = new PriceFragment();
         fragment.setArguments(args);
         return fragment;
@@ -65,13 +60,11 @@ public class PriceFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_price, container, false);
-
         mTitleField = (EditText) v.findViewById(R.id.price_title);
         mTitleField.setText(mPrice.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -87,71 +80,42 @@ public class PriceFragment extends Fragment {
 
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
-        mDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v14) {
-                FragmentManager manager = PriceFragment.this.getFragmentManager();
-                DatePickerFragment dialog = DatePickerFragment
-                        .newInstance(mPrice.getDate());
-                dialog.setTargetFragment(PriceFragment.this, REQUEST_DATE);
-                dialog.show(manager, DIALOG_DATE);
-            }
+
+        mSharePriceButton = (Button) v.findViewById(R.id.price_share);
+        mSharePriceButton.setOnClickListener(v13 -> {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_TEXT, PriceFragment.this.getPriceReport());
+            i.putExtra(Intent.EXTRA_SUBJECT,
+                    PriceFragment.this.getString(R.string.price_report_subject));
+            i = Intent.createChooser(i, PriceFragment.this.getString(R.string.send_report));
+            PriceFragment.this.startActivity(i);
         });
 
-        mSolvedCheckbox = (CheckBox) v.findViewById(R.id.price_solved);
-        mSolvedCheckbox.setChecked(mPrice.isSolved());
-        mSolvedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mPrice.setSolved(isChecked);
-            }
+        mSaveEditsButton = (Button) v.findViewById(R.id.price_edit);
+        mSaveEditsButton.setOnClickListener(view -> {
+            Log.d("myTag", "Clicked saved edits");
+            PriceLab.get(getActivity()).updatePrice(mPrice);
+            Toast toast = Toast.makeText(getContext(), "Edited price successfully!", Toast.LENGTH_SHORT);
+            toast.show();
         });
 
-        mReportButton = (Button) v.findViewById(R.id.price_report);
-        mReportButton.setOnClickListener(new View.OnClickListener() {
+        // todo:
+        //  for the price display, right now it is a straightforward text input, but I would
+        //  like to add some automatic formatting for the user
+        mPriceInput = (EditText) v.findViewById(R.id.price_input);
+        mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v13) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_TEXT, PriceFragment.this.getPriceReport());
-                i.putExtra(Intent.EXTRA_SUBJECT,
-                        PriceFragment.this.getString(R.string.price_report_subject));
-                i = Intent.createChooser(i, PriceFragment.this.getString(R.string.send_report));
-                PriceFragment.this.startActivity(i);
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
-        });
 
-        final Intent pickContact = new Intent(Intent.ACTION_PICK,
-                ContactsContract.Contacts.CONTENT_URI);
-        mSuspectButton = (Button) v.findViewById(R.id.price_suspect);
-        mSuspectButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v12) {
-                PriceFragment.this.startActivityForResult(pickContact, REQUEST_CONTACT);
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
-        });
 
-        PackageManager packageManager = getActivity().getPackageManager();
-        if (packageManager.resolveActivity(pickContact,
-                PackageManager.MATCH_DEFAULT_ONLY) == null) {
-            mSuspectButton.setEnabled(false);
-        }
-
-        mCallButton = (Button) v.findViewById(R.id.price_call);
-        if (mPrice.getSuspect() == null) {
-            mCallButton.setEnabled(false);
-            mCallButton.setText(R.string.call_suspect);
-        } else {
-            mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
-        }
-        mCallButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v1) {
-                if (mPrice.getSuspectNumber() != null) {
-                    Intent intent = new Intent(Intent.ACTION_DIAL,
-                            Uri.parse("tel:" + mPrice.getSuspectNumber()));
-                    PriceFragment.this.startActivity(intent);
-                }
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
@@ -161,9 +125,8 @@ public class PriceFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
-        PriceLab.get(getActivity())
-                .updatePrice(mPrice);
+//        PriceLab.get(getActivity()).updatePrice(mPrice);
+        Log.d("myTag", "on pause called");
     }
 
     @Override
@@ -202,9 +165,6 @@ public class PriceFragment extends Fragment {
                 String suspect = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 suspectId = c.getString(c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                 mPrice.setSuspect(suspect);
-                mSuspectButton.setText(suspect);
-                mCallButton.setEnabled(true);
-                mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
             } finally {
                 c.close();
             }
@@ -252,4 +212,31 @@ public class PriceFragment extends Fragment {
                 mPrice.getTitle(), dateString, solvedString, suspect);
         return report;
     }
+
+    /**
+     * Takes in an input string and coverts it to a $_.__ formatted string
+     * @param digits the string (from charSequence) from a view/edit
+     * @return formatted string
+     */
+    private String addCurrencySign(String digits) {
+        String amount = "$";
+        // remove any non numeric chars
+        digits = digits.replace(".", "");
+
+        // Amount length greater than 2 means we need to add a decimal point
+        if (digits.length() > 2) {
+            String dollar = digits.substring(0, digits.length() - 2); // Pound part
+            String cents = digits.substring(digits.length() - 2); // Pence part
+            amount += dollar + "." + cents;
+        }
+        else if (digits.length() == 1) {
+            amount += "0.0" + digits;
+        }
+        else if (digits.length() == 2) {
+            amount += "0." + digits;
+        }
+
+        return amount;
+    }
+
 }

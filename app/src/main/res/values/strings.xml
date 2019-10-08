@@ -2,7 +2,7 @@
     <string name="app_name">Gas Price Tracker</string>
     <string name="price_title_hint">Enter the name of the gas station.</string>
     <string name="price_title_label">Gas Station Name</string>
-    <string name="price_details_label">Details</string>
+    <string name="price_details_label">Price</string>
     <string name="price_solved_label">Solved</string>
     <string name="date_picker_title">Date of price:</string>
     <string name="new_price">New price</string>
@@ -10,7 +10,8 @@
     <string name="hide_subtitle">Hide Subtitle</string>
     <string name="subtitle_format">%1$d prices</string>
     <string name="price_suspect_text">Choose Suspect</string>
-    <string name="price_report_text">Send price Report</string>
+    <string name="report_prices_text">Report prices</string>
+    <string name="share_price_text">Share this price</string>
     <string name="price_report">%1$s!
     The price was reported on %2$s. %3$s, and %4$s
   </string>
@@ -18,10 +19,16 @@
     <string name="price_report_unsolved">The case is not solved</string>
     <string name="price_report_no_suspect">there is no suspect.</string>
     <string name="price_report_suspect">the suspect is %s.</string>
-    <string name="price_report_subject">CriminalIntent price Report</string>
-    <string name="send_report">Send price report via</string>
+    <string name="price_report_subject">GasPriceTracker Price Report</string>
+    <string name="send_report">Share this price via</string>
     <string name="price_call_text">Call: %s</string>
     <string name="call_suspect">Call suspect</string>
-    <string name="price_title">price Title</string>
-    <string name="price_date">price Date</string>
+    <string name="price_title">Price Title</string>
+    <string name="price_date">Price Date</string>
+    <string name="view_prices_text">View Price List</string>
+    <string name="price_hint">0.00</string>
+    <string name="submit_price">Submit Price</string>
+    <string name="edit_price_text">Confirm edit</string>
+    <string name="view_price_map">View Price Map</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
