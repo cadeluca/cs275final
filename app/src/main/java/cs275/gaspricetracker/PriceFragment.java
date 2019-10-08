@@ -12,6 +12,9 @@ import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -52,6 +55,7 @@ public class PriceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         UUID priceId = (UUID) getArguments().getSerializable(ARG_PRICE_ID);
         mPrice = PriceLab.get(getActivity()).getPrice(priceId);
     }
@@ -189,8 +193,26 @@ public class PriceFragment extends Fragment {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.delete_price:
+                PriceLab.get(getActivity()).deletePrice(mPrice);
+                getActivity().finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void updateDate() {
         mDateButton.setText(mPrice.getDate().toString());
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_price, menu);
     }
 
     private String getPriceReport() {
