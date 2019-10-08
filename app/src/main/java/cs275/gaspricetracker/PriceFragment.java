@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.Date;
 import java.util.UUID;
@@ -32,10 +33,10 @@ import java.util.UUID;
 public class PriceFragment extends Fragment {
 
     private static final String ARG_PRICE_ID = "price_id";
-
+    private static final String DIALOG_DELETE = "dialog_delete";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
-
+    private static final int REQUEST_DELETE = 2;
     private Price mPrice;
     private EditText mTitleField;
     private Button mDateButton;
@@ -190,6 +191,9 @@ public class PriceFragment extends Fragment {
             } finally {
                 c.close();
             }
+        } else if (requestCode == REQUEST_DELETE) {
+            PriceLab.get(getActivity()).deletePrice(mPrice);
+            getActivity().finish();
         }
     }
 
@@ -197,8 +201,10 @@ public class PriceFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.delete_price:
-                PriceLab.get(getActivity()).deletePrice(mPrice);
-                getActivity().finish();
+                FragmentManager manager = getFragmentManager();
+                DeleteDialogFragment dialog = new DeleteDialogFragment();
+                dialog.setTargetFragment(PriceFragment.this, REQUEST_DELETE);
+                dialog.show(manager, DIALOG_DELETE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
