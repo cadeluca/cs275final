@@ -1,22 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="16dp"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <TextView
-        style="?android:listSeparatorTextViewStyle"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/price_title_label"/>
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp">
 
-    <EditText
-        android:id="@+id/price_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/price_title_hint"
-        android:inputType="text" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/price_photo"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerInside"
+                android:cropToPadding="true"
+                android:background="@android:color/darker_gray" />
+
+            <ImageButton
+                android:id="@+id/price_camera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_camera" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                style="?android:listSeparatorTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/price_title_label" />
+
+            <EditText
+                android:id="@+id/price_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/price_title_hint"
+                android:inputType="text"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
@@ -24,6 +62,10 @@
         android:layout_height="wrap_content"
         android:text="@string/price_details_label"/>
 
+    <Button
+        android:id="@+id/price_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +93,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-
     <Button
         android:id="@+id/price_share"
         android:layout_width="match_parent"

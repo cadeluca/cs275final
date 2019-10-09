@@ -84,4 +84,8 @@ public class Price {
     public void setGasPrice(float gasPrice) {
         this.mGasPrice = gasPrice;
     }
+
+    public String getPhotoFilename() {
+        return "IMG_" + getId().toString() + ".jpg";
+    }
 }

@@ -14,6 +14,7 @@ import cs275.gaspricetracker.database.PriceCursorWrapper;
 import cs275.gaspricetracker.database.PriceDbSchema;
 import cs275.gaspricetracker.database.PriceDbSchema.PriceTable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -81,6 +82,11 @@ public class PriceLab {
             cursor.moveToFirst();
             return cursor.getPrice();
         }
+    }
+
+    public File getPhotoFile(Price price) {
+        File filesDir = mContext.getFilesDir();
+        return new File(filesDir, price.getPhotoFilename());
     }
 
     public void updatePrice(Price price) {
