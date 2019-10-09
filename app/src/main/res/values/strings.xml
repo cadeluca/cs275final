@@ -32,7 +32,7 @@
     <string name="edit_price_text">Confirm edit</string>
     <string name="view_price_map">View Price Map</string>
     <string name="title_activity_maps">Map</string>
-    <string name="dialog_delete">delete</string>
-    <string name="dialog_cancle">cancle</string>
-    <string name="dialog_question">Are you sure to delete?"</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_cancle">Cancel</string>
+    <string name="dialog_question">Are you sure you want to delete?"</string>
 </resources>
