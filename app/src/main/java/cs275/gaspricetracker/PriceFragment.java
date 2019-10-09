@@ -47,7 +47,7 @@ public class PriceFragment extends Fragment {
     private static final String DIALOG_DELETE = "dialog_delete";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
-    private static final int REQUEST_PHOTO= 2;
+    private static final int REQUEST_PHOTO = 2;
     private static final int REQUEST_DELETE = 3;
     private Price mPrice;
     private File mPhotoFile;
