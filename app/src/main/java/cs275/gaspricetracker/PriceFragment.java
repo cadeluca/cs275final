@@ -1,10 +1,11 @@
 package cs275.gaspricetracker;
 
-import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,16 +23,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.ContactsContract;
-import android.text.format.DateFormat;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -126,40 +120,46 @@ public class PriceFragment extends Fragment {
             toast.show();
         });
 
-        // todo:
-        //  for the price display, right now it is a straightforward text input, but I would
-        //  like to add some automatic formatting for the user
         mPriceInput = (EditText) v.findViewById(R.id.price_input);
         mPriceInput.addTextChangedListener(new TextWatcher() {
-                                               @Override
-                                               public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                               }
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
-                                               @Override
-                                               public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                               }
-                                           };
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
+
+        PackageManager packageManager = getActivity().getPackageManager();
+//        if (packageManager.resolveActivity(pickContact,
+//                PackageManager.MATCH_DEFAULT_ONLY) == null) {
+//            mSuspectButton.setEnabled(false);
+//        }
+//
         mPhotoButton = (ImageButton) v.findViewById(R.id.price_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null &&
                 captureImage.resolveActivity(packageManager) != null;
         mPhotoButton.setEnabled(canTakePhoto);
-        mPhotoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri uri = FileProvider.getUriForFile(getActivity(),
-                        "cs275.gaspricetracker.fileprovider",
-                        mPhotoFile);
-                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                List<ResolveInfo> cameraActivities = getActivity()
-                        .getPackageManager().queryIntentActivities(captureImage,
-                                PackageManager.MATCH_DEFAULT_ONLY);
-                for (ResolveInfo activity : cameraActivities) {
-                    getActivity().grantUriPermission(activity.activityInfo.packageName,
-                            uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                }
-                startActivityForResult(captureImage, REQUEST_PHOTO);
+        mPhotoButton.setOnClickListener(v1 -> {
+            Uri uri = FileProvider.getUriForFile(getActivity(),
+                    "cs275.gaspricetracker.fileprovider",
+                    mPhotoFile);
+            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            List<ResolveInfo> cameraActivities = getActivity()
+                    .getPackageManager().queryIntentActivities(captureImage,
+                            PackageManager.MATCH_DEFAULT_ONLY);
+            for (ResolveInfo activity : cameraActivities) {
+                getActivity().grantUriPermission(activity.activityInfo.packageName,
+                        uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             }
+            startActivityForResult(captureImage, REQUEST_PHOTO);
         });
 
         mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
@@ -182,7 +182,6 @@ public class PriceFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-//        PriceLab.get(getActivity()).updatePrice(mPrice);
         Log.d("myTag", "on pause called");
     }
 
