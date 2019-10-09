@@ -24,7 +24,7 @@ public class DeleteDialogFragment extends DialogFragment {
                                 sendResult(Activity.RESULT_OK, null);
                             }
                         })
-                .setPositiveButton(R.string.dialog_delete,
+                .setPositiveButton(R.string.dialog_cancle,
                         new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog, int i) {
