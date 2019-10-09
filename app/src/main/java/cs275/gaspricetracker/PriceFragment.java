@@ -44,10 +44,12 @@ public class PriceFragment extends Fragment {
     private static final String ARG_PRICE_ID = "price_id";
     private static final String DIALOG_PHOTO = "DialogPhoto";
 
+    private static final String DIALOG_DELETE = "dialog_delete";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_PHOTO= 2;
 
+    private static final int REQUEST_DELETE = 2;
     private Price mPrice;
     private File mPhotoFile;
     private EditText mTitleField;
@@ -134,8 +136,6 @@ public class PriceFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
             }
         });
-
-
         PackageManager packageManager = getActivity().getPackageManager();
 //        if (packageManager.resolveActivity(pickContact,
 //                PackageManager.MATCH_DEFAULT_ONLY) == null) {
@@ -173,8 +173,6 @@ public class PriceFragment extends Fragment {
                     ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
                     dialog.show(manager, DIALOG_PHOTO);
                 }
-            }
-        });
 
         return v;
     }
@@ -249,16 +247,20 @@ public class PriceFragment extends Fragment {
             getActivity().revokeUriPermission(uri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             updatePhotoView();
+        } else if (requestCode == REQUEST_DELETE) {
+            PriceLab.get(getActivity()).deletePrice(mPrice);
+            getActivity().finish();
         }
-
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.delete_price:
-                PriceLab.get(getActivity()).deletePrice(mPrice);
-                getActivity().finish();
+                FragmentManager manager = getFragmentManager();
+                DeleteDialogFragment dialog = new DeleteDialogFragment();
+                dialog.setTargetFragment(PriceFragment.this, REQUEST_DELETE);
+                dialog.show(manager, DIALOG_DELETE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
