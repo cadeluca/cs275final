@@ -103,6 +103,7 @@ public class PriceFragment extends Fragment {
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
 
+
         mSharePriceButton = (Button) v.findViewById(R.id.price_share);
         mSharePriceButton.setOnClickListener(v13 -> {
             Intent i = new Intent(Intent.ACTION_SEND);
@@ -165,14 +166,13 @@ public class PriceFragment extends Fragment {
         mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
         updatePhotoView();
 
-        mPhotoView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mPhotoFile != null && mPhotoFile.exists()) {
-                    FragmentManager manager = getFragmentManager();
-                    ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
-                    dialog.show(manager, DIALOG_PHOTO);
-                }
+        mPhotoView.setOnClickListener(view -> {
+            if (mPhotoFile != null && mPhotoFile.exists()) {
+                FragmentManager manager = getFragmentManager();
+                ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
+                dialog.show(manager, DIALOG_PHOTO);
+            }
+        });
 
         return v;
     }
