@@ -16,15 +16,15 @@ public class DeleteDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
-                .setTitle("@string/dialog_question")
-                .setNegativeButton("@string/dialog_cancle",
+                .setTitle(R.string.dialog_question)
+                .setNegativeButton(R.string.dialog_delete,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 sendResult(Activity.RESULT_OK, null);
                             }
                         })
-                .setPositiveButton("@string/dialog_cancle",
+                .setPositiveButton(R.string.dialog_delete,
                         new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog, int i) {
