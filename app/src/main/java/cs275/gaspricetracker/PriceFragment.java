@@ -37,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.util.Date;
@@ -130,14 +131,14 @@ public class PriceFragment extends Fragment {
         //  like to add some automatic formatting for the user
         mPriceInput = (EditText) v.findViewById(R.id.price_input);
         mPriceInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+                                               @Override
+                                               public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                               }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
+                                               @Override
+                                               public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                               }
+                                           };
         mPhotoButton = (ImageButton) v.findViewById(R.id.price_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null &&
@@ -172,20 +173,6 @@ public class PriceFragment extends Fragment {
                     ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
                     dialog.show(manager, DIALOG_PHOTO);
                 }
-            }
-        });
-
-        mCallButton = (Button) v.findViewById(R.id.price_call);
-        if (mPrice.getSuspect() == null) {
-            mCallButton.setEnabled(false);
-            mCallButton.setText(R.string.call_suspect);
-        } else {
-            mCallButton.setText(getString(R.string.price_call_text, mPrice.getSuspect()));
-        }
-        mCallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void afterTextChanged(Editable editable) {
-
             }
         });
 
