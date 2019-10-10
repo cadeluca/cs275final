@@ -139,7 +139,7 @@ public class PriceListFragment extends Fragment {
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.price_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.price_date);
-            mSolvedImageView = (ImageView) itemView.findViewById(R.id.price_solved);
+//            mSolvedImageView = (ImageView) itemView.findViewById(R.id.price_solved);
         }
 
         public void bind(Price price) {
