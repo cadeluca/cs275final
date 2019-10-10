@@ -16,8 +16,6 @@
   </string>
     <string name="price_report_subject">GasPriceTracker Price Report</string>
     <string name="send_report">Share this price via</string>
-    <string name="price_call_text">Call: %s</string>
-    <string name="call_suspect">Call suspect</string>
     <string name="price_title">Price Title</string>
     <string name="price_date">Price Date</string>
     <string name="view_prices_text">View Price List</string>
@@ -29,4 +27,5 @@
     <string name="dialog_delete">Delete</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_question">Are you sure you want to delete this price?"</string>
+    <string name="dollar_sign">$</string>
 </resources>

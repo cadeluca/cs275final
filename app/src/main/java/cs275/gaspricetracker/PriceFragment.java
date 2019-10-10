@@ -43,7 +43,6 @@ public class PriceFragment extends Fragment {
 
     private static final String ARG_PRICE_ID = "price_id";
     private static final String DIALOG_PHOTO = "DialogPhoto";
-
     private static final String DIALOG_DELETE = "dialog_delete";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
@@ -102,7 +101,6 @@ public class PriceFragment extends Fragment {
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
 
-
         mSharePriceButton = (Button) v.findViewById(R.id.price_share);
         mSharePriceButton.setOnClickListener(v13 -> {
             Intent i = new Intent(Intent.ACTION_SEND);
@@ -137,11 +135,7 @@ public class PriceFragment extends Fragment {
             }
         });
         PackageManager packageManager = getActivity().getPackageManager();
-//        if (packageManager.resolveActivity(pickContact,
-//                PackageManager.MATCH_DEFAULT_ONLY) == null) {
-//            mSuspectButton.setEnabled(false);
-//        }
-//
+
         mPhotoButton = (ImageButton) v.findViewById(R.id.price_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null &&
@@ -278,19 +272,9 @@ public class PriceFragment extends Fragment {
 
     private String getPriceReport() {
         String solvedString = null;
-        if (mPrice.isSolved()) {
-            solvedString = getString(R.string.price_report_solved);
-        } else {
-            solvedString = getString(R.string.price_report_unsolved);
-        }
         String dateFormat = "EEE, MMM dd";
         String dateString = DateFormat.format(dateFormat, mPrice.getDate()).toString();
         String suspect = mPrice.getSuspect();
-        if (suspect == null) {
-            suspect = getString(R.string.price_report_no_suspect);
-        } else {
-            suspect = getString(R.string.price_report_suspect, suspect);
-        }
         String report = getString(R.string.price_report,
                 mPrice.getTitle(), dateString, solvedString, suspect);
         return report;
