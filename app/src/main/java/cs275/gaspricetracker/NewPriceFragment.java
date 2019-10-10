@@ -93,7 +93,9 @@ public class NewPriceFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mPrice.setGasPrice(Float.parseFloat(charSequence.toString()));
+                if (charSequence.length() > 0) {
+                    mPrice.setGasPrice(Float.parseFloat(charSequence.toString()));
+                }
             }
 
             @Override
