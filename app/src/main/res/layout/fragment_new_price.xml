@@ -2,30 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
+    android:layout_margin="0dp"
     android:orientation="vertical">
 
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginLeft="16dp">
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/price_photo"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:scaleType="centerInside"
+                android:background="@android:color/darker_gray"
                 android:cropToPadding="true"
-                android:background="@android:color/darker_gray" />
+                android:scaleType="centerInside" />
 
             <ImageButton
                 android:id="@+id/price_camera"
@@ -36,10 +36,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
                 style="?android:listSeparatorTextViewStyle"
@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/price_title_hint"
-                android:inputType="text"/>
+                android:inputType="text" />
 
         </LinearLayout>
 
@@ -62,7 +62,7 @@
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/price_details_label"/>
+        android:text="@string/price_details_label" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,8 +73,8 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="$"
             android:gravity="center"
+            android:text="$"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <EditText
