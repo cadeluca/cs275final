@@ -93,6 +93,9 @@ public class NewPriceFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() > 0) {
+                    mPrice.setGasPrice(Float.parseFloat(charSequence.toString()));
+                }
             }
 
             @Override
@@ -100,11 +103,7 @@ public class NewPriceFragment extends Fragment {
             }
         });
         PackageManager packageManager = getActivity().getPackageManager();
-//        if (packageManager.resolveActivity(pickContact,
-//                PackageManager.MATCH_DEFAULT_ONLY) == null) {
-//            mSuspectButton.setEnabled(false);
-//        }
-//
+
         mPhotoButton = (ImageButton) v.findViewById(R.id.price_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null &&

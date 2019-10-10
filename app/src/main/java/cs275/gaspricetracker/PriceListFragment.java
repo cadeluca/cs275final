@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-//import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
@@ -140,14 +139,13 @@ public class PriceListFragment extends Fragment {
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.price_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.price_date);
-            mSolvedImageView = (ImageView) itemView.findViewById(R.id.price_solved);
+//            mSolvedImageView = (ImageView) itemView.findViewById(R.id.price_solved);
         }
 
         public void bind(Price price) {
             mPrice = price;
             mTitleTextView.setText(mPrice.getTitle());
             mDateTextView.setText(mPrice.getDate().toString());
-            mSolvedImageView.setVisibility(price.isSolved() ? View.VISIBLE : View.GONE);
         }
 
         @Override

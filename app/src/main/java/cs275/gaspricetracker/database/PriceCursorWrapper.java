@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 
 import cs275.gaspricetracker.Price;
-import cs275.gaspricetracker.database.PriceDbSchema.PriceTable;
 
 import java.util.Date;
 import java.util.UUID;
@@ -22,14 +21,12 @@ public class PriceCursorWrapper extends CursorWrapper {
         String uuidString = getString(getColumnIndex(Cols.UUID));
         String title = getString(getColumnIndex(Cols.TITLE));
         long date = getLong(getColumnIndex(Cols.DATE));
-        int isSolved = getInt(getColumnIndex(Cols.SOLVED));
-        String suspect = getString(getColumnIndex(PriceTable.Cols.SUSPECT));
+        float gasPrice = getFloat(getColumnIndex(Cols.PRICE));
 
         Price price = new Price(UUID.fromString(uuidString));
         price.setTitle(title);
         price.setDate(new Date(date));
-        price.setSolved(isSolved != 0);
-        price.setSuspect(suspect);
+        price.setGasPrice(gasPrice);
 
         return price;
     }
