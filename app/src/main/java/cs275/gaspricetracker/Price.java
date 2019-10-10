@@ -8,9 +8,6 @@ public class Price {
     private UUID mId;
     private String mTitle;
     private Date mDate;
-    private boolean mSolved;
-    private String mSuspect;
-    private String mNumber;
 
     private String mLocation;
     private float mGasPrice;
@@ -43,30 +40,6 @@ public class Price {
 
     public void setDate(Date date) {
         mDate = date;
-    }
-
-    public boolean isSolved() {
-        return mSolved;
-    }
-
-    public void setSolved(boolean solved) {
-        mSolved = solved;
-    }
-
-    public String getSuspect() {
-        return mSuspect;
-    }
-
-    public void setSuspect(String suspect) {
-        mSuspect = suspect;
-    }
-
-    public String getSuspectNumber() {
-        return mNumber;
-    }
-
-    public void setSuspectNumber(String number) {
-        mNumber = number;
     }
 
     public String getLocation() {

@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-//import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
@@ -147,7 +146,6 @@ public class PriceListFragment extends Fragment {
             mPrice = price;
             mTitleTextView.setText(mPrice.getTitle());
             mDateTextView.setText(mPrice.getDate().toString());
-            mSolvedImageView.setVisibility(price.isSolved() ? View.VISIBLE : View.GONE);
         }
 
         @Override
