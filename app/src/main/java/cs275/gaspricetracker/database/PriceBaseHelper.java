@@ -19,8 +19,7 @@ public class PriceBaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + PriceTable.NAME + "(" +
                 " _id integer primary key autoincrement, " + PriceTable.Cols.UUID + ", " + PriceTable.Cols.TITLE + ", " +
                 PriceTable.Cols.DATE + ", " +
-                PriceTable.Cols.SOLVED + ", " +
-                PriceTable.Cols.SUSPECT +
+                PriceTable.Cols.PRICE +
                 ")"
         );
     }

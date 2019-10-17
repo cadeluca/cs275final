@@ -43,11 +43,10 @@ public class PriceFragment extends Fragment {
 
     private static final String ARG_PRICE_ID = "price_id";
     private static final String DIALOG_PHOTO = "DialogPhoto";
-
     private static final String DIALOG_DELETE = "dialog_delete";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
-    private static final int REQUEST_PHOTO= 2;
+    private static final int REQUEST_PHOTO = 2;
     private static final int REQUEST_DELETE = 3;
     private Price mPrice;
     private File mPhotoFile;
@@ -102,7 +101,6 @@ public class PriceFragment extends Fragment {
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
 
-
         mSharePriceButton = (Button) v.findViewById(R.id.price_share);
         mSharePriceButton.setOnClickListener(v13 -> {
             Intent i = new Intent(Intent.ACTION_SEND);
@@ -123,6 +121,7 @@ public class PriceFragment extends Fragment {
         });
 
         mPriceInput = (EditText) v.findViewById(R.id.price_input);
+        mPriceInput.setText(Float.toString(mPrice.getGasPrice()));
         mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -130,6 +129,7 @@ public class PriceFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                mPrice.setGasPrice(Float.parseFloat(charSequence.toString()));
             }
 
             @Override
@@ -137,11 +137,7 @@ public class PriceFragment extends Fragment {
             }
         });
         PackageManager packageManager = getActivity().getPackageManager();
-//        if (packageManager.resolveActivity(pickContact,
-//                PackageManager.MATCH_DEFAULT_ONLY) == null) {
-//            mSuspectButton.setEnabled(false);
-//        }
-//
+
         mPhotoButton = (ImageButton) v.findViewById(R.id.price_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null &&
@@ -188,58 +184,7 @@ public class PriceFragment extends Fragment {
             return;
         }
 
-        if (requestCode == REQUEST_DATE) {
-            Date date = (Date) data
-                    .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            mPrice.setDate(date);
-            updateDate();
-        } else if (requestCode == REQUEST_CONTACT && data != null) {
-            Uri contactUri = data.getData();
-            // Specify which fields you want your query to return
-            // values for.
-            String[] queryFields = new String[]{
-                    ContactsContract.Contacts.LOOKUP_KEY,
-                    ContactsContract.Contacts.DISPLAY_NAME
-            };
-            // Perform your query - the contactUri is like a "where"
-            // clause here
-            Cursor c = getActivity().getContentResolver()
-                    .query(contactUri, queryFields, null, null, null);
-            String suspectId;
-
-            try {
-                // Double-check that you actually got results
-                if (c.getCount() == 0) {
-                    return;
-                }
-                // Pull out the first column of the first row of data -
-                // that is your suspect's name.
-                c.moveToFirst();
-                String suspect = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                suspectId = c.getString(c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                mPrice.setSuspect(suspect);
-            } finally {
-                c.close();
-            }
-
-            contactUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-            queryFields = new String[] {ContactsContract.CommonDataKinds.Phone.NUMBER};
-            c = getActivity().getContentResolver()
-                    .query(contactUri, queryFields,
-                            ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ? ",
-                            new String[] {suspectId}, null);
-
-            try {
-                if (c.getCount() == 0) {
-                    return;
-                }
-                c.moveToFirst();
-                String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                mPrice.setSuspectNumber(number);
-            } finally {
-                c.close();
-            }
-        } else if (requestCode == REQUEST_PHOTO) {
+        if (requestCode == REQUEST_PHOTO) {
             Uri uri = FileProvider.getUriForFile(getActivity(),
                     "cs275.gaspricetracker.fileprovider",
                     mPhotoFile);
@@ -278,21 +223,9 @@ public class PriceFragment extends Fragment {
 
     private String getPriceReport() {
         String solvedString = null;
-        if (mPrice.isSolved()) {
-            solvedString = getString(R.string.price_report_solved);
-        } else {
-            solvedString = getString(R.string.price_report_unsolved);
-        }
         String dateFormat = "EEE, MMM dd";
         String dateString = DateFormat.format(dateFormat, mPrice.getDate()).toString();
-        String suspect = mPrice.getSuspect();
-        if (suspect == null) {
-            suspect = getString(R.string.price_report_no_suspect);
-        } else {
-            suspect = getString(R.string.price_report_suspect, suspect);
-        }
-        String report = getString(R.string.price_report,
-                mPrice.getTitle(), dateString, solvedString, suspect);
+        String report = "temporary report string";
         return report;
     }
 

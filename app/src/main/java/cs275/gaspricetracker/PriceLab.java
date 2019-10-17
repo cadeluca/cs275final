@@ -116,9 +116,9 @@ public class PriceLab {
         values.put(UUID, price.getId().toString());
         values.put(TITLE, price.getTitle());
         values.put(DATE, price.getDate().getTime());
-        values.put(SOLVED, price.isSolved() ? 1 : 0);
-        values.put(PriceTable.Cols.SUSPECT, price.getSuspect());
-
+        values.put(PRICE, price.getGasPrice());
+        float f = price.getGasPrice();
+        Log.d("myTag", Float.toString(f));
         return values;
     }
 }
