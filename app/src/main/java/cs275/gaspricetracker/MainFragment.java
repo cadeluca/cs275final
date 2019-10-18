@@ -2,7 +2,6 @@ package cs275.gaspricetracker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ public class MainFragment extends Fragment {
 
         mPriceMapButton  = v.findViewById(R.id.view_map);
         mPriceMapButton.setOnClickListener(v1 -> {
-            Intent intent = new Intent(getActivity(), PriceMapActivity.class);
+            Intent intent = new Intent(getActivity(), PriceLocatrActivity.class);
             startActivity(intent);
         });
 
