@@ -28,14 +28,14 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class PriceLocatrFragment extends SupportMapFragment {
-
-    private static final String TAG = "PriceLocatrFragment";
-    private static final String[] LOCATION_PERMISSIONS = new String[]{
+    private static final String TAG = "LocatrFragment";
+    private static final String[] LOCATION_PERMISSIONS = new String[] {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
     };
@@ -43,6 +43,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
     private GoogleApiClient mClient;
     private GoogleMap mMap;
     private Bitmap mMapImage;
+    private GalleryItem mMapItem;
     private Location mCurrentLocation;
 
     public static PriceLocatrFragment newInstance() {
@@ -53,8 +54,6 @@ public class PriceLocatrFragment extends SupportMapFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.getSupportActionBar().setTitle("Price Map");
 
         mClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(LocationServices.API)
@@ -76,9 +75,8 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 updateUI();
             }
         });
-
-        getMapAsync(googleMap -> mMap = googleMap);
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -101,6 +99,8 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -114,34 +114,6 @@ public class PriceLocatrFragment extends SupportMapFragment {
         mClient.disconnect();
     }
 
-    private boolean hasLocationPermission() {
-        int result = ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);
-        return result == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void updateUI() {
-        if (mMap == null || mMapImage == null) {
-            return;
-        }
-        LatLng myPoint = new LatLng(
-                mCurrentLocation.getLatitude(),
-                mCurrentLocation.getLongitude()
-        );
-        BitmapDescriptor itemBitmap = BitmapDescriptorFactory.fromBitmap(mMapImage);
-        MarkerOptions itemMarker = new MarkerOptions()
-                .icon(itemBitmap);
-        MarkerOptions myMarker = new MarkerOptions()
-                .position(myPoint);
-        mMap.clear();
-        mMap.addMarker(itemMarker);
-        mMap.addMarker(myMarker);
-        LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(myPoint)
-                .build();
-        int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
-        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
-        mMap.animateCamera(update);
-    }
     private void findImage() {
         LocationRequest request = LocationRequest.create();
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -156,31 +128,80 @@ public class PriceLocatrFragment extends SupportMapFragment {
                     }
                 });
     }
+
+    private boolean hasLocationPermission() {
+        int result = ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);
+        return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void updateUI() {
+        if (mMap == null || mMapImage == null) {
+            return;
+        }
+        LatLng itemPoint = new LatLng(mMapItem.getmLat(),
+                mMapItem.getmLon());
+        LatLng myPoint = new LatLng(
+                mCurrentLocation.getLatitude(),
+                mCurrentLocation.getLongitude()
+        );
+        BitmapDescriptor itemBitmap = BitmapDescriptorFactory.fromBitmap(mMapImage);
+        MarkerOptions itemMarker = new MarkerOptions()
+                .position(itemPoint)
+                .icon(itemBitmap);
+        MarkerOptions myMarker = new MarkerOptions()
+                .position(myPoint);
+        mMap.clear();
+        mMap.addMarker(itemMarker);
+        mMap.addMarker(myMarker);
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(itemPoint)
+                .include(myPoint)
+                .build();
+        int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
+        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
+        mMap.animateCamera(update);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_LOCATION_PERMISSIONS:
                 if(hasLocationPermission()) {
-                    //findImage();
+                    findImage();
                 }
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
     private class SearchTask extends AsyncTask<Location, Void, Void> {
+        private GalleryItem mGalleryItem;
         private Bitmap mBitmap;
         private Location mLocation;
         @Override
         protected Void doInBackground(Location... param) {
+            mLocation = param[0];
+            FlickrFetchr fetchr = new FlickrFetchr();
+            List<GalleryItem> items = fetchr.searchPhotos(param[0]);
+            if (items.size() == 0) {
+                return null;
+            }
+            mGalleryItem = items.get(0);
+            try {
+                byte[] bytes = fetchr.getUrlBytes((mGalleryItem.getmUrl()));
+                mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+            } catch (IOException ioe) {
+                Log.i(TAG, "Unable to download bitmap", ioe);
+            }
             return null;
         }
         @Override
         protected void onPostExecute(Void result) {
             mMapImage = mBitmap;
+            mMapItem = mGalleryItem;
             mCurrentLocation = mLocation;
+
             updateUI();
         }
     }
-
-
 }
