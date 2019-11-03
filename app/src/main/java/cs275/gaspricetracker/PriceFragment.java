@@ -41,7 +41,7 @@ import java.util.UUID;
 
 public class PriceFragment extends Fragment {
 
-    private static final String ARG_PRICE_ID = "price_id";
+    public static final String ARG_PRICE_ID = "price_id";
     private static final String DIALOG_PHOTO = "DialogPhoto";
     private static final String DIALOG_DELETE = "dialog_delete";
     private static final int REQUEST_DATE = 0;
