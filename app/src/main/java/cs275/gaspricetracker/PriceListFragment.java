@@ -17,11 +17,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.ListFragment;
 import cs275.gaspricetracker.R;
 
@@ -29,13 +32,19 @@ public class PriceListFragment extends ListFragment {
     private ArrayList<Price> mPrices;
     private boolean mSubtitleVisible;
     private static final String TAG = "PriceListFragment";
+    private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+    //PriceAdapter mAdapter;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_price_list, menu);
-        MenuItem showSubtitle = menu.findItem(R.id.show_subtitle);
-        showSubtitle.setTitle(R.string.hide_subtitle);
+        MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
+        if (mSubtitleVisible) {
+            subtitleItem.setTitle(R.string.hide_subtitle);
+        } else {
+            subtitleItem.setTitle(R.string.show_subtitle);
+        }
     }
 
     @Override
@@ -47,7 +56,7 @@ public class PriceListFragment extends ListFragment {
         this.getActivity().setTitle(R.string.price_title);
         this.mPrices = (ArrayList<Price>) PriceLab.get(getActivity()).getPrices();
 //        ArrayAdapter<Price> adapter = new ArrayAdapter<Price>(getActivity(), android.R.layout.simple_list_item_1, mPrices);
-        PriceAdapter adapter = new PriceAdapter(mPrices);
+        ListAdapter adapter = new PriceAdapter(mPrices);
         setListAdapter(adapter);
     }
     @Override
@@ -87,6 +96,7 @@ public class PriceListFragment extends ListFragment {
     public void onResume() {
         super.onResume();
         ((PriceAdapter)getListAdapter()).notifyDataSetChanged();
+        updateSubtitle();
     }
 
     @Override
@@ -97,8 +107,10 @@ public class PriceListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, parent, savedInstanceState);
-        if (mSubtitleVisible)
-            getActivity().getActionBar().setSubtitle(R.string.show_subtitle);
+        if (savedInstanceState != null) {
+            mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+        }
+
         ListView listView = (ListView)v.findViewById(android.R.id.list);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             registerForContextMenu(listView);
@@ -143,6 +155,8 @@ public class PriceListFragment extends ListFragment {
                 }
             });
         }
+        ((PriceAdapter)getListAdapter()).notifyDataSetChanged();
+        updateSubtitle();
         return v;
     }
 
@@ -174,19 +188,35 @@ public class PriceListFragment extends ListFragment {
                 return true;
 
             case R.id.show_subtitle:
-                if (getActivity().getActionBar().getSubtitle() == null) {
-                    getActivity().getActionBar().setSubtitle(R.string.show_subtitle);
-                    mSubtitleVisible = true;
-                    item.setTitle(R.string.hide_subtitle);
-                }
-                else {
-                    getActivity().getActionBar().setSubtitle(null);
-                    mSubtitleVisible = false;
-                    item.setTitle(R.string.show_subtitle);
-                }
+                mSubtitleVisible = !mSubtitleVisible;
+                getActivity().invalidateOptionsMenu();
+                updateSubtitle();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void updateSubtitle() {
+        PriceLab priceLab = PriceLab.get(getActivity());
+        int priceCount = priceLab.getPrices().size();
+        String subtitle = getString(R.string.subtitle_format, priceCount);
+
+        if (!mSubtitleVisible) {
+            subtitle = null;
+        }
+        AppCompatActivity activity = (AppCompatActivity)getActivity();
+        activity.getSupportActionBar().setSubtitle(subtitle);
+    }
+
+//    private void updateUI() {
+//        PriceLab priceLab = PriceLab.get(getActivity());
+//        List<Price> prices = priceLab.getPrices();
+//        if (mAdapter == null) {
+//
+//        } else {
+//
+//        }
+//        updateSubtitle();
+//    }
 }
