@@ -15,8 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,14 +24,12 @@ import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.ListFragment;
-import cs275.gaspricetracker.R;
 
 public class PriceListFragment extends ListFragment {
     private ArrayList<Price> mPrices;
     private boolean mSubtitleVisible;
     private static final String TAG = "PriceListFragment";
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
-    //PriceAdapter mAdapter;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -61,16 +57,9 @@ public class PriceListFragment extends ListFragment {
     }
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        //Price c= (Price)(getListAdapter()).getItem(position);
-        Price c = ((PriceAdapter)getListAdapter()).getItem(position);
-
-        // Start PriceActivity
-        //Intent i = new Intent(getActivity(), PriceActivity.class);
-
-        // Start PricePagerActivity with this price
-        Intent i = new Intent(getActivity(), PricePagerActivity.class);
-        i.putExtra(PriceFragment.ARG_PRICE_ID, c.getId());
-        startActivity(i);
+        Price price = ((PriceAdapter)getListAdapter()).getItem(position);
+        Intent intent = PricePagerActivity.newIntent(getActivity(), price.getId());
+        startActivity(intent);
     }
     private class PriceAdapter extends ArrayAdapter<Price> {
         public PriceAdapter(ArrayList<Price> prices) {
@@ -91,11 +80,13 @@ public class PriceListFragment extends ListFragment {
             dateTextView.setText(p.getDate().toString());
             return convertView;
         }
+        public void setPrices(List<Price> prices) {
+             mPrices = (ArrayList)prices;
+        }
     }
     @Override
     public void onResume() {
         super.onResume();
-        ((PriceAdapter)getListAdapter()).notifyDataSetChanged();
         updateSubtitle();
     }
 
@@ -180,11 +171,8 @@ public class PriceListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_price:
-                Price price = new Price();
-                PriceLab.get(getActivity()).addPrice(price);
-                Intent i = new Intent(getActivity(), PricePagerActivity.class);
-                i.putExtra(PriceFragment.ARG_PRICE_ID, price.getId());
-                startActivityForResult(i, 0);
+                Intent intent = new Intent(getContext(), NewPriceActivity.class);
+                startActivity(intent);
                 return true;
 
             case R.id.show_subtitle:
@@ -208,15 +196,4 @@ public class PriceListFragment extends ListFragment {
         AppCompatActivity activity = (AppCompatActivity)getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
-
-//    private void updateUI() {
-//        PriceLab priceLab = PriceLab.get(getActivity());
-//        List<Price> prices = priceLab.getPrices();
-//        if (mAdapter == null) {
-//
-//        } else {
-//
-//        }
-//        updateSubtitle();
-//    }
 }
