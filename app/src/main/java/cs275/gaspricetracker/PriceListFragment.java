@@ -1,5 +1,6 @@
 package cs275.gaspricetracker;
 
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,17 +20,17 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.ListFragment;
 
 public class PriceListFragment extends ListFragment {
-    private ArrayList<Price> mPrices;
     private boolean mSubtitleVisible;
     private static final String TAG = "PriceListFragment";
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+    private PriceAdapter mAdapter;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -50,19 +51,19 @@ public class PriceListFragment extends ListFragment {
         mSubtitleVisible = false;
         setHasOptionsMenu(true);
         this.getActivity().setTitle(R.string.price_title);
-        this.mPrices = (ArrayList<Price>) PriceLab.get(getActivity()).getPrices();
-//        ArrayAdapter<Price> adapter = new ArrayAdapter<Price>(getActivity(), android.R.layout.simple_list_item_1, mPrices);
-        ListAdapter adapter = new PriceAdapter(mPrices);
-        setListAdapter(adapter);
     }
+
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Price price = ((PriceAdapter)getListAdapter()).getItem(position);
         Intent intent = PricePagerActivity.newIntent(getActivity(), price.getId());
         startActivity(intent);
     }
+
     private class PriceAdapter extends ArrayAdapter<Price> {
-        public PriceAdapter(ArrayList<Price> prices) {
+        private List<Price> mPrices;
+        
+        public PriceAdapter(List<Price> prices) {
             super(getActivity(), 0, prices);
         }
 
@@ -81,13 +82,19 @@ public class PriceListFragment extends ListFragment {
             return convertView;
         }
         public void setPrices(List<Price> prices) {
-             mPrices = (ArrayList)prices;
+             mPrices = prices;
         }
     }
+
     @Override
     public void onResume() {
         super.onResume();
-        updateSubtitle();
+        updateUI();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        updateUI();
     }
 
     @Override
@@ -126,15 +133,17 @@ public class PriceListFragment extends ListFragment {
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.menu_delete:
-                            PriceAdapter adapter = (PriceAdapter) getListAdapter();
+                            PriceAdapter mAdapter = (PriceAdapter) getListAdapter();
                             PriceLab priceLab = PriceLab.get(getActivity());
-                            for (int i = adapter.getCount() - 1; i >= 0; i--) {
+                            for (int i = mAdapter.getCount() - 1; i >= 0; i--) {
                                 if (getListView().isItemChecked(i)) {
-                                    priceLab.deletePrice(adapter.getItem(i));
+                                    priceLab.deletePrice(mAdapter.getItem(i));
+                                    Intent intent = new Intent(getContext(), PriceListActivity.class);
+                                    startActivity(intent);
                                 }
                             }
                             mode.finish();
-                            adapter.notifyDataSetChanged();
+                            mAdapter.notifyDataSetChanged();
                             return true;
                         default:
                             return false;
@@ -146,8 +155,7 @@ public class PriceListFragment extends ListFragment {
                 }
             });
         }
-        ((PriceAdapter)getListAdapter()).notifyDataSetChanged();
-        updateSubtitle();
+        updateUI();
         return v;
     }
 
@@ -155,13 +163,13 @@ public class PriceListFragment extends ListFragment {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
         int position = info.position;
-        PriceAdapter adapter = (PriceAdapter)getListAdapter();
-        Price price = adapter.getItem(position);
+        PriceAdapter mAdapter = (PriceAdapter)getListAdapter();
+        Price price = mAdapter.getItem(position);
 
         switch (item.getItemId()) {
             case R.id.delete_price:
                 PriceLab.get(getActivity()).deletePrice(price);
-                adapter.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
                 return true;
         }
         return super.onContextItemSelected(item);
@@ -195,5 +203,18 @@ public class PriceListFragment extends ListFragment {
         }
         AppCompatActivity activity = (AppCompatActivity)getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
+    }
+
+    public void updateUI() {
+        PriceLab priceLab = PriceLab.get(getActivity());
+        List<Price> prices = priceLab.getPrices();
+        if (mAdapter == null) {
+            mAdapter = new PriceAdapter((List)prices);
+            setListAdapter(mAdapter);
+        } else {
+            mAdapter.setPrices(prices);
+            mAdapter.notifyDataSetChanged();
+        }
+        updateSubtitle();
     }
 }

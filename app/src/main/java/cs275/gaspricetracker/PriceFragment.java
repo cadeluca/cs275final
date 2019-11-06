@@ -32,6 +32,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.ListFragment;
 
 import java.io.File;
 import java.util.Date;
@@ -193,7 +194,8 @@ public class PriceFragment extends Fragment {
             updatePhotoView();
         } else if (requestCode == REQUEST_DELETE) {
             PriceLab.get(getActivity()).deletePrice(mPrice);
-            getActivity().finish();
+            Intent intent = new Intent(getContext(), PriceListActivity.class);
+            startActivity(intent);
         }
     }
 
