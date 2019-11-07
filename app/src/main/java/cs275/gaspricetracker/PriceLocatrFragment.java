@@ -30,7 +30,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.List;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class PriceLocatrFragment extends SupportMapFragment {
@@ -180,7 +179,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
         @Override
         protected Void doInBackground(Location... param) {
             mLocation = param[0];
-            FlickrFetchr fetchr = new FlickrFetchr();
+            PriceFetcher fetchr = new PriceFetcher();
             List<GalleryItem> items = fetchr.searchPhotos(param[0]);
             if (items.size() == 0) {
                 return null;

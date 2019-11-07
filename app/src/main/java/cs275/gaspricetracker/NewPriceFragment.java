@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +28,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 
 public class NewPriceFragment extends Fragment {
@@ -55,6 +60,28 @@ public class NewPriceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_new_price, container, false);
 
+//
+//        // Instantiate the RequestQueue.
+//        RequestQueue queue = Volley.newRequestQueue(Objects.requireNonNull(getContext()));
+//        String url ="http://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php";
+//
+//        // Request a string response from the provided URL.
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                response -> {
+//                    // Display the first 500 characters of the response string.
+//
+//                    String toastStr = "Response is: "+ response.substring(0,500);
+//                    Toast toast = Toast.makeText(getContext(), toastStr, Toast.LENGTH_SHORT);
+//                    toast.show();
+//                }, error -> {
+//                    Toast toast = Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT);
+//                    toast.show();
+//                });
+//
+//        // Add the request to the RequestQueue.
+//        queue.add(stringRequest);
+
+
         mTitleField = v.findViewById(R.id.price_title);
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -76,6 +103,16 @@ public class NewPriceFragment extends Fragment {
         mSavePriceButton.setOnClickListener(view -> {
             // add the price to the PriceLab
             PriceLab.get(getActivity()).addPrice(mPrice);
+
+
+            new RequestAsync().execute();
+            // todo: make post request
+//            new PostTask().execute(mPrice);
+//            PriceBackendFetcher fetchr = new PriceBackendFetcher();
+//            fetchr.postTest();
+//            Price fakePrice = new Price();
+//            new PostTask(fakePrice).execute();
+
 
             Toast toast = Toast.makeText(getContext(), "Added price successfully!", Toast.LENGTH_SHORT);
             toast.show();
@@ -135,6 +172,9 @@ public class NewPriceFragment extends Fragment {
             }
         });
 
+
+
+
         return v;
     }
 
@@ -144,9 +184,48 @@ public class NewPriceFragment extends Fragment {
             mPhotoView.setImageDrawable(null);
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(), getActivity());
+                    mPhotoFile.getPath(), Objects.requireNonNull(getActivity()));
             mPhotoView.setImageBitmap(bitmap);
         }
     }
 
+
+
+
+    // todo: get this working
+
+//    private class PostTask extends AsyncTask<Price, Void, Void> {
+//        private Price mPrice;
+//
+//        @Override
+//        protected Void doInBackground(Price... param) {
+//            mPrice = param[0];
+//            PriceBackendFetcher fetchr = new PriceBackendFetcher();
+//            fetchr.postPrice(param[0]);
+//            return null;
+//        }
+//        @Override
+//        protected void onPostExecute(Void result) {
+//            // todo:
+////            something
+//        }
+//    }
+//
+//    private class PostTask extends AsyncTask<Price, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Price... param) {
+//            mPrice = param[0];
+//            PriceBackendFetcher fetchr = new PriceBackendFetcher();
+//            fetchr.postTest();
+//            return null;
+//        }
+//        @Override
+//        protected void onPostExecute(Void result) {
+//            // todo:
+////            something
+//        }
+//    }
+
 }
+

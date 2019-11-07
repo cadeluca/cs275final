@@ -1,5 +1,6 @@
 package cs275.gaspricetracker.database;
 
+// todo: add the other fields needed
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
