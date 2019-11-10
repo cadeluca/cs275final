@@ -140,6 +140,10 @@ public class PriceLocatrFragment extends SupportMapFragment {
         }
         LatLng itemPoint = new LatLng(mMapItem.getmLat(),
                 mMapItem.getmLon());
+
+        LatLng itemPoint1 = new LatLng(mMapItem.getmLat(),
+                mMapItem.getmLon()-0.03);
+
         LatLng myPoint = new LatLng(
                 mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude()
@@ -148,16 +152,25 @@ public class PriceLocatrFragment extends SupportMapFragment {
         MarkerOptions itemMarker = new MarkerOptions()
                 .position(itemPoint)
                 .icon(itemBitmap);
+
+        BitmapDescriptor itemBitmap1 = BitmapDescriptorFactory.fromBitmap(mMapImage);
+        MarkerOptions itemMarker1 = new MarkerOptions()
+                .position(itemPoint1)
+                .icon(itemBitmap1);
+
         MarkerOptions myMarker = new MarkerOptions()
                 .position(myPoint);
         mMap.clear();
         mMap.addMarker(itemMarker);
+        mMap.addMarker(itemMarker1);
         mMap.addMarker(myMarker);
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(itemPoint)
+                //.include(itemPoint1)
                 .include(myPoint)
                 .build();
         int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
+        //int margin = 100;
         CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
         mMap.animateCamera(update);
     }
