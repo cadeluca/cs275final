@@ -5,10 +5,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
@@ -55,29 +59,6 @@ public class NewPriceFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_new_price, container, false);
-
-//
-//        // Instantiate the RequestQueue.
-//        RequestQueue queue = Volley.newRequestQueue(Objects.requireNonNull(getContext()));
-//        String url ="http://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php";
-//
-//        // Request a string response from the provided URL.
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-//                response -> {
-//                    // Display the first 500 characters of the response string.
-//
-//                    String toastStr = "Response is: "+ response.substring(0,500);
-//                    Toast toast = Toast.makeText(getContext(), toastStr, Toast.LENGTH_SHORT);
-//                    toast.show();
-//                }, error -> {
-//                    Toast toast = Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT);
-//                    toast.show();
-//                });
-//
-//        // Add the request to the RequestQueue.
-//        queue.add(stringRequest);
-
-
         mTitleField = v.findViewById(R.id.price_title);
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -99,20 +80,13 @@ public class NewPriceFragment extends Fragment {
         mSavePriceButton.setOnClickListener(view -> {
             // add the price to the PriceLab
             PriceLab.get(getActivity()).addPrice(mPrice);
-
-
+            // post to database
+            // todo:
+            //  check if we can pull a response from the async task, for example a 200 response,
+            //  so that we may conditionally issue a success or failure response.
             new PostPriceAsync().execute(mPrice);
-            // todo: make post request
-//            new PostTask().execute(mPrice);
-//            PriceBackendFetcher fetchr = new PriceBackendFetcher();
-//            fetchr.postTest();
-//            Price fakePrice = new Price();
-//            new PostTask(fakePrice).execute();
-
-
             Toast toast = Toast.makeText(getContext(), "Added price successfully!", Toast.LENGTH_SHORT);
             toast.show();
-
             // go back to main
             Intent intent = new Intent(getContext(), MainActivity.class);
             startActivity(intent);
@@ -168,9 +142,6 @@ public class NewPriceFragment extends Fragment {
             }
         });
 
-
-
-
         return v;
     }
 
@@ -187,8 +158,44 @@ public class NewPriceFragment extends Fragment {
 
 
 
+    private static class PostPriceAsync extends AsyncTask<Price,String,String> {
+        private Price mPrice;
+        private String title;
+        private Float price;
+        private int uID;
+        @Override
+        protected String doInBackground(Price... parmam) {
+            mPrice = parmam[0];
 
-    // todo: get this working
+            title = mPrice.getTitle();
+            price = mPrice.getGasPrice();
+            // todo: add the user id flag, need to figure out how to store
+            //  the uuid in the db since a uuid is too big for an int
+//        uID = Integer.parseInt("" + mPrice.getId().toString().charAt(0));
+            uID = 1;
+            try {
+                // POST Request
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("title", title);
+                postDataParams.put("price", price);
+                postDataParams.put("uID", uID);
+
+                return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php",postDataParams);
+            }
+            catch(Exception e){
+                return "Exception: " + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s!=null){
+                Log.d("postWorked", s);
+            }
+        }
+    }
+
+    // todo: dont delete this yet, using this as a reference
 
 //    private class PostTask extends AsyncTask<Price, Void, Void> {
 //        private Price mPrice;
@@ -202,8 +209,6 @@ public class NewPriceFragment extends Fragment {
 //        }
 //        @Override
 //        protected void onPostExecute(Void result) {
-//            // todo:
-////            something
 //        }
 //    }
 //
@@ -218,8 +223,6 @@ public class NewPriceFragment extends Fragment {
 //        }
 //        @Override
 //        protected void onPostExecute(Void result) {
-//            // todo:
-////            something
 //        }
 //    }
 

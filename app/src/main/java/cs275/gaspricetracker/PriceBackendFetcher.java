@@ -1,13 +1,10 @@
 package cs275.gaspricetracker;
 
-import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,19 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+// todo: if i determine that i cannot get this modified version to work, i will delete this one.
+//  Note: this is a copy of PriceFetchr, which still works and will remain.
+
 public class PriceBackendFetcher {
     private static final String TAG = "PriceBackendFetcher";
-//    private static final String API_KEY = "2093ccd60ae8751e44de505c041d8486";
     private static final String FETCH_ALL = "getAll";
     private static final String POST_NEW = "postNew";
     private static final Uri ENDPOINT = Uri.parse("http://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php")
             .buildUpon()
-//            .appendQueryParameter("api_key", API_KEY)
             .appendQueryParameter("format", "json")
             .appendQueryParameter("nojsoncallback", "1")
-//            .appendQueryParameter("extras", "url_s,geo")
             .build();
-
 
     public void postTest(){
         URL url = null;
