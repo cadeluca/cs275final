@@ -67,12 +67,9 @@ public class PriceLocatrFragment extends SupportMapFragment {
                     }
                 })
                 .build();
-        getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                mMap = googleMap;
-                updateUI();
-            }
+        getMapAsync(googleMap -> {
+            mMap = googleMap;
+            updateUI();
         });
     }
 
