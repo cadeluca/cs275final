@@ -27,4 +27,5 @@
     <string name="dialog_question">Are you sure you want to delete this price?"</string>
     <string name="dollar_sign">$</string>
     <string name="search">Find a gas station near you</string>
+    <string name="price_sort">Sort with lower price</string>
 </resources>

@@ -60,7 +60,20 @@ public class PriceLab {
 
     public List<Price> getPrices() {
         List<Price> prices = new ArrayList<>();
-        try (PriceCursorWrapper cursor = queryPrices(null, null)) {
+        try (PriceCursorWrapper cursor = queryPrices(null, null, null)) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                prices.add(cursor.getPrice());
+                cursor.moveToNext();
+            }
+        }
+        return prices;
+    }
+
+    // get a List of sorted prices.
+    public List<Price> getPrices(String sort) {
+        List<Price> prices = new ArrayList<>();
+        try (PriceCursorWrapper cursor = queryPrices(null, null, sort)) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 prices.add(cursor.getPrice());
@@ -74,7 +87,7 @@ public class PriceLab {
     public Price getPrice(UUID id) {
         try (PriceCursorWrapper cursor = queryPrices(
                 PriceTable.Cols.UUID + " = ?",
-                new String[]{id.toString()}
+                new String[]{id.toString() }, ""
         )) {
             if (cursor.getCount() == 0) {
                 return null;
@@ -98,16 +111,34 @@ public class PriceLab {
         Log.d("myTag", "update price called");
     }
 
-    private PriceCursorWrapper queryPrices(String whereClause, String[] whereArgs) {
-        Cursor cursor = mDatabase.query(
-                PriceTable.NAME,
-                null, // Columns - null selects all columns
-                whereClause,
-                whereArgs,
-                null, // groupBy
-                null, // having
-                null
-        );
+    private PriceCursorWrapper queryPrices(String whereClause, String[] whereArgs, String sort) {
+        Cursor cursor;
+        // sort in price
+        if (sort == "price"){
+            cursor = mDatabase.query(
+                    PriceTable.NAME,
+                    null, // Columns - null selects all columns
+                    whereClause,
+                    whereArgs,
+                    null, // groupBy
+                    null, // having
+                    PRICE
+            );
+        }
+
+        // default list order
+        else  {
+            cursor = mDatabase.query(
+                    PriceTable.NAME,
+                    null, // Columns - null selects all columns
+                    whereClause,
+                    whereArgs,
+                    null, // groupBy
+                    null, // having
+                    null
+            );
+        }
+
         return new PriceCursorWrapper(cursor);
     }
 

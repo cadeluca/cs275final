@@ -28,6 +28,7 @@ public class PriceListFragment extends Fragment {
     private RecyclerView mPriceRecyclerView;
     private PriceAdapter mAdapter;
     private boolean mSubtitleVisible;
+    private boolean mIsSorted;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class PriceListFragment extends Fragment {
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
 
-        updateUI();
+        updateUI("");
 
         return view;
     }
@@ -58,7 +59,7 @@ public class PriceListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        updateUI();
+        updateUI("");
     }
 
     @Override
@@ -83,6 +84,9 @@ public class PriceListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.price_sort:
+                updateUI("price");
+                return true;
             case R.id.new_price:
                 Intent intent = new Intent(getContext(), NewPriceActivity.class);
                 startActivity(intent);
@@ -110,9 +114,14 @@ public class PriceListFragment extends Fragment {
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
-    private void updateUI() {
+    private void updateUI(String sort) {
         PriceLab priceLab = PriceLab.get(getActivity());
-        List<Price> prices = priceLab.getPrices();
+        List<Price> prices;
+        if (sort == "price") {
+            prices = priceLab.getPrices(sort);
+        } else {
+            prices = priceLab.getPrices();
+        }
 
         if (mAdapter == null) {
             mAdapter = new PriceAdapter(prices);
