@@ -106,7 +106,7 @@ public class PriceLab {
                 whereArgs,
                 null, // groupBy
                 null, // having
-                null  // orderBy
+                null
         );
         return new PriceCursorWrapper(cursor);
     }

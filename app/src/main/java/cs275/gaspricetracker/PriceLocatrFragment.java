@@ -2,6 +2,7 @@ package cs275.gaspricetracker;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -100,7 +102,6 @@ public class PriceLocatrFragment extends SupportMapFragment {
         }
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -148,19 +149,39 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude()
         );
-        BitmapDescriptor itemBitmap = BitmapDescriptorFactory.fromBitmap(mMapImage);
+
+
+        // Image and Price 0
+        List<Price> mPrices = PriceLab.get(getActivity()).getPrices();
+        File mPhotoFile;
+        Price mPrice = mPrices.get(0);
+        String price = "$ " + mPrice.getGasPrice();
+        String price_title = mPrice.getTitle();
+        mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
+        BitmapDescriptor itemBitmap = BitmapDescriptorFactory.fromPath(mPhotoFile.getPath());
+
+        //  marker in blue
         MarkerOptions itemMarker = new MarkerOptions()
                 .position(itemPoint)
-                .icon(itemBitmap);
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                .title(price_title)
+                .snippet(price);
 
-        BitmapDescriptor itemBitmap1 = BitmapDescriptorFactory.fromBitmap(mMapImage);
+        // local image
         MarkerOptions itemMarker1 = new MarkerOptions()
                 .position(itemPoint1)
-                .icon(itemBitmap1);
+                .icon(itemBitmap)
+                .title(price_title)
+                .snippet(price);
 
+        // My current location
         MarkerOptions myMarker = new MarkerOptions()
-                .position(myPoint);
+                .position(myPoint)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                .title("me");
         mMap.clear();
+
+        // add marker into map
         mMap.addMarker(itemMarker);
         mMap.addMarker(itemMarker1);
         mMap.addMarker(myMarker);
