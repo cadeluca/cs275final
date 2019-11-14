@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
@@ -25,6 +26,7 @@ public class PriceLab {
     private static PriceLab sPriceLab;
     private Context mContext;
     private SQLiteDatabase mDatabase;
+    private PriceBaseHelper mHelper;
 
     public static PriceLab get(Context context) {
         if (sPriceLab == null) {
@@ -36,15 +38,13 @@ public class PriceLab {
 
     private PriceLab(Context context) {
         mContext = context.getApplicationContext();
-        mDatabase = new PriceBaseHelper(mContext)
-                .getWritableDatabase();
-
+        mHelper = new PriceBaseHelper(mContext);
+        mDatabase = mHelper.getWritableDatabase();
+        new GetPricesAsync().execute();
     }
 
     public void addPrice(Price p) {
         ContentValues values = getContentValues(p);
-        // todo: change this so that there is a temporary price in memory,
-        //  then if a submit button is pressed we do this
         Log.i("myTag", "add price called");
         mDatabase.insert(PriceTable.NAME, null, values);
     }
@@ -98,6 +98,22 @@ public class PriceLab {
         Log.d("myTag", "update price called");
     }
 
+    public void syncPrices(String response) {
+        // todo: switch to input of arraylist of prices or make the arraylist of price
+        mHelper.syncDB(mDatabase);
+        Price testPrice = new Price();
+        testPrice.setGasPrice(1);
+        testPrice.setTitle("title from sync prices");
+        ArrayList<Price> prices = new ArrayList<>();
+        prices.add(testPrice);
+        for (Price p : prices) {
+            ContentValues values = getContentValues(p);
+            Log.d("getDb", "add price called from sync prices called");
+            Log.d("myTag","add price called from sync prices called" );
+            mDatabase.insert(PriceTable.NAME, null, values);
+        }
+    }
+
     private PriceCursorWrapper queryPrices(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 PriceTable.NAME,
@@ -120,5 +136,32 @@ public class PriceLab {
         float f = price.getGasPrice();
         Log.d("myTag", Float.toString(f));
         return values;
+    }
+
+    public class GetPricesAsync extends AsyncTask<Void,String,String> {
+        private String res;
+        @Override
+        protected String doInBackground(Void... param) {
+            try {
+                // GET Request
+                res = RequestHandler.sendGet("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php");
+                Log.d("getDb", res);
+                return res;
+            }
+            catch(Exception e){
+                return "Exception: " + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s!=null){
+                Log.d("getDb", s);
+                Log.d("getDb", "start syncPrices");
+//                PriceLab lab = PriceLab.get(getActivity());
+                syncPrices("test");
+                Log.d("getDb", "end syncPrices");
+            }
+        }
     }
 }

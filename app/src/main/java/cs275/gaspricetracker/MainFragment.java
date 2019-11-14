@@ -1,7 +1,9 @@
 package cs275.gaspricetracker;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +18,19 @@ public class MainFragment extends Fragment {
     private Button mViewButton;
     private Button mReportButton;
     private Button mPriceMapButton;
+    private PriceLab lab;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+//        populateDatabase();
+        lab = PriceLab.get(getActivity());
     }
+
+//    private void populateDatabase() {
+//        Log.d("popD", "called populate database");
+//        new GetPricesAsync().execute();
+//    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,

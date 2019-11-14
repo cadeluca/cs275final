@@ -156,8 +156,6 @@ public class NewPriceFragment extends Fragment {
         }
     }
 
-
-
     private static class PostPriceAsync extends AsyncTask<Price,String,String> {
         private Price mPrice;
         private String title;
@@ -166,7 +164,6 @@ public class NewPriceFragment extends Fragment {
         @Override
         protected String doInBackground(Price... parmam) {
             mPrice = parmam[0];
-
             title = mPrice.getTitle();
             price = mPrice.getGasPrice();
             // todo: add the user id flag, need to figure out how to store
