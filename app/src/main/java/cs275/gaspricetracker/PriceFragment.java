@@ -115,6 +115,7 @@ public class PriceFragment extends Fragment {
         mSaveEditsButton = (Button) v.findViewById(R.id.price_edit);
         mSaveEditsButton.setOnClickListener(view -> {
             Log.d("myTag", "Clicked saved edits");
+            // todo: add async for call update price in db
             PriceLab.get(getActivity()).updatePrice(mPrice);
             Toast toast = Toast.makeText(getContext(), "Edited price successfully!", Toast.LENGTH_SHORT);
             toast.show();
@@ -193,6 +194,7 @@ public class PriceFragment extends Fragment {
             updatePhotoView();
         } else if (requestCode == REQUEST_DELETE) {
             PriceLab.get(getActivity()).deletePrice(mPrice);
+            // todo: add async for call delete price in db
             getActivity().finish();
         }
     }
