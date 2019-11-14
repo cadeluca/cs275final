@@ -10,6 +10,10 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import cs275.gaspricetracker.database.PriceBaseHelper;
 import cs275.gaspricetracker.database.PriceCursorWrapper;
 import cs275.gaspricetracker.database.PriceDbSchema;
@@ -40,6 +44,7 @@ public class PriceLab {
         mContext = context.getApplicationContext();
         mHelper = new PriceBaseHelper(mContext);
         mDatabase = mHelper.getWritableDatabase();
+        // Launch async get db task on first creation
         new GetPricesAsync().execute();
     }
 
@@ -98,16 +103,11 @@ public class PriceLab {
         Log.d("myTag", "update price called");
     }
 
-    public void syncPrices(String response) {
-        // todo: switch to input of arraylist of prices or make the arraylist of price
+    public void syncPrices(ArrayList<Price> prices) {
         mHelper.syncDB(mDatabase);
-        Price testPrice = new Price();
-        testPrice.setGasPrice(1);
-        testPrice.setTitle("title from sync prices");
-        ArrayList<Price> prices = new ArrayList<>();
-        prices.add(testPrice);
         for (Price p : prices) {
             ContentValues values = getContentValues(p);
+            // todo: consider removing these logs since we know these work
             Log.d("getDb", "add price called from sync prices called");
             Log.d("myTag","add price called from sync prices called" );
             mDatabase.insert(PriceTable.NAME, null, values);
@@ -153,13 +153,44 @@ public class PriceLab {
             }
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected void onPostExecute(String s) {
             if(s!=null){
+                // todo: consider removing these logs since we know these work
+                ArrayList<Price> prices = new ArrayList<>();
+                final JSONArray[] priceArray = new JSONArray[1];
+                try {
+                    JSONObject j = new JSONObject(s);
+                    j.keys().forEachRemaining(key -> {
+                        Object value = null;
+                        try {
+                            value = j.get(key);
+                            priceArray[0] = (JSONArray) value;
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        String val = ("Key: " + key + " Value: "+ value);
+                        Log.d("jsonTest", val);
+
+                    });
+
+                    for(int n = 0; n < priceArray[0].length(); n++) {
+                        JSONArray subArr = (JSONArray) priceArray[0].get(n);
+                        Price p = new Price();
+                        p.setTitle(subArr.get(1).toString());
+                        p.setGasPrice(Float.parseFloat(subArr.get(2).toString()));
+                        prices.add(p);
+                    }
+
+                }catch (JSONException err){
+                    Log.d("Error", err.toString());
+                }
+
                 Log.d("getDb", s);
                 Log.d("getDb", "start syncPrices");
-//                PriceLab lab = PriceLab.get(getActivity());
-                syncPrices("test");
+                syncPrices(prices);
                 Log.d("getDb", "end syncPrices");
             }
         }

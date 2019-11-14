@@ -48,6 +48,7 @@ public class RequestHandler {
         }
         return null;
     }
+
     public static String sendGet(String url) throws IOException {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
