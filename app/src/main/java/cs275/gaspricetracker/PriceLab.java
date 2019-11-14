@@ -20,8 +20,12 @@ import cs275.gaspricetracker.database.PriceDbSchema;
 import cs275.gaspricetracker.database.PriceDbSchema.PriceTable;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static cs275.gaspricetracker.database.PriceDbSchema.PriceTable.Cols.*;
@@ -181,11 +185,15 @@ public class PriceLab {
                         Price p = new Price();
                         p.setTitle(subArr.get(1).toString());
                         p.setGasPrice(Float.parseFloat(subArr.get(2).toString()));
+                        Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(subArr.get(3).toString());
+                        p.setDate(date);
                         prices.add(p);
                     }
 
                 }catch (JSONException err){
                     Log.d("Error", err.toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
 
                 Log.d("getDb", s);
