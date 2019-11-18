@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -57,6 +58,7 @@ public class PriceFragment extends Fragment {
     private EditText mPriceInput;
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
+    private TextView mReadLocationView;
 
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
@@ -100,6 +102,9 @@ public class PriceFragment extends Fragment {
 
         mDateButton = (Button) v.findViewById(R.id.price_date);
         updateDate();
+
+        mReadLocationView = (TextView) v.findViewById(R.id.readLocationView);
+        mReadLocationView.setText("latitude: "+ mPrice.getLatitude() + " longitude: " + mPrice.getLongitude());
 
         mSharePriceButton = (Button) v.findViewById(R.id.price_share);
         mSharePriceButton.setOnClickListener(v13 -> {

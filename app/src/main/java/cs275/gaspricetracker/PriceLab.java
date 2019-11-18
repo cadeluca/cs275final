@@ -148,6 +148,8 @@ public class PriceLab {
         values.put(TITLE, price.getTitle());
         values.put(DATE, price.getDate().getTime());
         values.put(PRICE, price.getGasPrice());
+        values.put(LATITUDE, price.getLatitude());
+        values.put(LONGITUDE, price.getLongitude());
         float f = price.getGasPrice();
         Log.d("myTag", Float.toString(f));
         return values;

@@ -9,7 +9,8 @@ public class Price {
     private String mTitle;
     private Date mDate;
 
-    private String mLocation;
+    private double mLatitude;
+    private double mLongitude;
     private float mGasPrice;
 
 
@@ -42,13 +43,22 @@ public class Price {
         mDate = date;
     }
 
-    public String getLocation() {
-        return mLocation;
+    public double getLatitude() {
+        return  mLatitude;
     }
 
-    public void setLocation(String location) {
-        this.mLocation = location;
+    public void setLatitude(double latitude) {
+        this.mLatitude = latitude;
     }
+
+    public void setLongitude(double longitude) {
+        mLongitude = longitude;
+    }
+
+    public double getLongitude() {
+        return mLongitude;
+    }
+
 
     public float getGasPrice() {
         return mGasPrice;

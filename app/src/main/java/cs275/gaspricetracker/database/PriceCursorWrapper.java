@@ -22,12 +22,14 @@ public class PriceCursorWrapper extends CursorWrapper {
         String title = getString(getColumnIndex(Cols.TITLE));
         long date = getLong(getColumnIndex(Cols.DATE));
         float gasPrice = getFloat(getColumnIndex(Cols.PRICE));
-
+        double latitude = getDouble(getColumnIndex(Cols.LATITUDE));
+        double longitude = getDouble(getColumnIndex(Cols.LONGITUDE));
         Price price = new Price(UUID.fromString(uuidString));
         price.setTitle(title);
         price.setDate(new Date(date));
         price.setGasPrice(gasPrice);
-
+        price.setLongitude(longitude);
+        price.setLatitude(latitude);
         return price;
     }
 }

@@ -1,35 +1,67 @@
 package cs275.gaspricetracker;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import org.w3c.dom.Text;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 
 public class NewPriceFragment extends Fragment {
-
     private static final String DIALOG_PHOTO = "DialogPhoto";
 
     private Button mSavePriceButton;
@@ -39,15 +71,55 @@ public class NewPriceFragment extends Fragment {
     private ImageView mPhotoView;
     private File mPhotoFile;
     private EditText mPriceInput;
-
+    private TextView mLocationView;
     private static final int REQUEST_PHOTO= 2;
+
+    private static final String TAG = "NewLocatrFragment";
+    private static final String[] LOCATION_PERMISSIONS = new String[] {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+    };
+    private static final int REQUEST_LOCATION_PERMISSIONS = 0;
+    private GoogleApiClient mClient;
+    private Location mCurrentLocation;
+
+    // testing for add offset, get a different random position for each price
+    private double getOffset() {
+        Random r = new Random();
+        Integer negator = r.nextInt(100);
+        double offset;
+        if (negator > 49) {
+            offset = -1 * r.nextInt(100) * 0.0001;
+        }
+        offset = r.nextInt(100) * 0.0001;
+        return offset;
+    }
+    public static NewPriceFragment newInstance() {
+        return new NewPriceFragment();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setTitle("Report New Gas Price");
         mPrice = new Price();
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        mClient = new GoogleApiClient.Builder(getActivity())
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        getActivity().invalidateOptionsMenu();
+                    }
+                    @Override
+                    public void onConnectionSuspended(int i) {
+
+                    }
+                })
+                .build();
     }
 
     @Override
@@ -84,7 +156,6 @@ public class NewPriceFragment extends Fragment {
             Intent intent = new Intent(getContext(), MainActivity.class);
             startActivity(intent);
         });
-
         mPriceInput = (EditText) v.findViewById(R.id.price_input);
         mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -102,6 +173,8 @@ public class NewPriceFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
             }
         });
+        mLocationView = (TextView) v.findViewById(R.id.newLocationView);
+        mLocationView.setText("latitude: "+ mPrice.getLatitude() + " longitude: " + mPrice.getLongitude() );
         PackageManager packageManager = getActivity().getPackageManager();
 
         mPhotoButton = (ImageButton) v.findViewById(R.id.price_camera);
@@ -138,7 +211,6 @@ public class NewPriceFragment extends Fragment {
         return v;
     }
 
-
     private void updatePhotoView() {
         if (mPhotoFile == null || !mPhotoFile.exists()) {
             mPhotoView.setImageDrawable(null);
@@ -146,6 +218,78 @@ public class NewPriceFragment extends Fragment {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
                     mPhotoFile.getPath(), getActivity());
             mPhotoView.setImageBitmap(bitmap);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_locatr, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_locate);
+        searchItem.setEnabled(mClient.isConnected());
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_locate :
+                if (hasLocationPermission()) {
+                    findImage();
+                } else {
+                    requestPermissions(LOCATION_PERMISSIONS,
+                            REQUEST_LOCATION_PERMISSIONS);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getActivity().invalidateOptionsMenu();
+        mClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mClient.disconnect();
+    }
+
+    private void findImage() {
+        LocationRequest request = LocationRequest.create();
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        request.setNumUpdates(1);
+        request.setInterval(0);
+        LocationServices.FusedLocationApi
+                .requestLocationUpdates(mClient, request, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        mCurrentLocation = location;
+                        Log.i(TAG, "Got a fix: " + location);
+                        // testing for adding offset
+                        mPrice.setLatitude(mCurrentLocation.getLatitude() + getOffset());
+                        mPrice.setLongitude(mCurrentLocation.getLongitude() + getOffset());
+                    }
+                });
+
+    }
+
+    private boolean hasLocationPermission() {
+        int result = ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);
+        return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSIONS:
+                if(hasLocationPermission()) {
+                    findImage();
+                }
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 

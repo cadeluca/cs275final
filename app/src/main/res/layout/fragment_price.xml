@@ -83,7 +83,15 @@
             android:layout_height="wrap_content"
             android:hint="@string/price_hint"
             android:inputType="numberDecimal" />
+
+
     </LinearLayout>
+    <TextView
+        android:id="@+id/readLocationView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/default_location"
+        android:gravity="center" />
 
     <Button
         android:id="@+id/price_date"

@@ -142,48 +142,50 @@ public class PriceLocatrFragment extends SupportMapFragment {
         LatLng itemPoint = new LatLng(mMapItem.getmLat(),
                 mMapItem.getmLon());
 
-        LatLng itemPoint1 = new LatLng(mMapItem.getmLat(),
-                mMapItem.getmLon()-0.03);
-
         LatLng myPoint = new LatLng(
                 mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude()
         );
 
-
-        // Image and Price 0
+        mMap.clear();
+        // Price from list
         List<Price> mPrices = PriceLab.get(getActivity()).getPrices();
         File mPhotoFile;
-        Price mPrice = mPrices.get(0);
-        String price = "$ " + mPrice.getGasPrice();
-        String price_title = mPrice.getTitle();
-        mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
-        BitmapDescriptor itemBitmap = BitmapDescriptorFactory.fromPath(mPhotoFile.getPath());
+        if (mPrices.size() != 0) {
+            for ( Price mPrice: mPrices) {
+                String price = "$ " + mPrice.getGasPrice();
+                String price_title = mPrice.getTitle();
+                mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
+                BitmapDescriptor itemBitmap;
+                if (mPhotoFile == null || !mPhotoFile.exists()) {
+                    itemBitmap = BitmapDescriptorFactory.fromPath(mPhotoFile.getPath());
+                }
+                else{
+                    itemBitmap = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+                }
+                LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
+                Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
 
-        //  marker in blue
-        MarkerOptions itemMarker = new MarkerOptions()
-                .position(itemPoint)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                .title(price_title)
-                .snippet(price);
 
-        // local image
-        MarkerOptions itemMarker1 = new MarkerOptions()
-                .position(itemPoint1)
-                .icon(itemBitmap)
-                .title(price_title)
-                .snippet(price);
-
+                //  marker in blue
+                MarkerOptions itemMarker = new MarkerOptions()
+                        .position(mPricePosition)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                        .title(price_title)
+                        .snippet(price);
+                // add price marker to map
+                mMap.addMarker(itemMarker);
+            }
+        }
         // My current location
         MarkerOptions myMarker = new MarkerOptions()
                 .position(myPoint)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                 .title("me");
-        mMap.clear();
+
+
 
         // add marker into map
-        mMap.addMarker(itemMarker);
-        mMap.addMarker(itemMarker1);
         mMap.addMarker(myMarker);
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(itemPoint)

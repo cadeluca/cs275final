@@ -9,6 +9,8 @@ public class PriceDbSchema {
             public static final String TITLE = "title";
             public static final String DATE = "date";
             public static final String PRICE = "price";
+            public static final String LATITUDE = "latitude";
+            public static final String LONGITUDE = "longitude";
         }
     }
 }
