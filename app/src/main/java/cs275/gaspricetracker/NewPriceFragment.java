@@ -55,10 +55,13 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.Objects;
 
 
 public class NewPriceFragment extends Fragment {
@@ -126,7 +129,6 @@ public class NewPriceFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_new_price, container, false);
-
         mTitleField = v.findViewById(R.id.price_title);
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -148,10 +150,13 @@ public class NewPriceFragment extends Fragment {
         mSavePriceButton.setOnClickListener(view -> {
             // add the price to the PriceLab
             PriceLab.get(getActivity()).addPrice(mPrice);
-
+            // post to database
+            // todo:
+            //  check if we can pull a response from the async task, for example a 200 response,
+            //  so that we may conditionally issue a success or failure response.
+            new PostPriceAsync().execute(mPrice);
             Toast toast = Toast.makeText(getContext(), "Added price successfully!", Toast.LENGTH_SHORT);
             toast.show();
-
             // go back to main
             Intent intent = new Intent(getContext(), MainActivity.class);
             startActivity(intent);
@@ -216,7 +221,7 @@ public class NewPriceFragment extends Fragment {
             mPhotoView.setImageDrawable(null);
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(), getActivity());
+                    mPhotoFile.getPath(), Objects.requireNonNull(getActivity()));
             mPhotoView.setImageBitmap(bitmap);
         }
     }
@@ -275,6 +280,77 @@ public class NewPriceFragment extends Fragment {
                 });
 
     }
+    private static class PostPriceAsync extends AsyncTask<Price,String,String> {
+        private Price mPrice;
+        private String title;
+        private Float price;
+        private Double longitude;
+        private Double latitude;
+        private int uID;
+        @Override
+        protected String doInBackground(Price... parmam) {
+            mPrice = parmam[0];
+            title = mPrice.getTitle();
+            price = mPrice.getGasPrice();
+            price = mPrice.getLongitude();
+            price = mPrice.getLatitude();
+            try {
+                // POST Request
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("title", title);
+                postDataParams.put("price", price);
+                postDataParams.put("uID", uID);
+                postDataParams.put("longitude", longitude);
+                postDataParams.put("latitude", latitude);
+
+                return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php",postDataParams);
+            }
+            catch(Exception e){
+                return "Exception: " + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s!=null){
+                Log.d("postWorked", s);
+            }
+        }
+    }
+
+    // todo: dont delete this yet, using this as a reference
+
+//    private class PostTask extends AsyncTask<Price, Void, Void> {
+//        private Price mPrice;
+//
+//        @Override
+//        protected Void doInBackground(Price... param) {
+//            mPrice = param[0];
+//            PriceBackendFetcher fetchr = new PriceBackendFetcher();
+//            fetchr.postPrice(param[0]);
+//            return null;
+//        }
+//        @Override
+//        protected void onPostExecute(Void result) {
+//        }
+//    }
+//
+//    private class PostTask extends AsyncTask<Price, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Price... param) {
+//            mPrice = param[0];
+//            PriceBackendFetcher fetchr = new PriceBackendFetcher();
+//            fetchr.postTest();
+//            return null;
+//        }
+//        @Override
+//        protected void onPostExecute(Void result) {
+//        }
+//    }
+
+}
+
 
     private boolean hasLocationPermission() {
         int result = ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);

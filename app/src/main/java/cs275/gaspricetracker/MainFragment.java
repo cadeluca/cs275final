@@ -16,11 +16,15 @@ public class MainFragment extends Fragment {
     private Button mViewButton;
     private Button mReportButton;
     private Button mPriceMapButton;
+    private PriceLab lab;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        // Create the price lab if the first time launching; activates the asynchronous db task
+        lab = PriceLab.get(getActivity());
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,

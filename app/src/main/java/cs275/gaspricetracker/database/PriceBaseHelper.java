@@ -29,4 +29,9 @@ public class PriceBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
+
+    public void syncDB(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + PriceTable.NAME);
+        onCreate(db);
+    }
 }
