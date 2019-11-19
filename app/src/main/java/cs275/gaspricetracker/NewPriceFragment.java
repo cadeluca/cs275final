@@ -160,22 +160,24 @@ public class NewPriceFragment extends Fragment {
         private Price mPrice;
         private String title;
         private Float price;
+        private Double longitude;
+        private Double latitude;
         private int uID;
         @Override
         protected String doInBackground(Price... parmam) {
             mPrice = parmam[0];
             title = mPrice.getTitle();
             price = mPrice.getGasPrice();
-            // todo: add the user id flag, need to figure out how to store
-            //  the uuid in the db since a uuid is too big for an int
-//        uID = Integer.parseInt("" + mPrice.getId().toString().charAt(0));
-            uID = 1;
+            price = mPrice.getLongitude();
+            price = mPrice.getLatitude();
             try {
                 // POST Request
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put("title", title);
                 postDataParams.put("price", price);
                 postDataParams.put("uID", uID);
+                postDataParams.put("longitude", longitude);
+                postDataParams.put("latitude", latitude);
 
                 return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php",postDataParams);
             }
