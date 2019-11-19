@@ -292,8 +292,8 @@ public class NewPriceFragment extends Fragment {
             mPrice = parmam[0];
             title = mPrice.getTitle();
             price = mPrice.getGasPrice();
-            price = mPrice.getLongitude();
-            price = mPrice.getLatitude();
+            longitude = mPrice.getLongitude();
+            latitude = mPrice.getLatitude();
             try {
                 // POST Request
                 JSONObject postDataParams = new JSONObject();
@@ -349,7 +349,7 @@ public class NewPriceFragment extends Fragment {
 //        }
 //    }
 
-}
+
 
 
     private boolean hasLocationPermission() {
