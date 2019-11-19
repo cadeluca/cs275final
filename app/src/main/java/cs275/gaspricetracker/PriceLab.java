@@ -216,6 +216,7 @@ public class PriceLab {
                         Object value = null;
                         try {
                             value = j.get(key);
+                            // todo: if value is null this throws an exception and crashes; it is null if the database php file encounters a db error
                             priceArray[0] = (JSONArray) value;
 
                         } catch (JSONException e) {
