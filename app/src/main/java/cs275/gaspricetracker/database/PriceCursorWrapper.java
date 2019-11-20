@@ -25,8 +25,10 @@ public class PriceCursorWrapper extends CursorWrapper {
         float gasPrice = getFloat(getColumnIndex(Cols.PRICE));
         double latitude = getDouble(getColumnIndex(Cols.LATITUDE));
         double longitude = getDouble(getColumnIndex(Cols.LONGITUDE));
+        int databaseId = getInt(getColumnIndex(Cols.DATABASE_ID));
         Price price = new Price(UUID.fromString(uuidString));
         price.setTitle(title);
+        price.setDatabaseId(databaseId);
         price.setDate(new Date(date));
         price.setGasPrice(gasPrice);
         price.setLongitude(longitude);

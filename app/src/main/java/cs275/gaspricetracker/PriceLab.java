@@ -154,10 +154,10 @@ public class PriceLab {
     public void syncPrices(ArrayList<Price> prices) {
         mHelper.syncDB(mDatabase);
         for (Price p : prices) {
+            Log.d("postWorked", "this price id from inside syncProces:"+p.getDatabaseId());
             ContentValues values = getContentValues(p);
             // todo: consider removing these logs since we know these work
             Log.d("getDb", "add price called from sync prices called");
-            Log.d("myTag","add price called from sync prices called" );
             mDatabase.insert(PriceTable.NAME, null, values);
         }
     }
@@ -179,12 +179,11 @@ public class PriceLab {
         ContentValues values = new ContentValues();
         values.put(UUID, price.getId().toString());
         values.put(TITLE, price.getTitle());
+        values.put(DATABASE_ID,price.getDatabaseId());
         values.put(DATE, price.getDate().getTime());
         values.put(PRICE, price.getGasPrice());
         values.put(LATITUDE, price.getLatitude());
         values.put(LONGITUDE, price.getLongitude());
-        float f = price.getGasPrice();
-        Log.d("myTag", Float.toString(f));
         return values;
     }
 
@@ -230,6 +229,8 @@ public class PriceLab {
                     for(int n = 0; n < priceArray[0].length(); n++) {
                         JSONArray subArr = (JSONArray) priceArray[0].get(n);
                         Price p = new Price();
+                        p.setDatabaseId(Integer.parseInt(subArr.get(0).toString()));
+                        Log.d("postWorked","set db id to: "+p.getDatabaseId());
                         p.setTitle(subArr.get(1).toString());
                         p.setGasPrice(Float.parseFloat(subArr.get(2).toString()));
                         Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(subArr.get(3).toString());

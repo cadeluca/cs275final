@@ -6,6 +6,7 @@ import java.util.UUID;
 public class Price {
 
     private UUID mId;
+    private int mDatabaseId;
     private String mTitle;
     private Date mDate;
 
@@ -70,5 +71,13 @@ public class Price {
 
     public String getPhotoFilename() {
         return "IMG_" + getId().toString() + ".jpg";
+    }
+
+    public void setDatabaseId(int dbId) {
+        this.mDatabaseId = dbId;
+    }
+
+    public int getDatabaseId() {
+        return this.mDatabaseId;
     }
 }

@@ -1,12 +1,10 @@
 package cs275.gaspricetracker;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -28,55 +26,41 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderApi;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-
-import org.w3c.dom.Text;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 import java.util.Objects;
+import java.util.Random;
 
 
-public class NewPriceFragment extends Fragment {
+public class NewPriceFragment extends Fragment implements AsyncResponse {
     private static final String DIALOG_PHOTO = "DialogPhoto";
-
+    PostPriceAsync mPostPriceAsync = new PostPriceAsync();
+    private int mThisCreatedPriceId;
     private Button mSavePriceButton;
     private Price mPrice;
     private EditText mTitleField;
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
+    // fixme: copy over from the regular price fragment all photo parts
     private File mPhotoFile;
     private EditText mPriceInput;
     private TextView mLocationView;
     private static final int REQUEST_PHOTO= 2;
-
     private static final String TAG = "NewLocatrFragment";
     private static final String[] LOCATION_PERMISSIONS = new String[] {
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -89,7 +73,7 @@ public class NewPriceFragment extends Fragment {
     // testing for add offset, get a different random position for each price
     private double getOffset() {
         Random r = new Random();
-        Integer negator = r.nextInt(100);
+        int negator = r.nextInt(100);
         double offset;
         if (negator > 49) {
             offset = -1 * r.nextInt(100) * 0.0001;
@@ -97,15 +81,16 @@ public class NewPriceFragment extends Fragment {
         offset = r.nextInt(100) * 0.0001;
         return offset;
     }
+
     public static NewPriceFragment newInstance() {
         return new NewPriceFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
+        mPostPriceAsync.delegate = this;
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.getSupportActionBar().setTitle("Report New Gas Price");
+        Objects.requireNonNull(Objects.requireNonNull(activity).getSupportActionBar()).setTitle("Report New Gas Price");
         mPrice = new Price();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -115,7 +100,7 @@ public class NewPriceFragment extends Fragment {
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
-                        getActivity().invalidateOptionsMenu();
+                        Objects.requireNonNull(getActivity()).invalidateOptionsMenu();
                     }
                     @Override
                     public void onConnectionSuspended(int i) {
@@ -148,20 +133,20 @@ public class NewPriceFragment extends Fragment {
 
         mSavePriceButton = v.findViewById(R.id.price_save);
         mSavePriceButton.setOnClickListener(view -> {
+            // post to database
+            mPostPriceAsync.execute(mPrice);
+
             // add the price to the PriceLab
             PriceLab.get(getActivity()).addPrice(mPrice);
-            // post to database
-            // todo:
-            //  check if we can pull a response from the async task, for example a 200 response,
-            //  so that we may conditionally issue a success or failure response.
-            new PostPriceAsync().execute(mPrice);
-            Toast toast = Toast.makeText(getContext(), "Added price successfully!", Toast.LENGTH_SHORT);
+
+            Toast toast = Toast.makeText(getContext(), R.string.added_price_success, Toast.LENGTH_SHORT);
             toast.show();
+
             // go back to main
             Intent intent = new Intent(getContext(), MainActivity.class);
             startActivity(intent);
         });
-        mPriceInput = (EditText) v.findViewById(R.id.price_input);
+        mPriceInput = v.findViewById(R.id.price_input);
         mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -179,6 +164,7 @@ public class NewPriceFragment extends Fragment {
             }
         });
         mLocationView = (TextView) v.findViewById(R.id.newLocationView);
+        // todo: investigate this IDE warning
         mLocationView.setText("latitude: "+ mPrice.getLatitude() + " longitude: " + mPrice.getLongitude() );
         PackageManager packageManager = getActivity().getPackageManager();
 
@@ -202,7 +188,7 @@ public class NewPriceFragment extends Fragment {
             startActivityForResult(captureImage, REQUEST_PHOTO);
         });
 
-        mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
+        mPhotoView = v.findViewById(R.id.price_photo);
         updatePhotoView();
 
         mPhotoView.setOnClickListener(view -> {
@@ -233,6 +219,7 @@ public class NewPriceFragment extends Fragment {
         MenuItem searchItem = menu.findItem(R.id.action_locate);
         searchItem.setEnabled(mClient.isConnected());
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -252,7 +239,7 @@ public class NewPriceFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        getActivity().invalidateOptionsMenu();
+        Objects.requireNonNull(getActivity()).invalidateOptionsMenu();
         mClient.connect();
     }
 
@@ -268,44 +255,53 @@ public class NewPriceFragment extends Fragment {
         request.setNumUpdates(1);
         request.setInterval(0);
         LocationServices.FusedLocationApi
-                .requestLocationUpdates(mClient, request, new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        mCurrentLocation = location;
-                        Log.i(TAG, "Got a fix: " + location);
-                        // testing for adding offset
-                        mPrice.setLatitude(mCurrentLocation.getLatitude() + getOffset());
-                        mPrice.setLongitude(mCurrentLocation.getLongitude() + getOffset());
-                    }
+                .requestLocationUpdates(mClient, request, location -> {
+                    mCurrentLocation = location;
+                    Log.i(TAG, "Got a fix: " + location);
+                    // testing for adding offset
+                    mPrice.setLatitude(mCurrentLocation.getLatitude() + getOffset());
+                    mPrice.setLongitude(mCurrentLocation.getLongitude() + getOffset());
                 });
 
     }
+
+    @Override
+    public void processFinish(String output) {
+        try {
+            JSONObject jo = new JSONObject(output);
+            int thisId = jo.getInt("thisId");
+            Log.d("postWorked", "price id before set: "+mPrice.getDatabaseId());
+            mPrice.setDatabaseId(thisId);
+            Log.d("postWorked", "price id after set: "+mPrice.getDatabaseId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static class PostPriceAsync extends AsyncTask<Price,String,String> {
-        private Price mPrice;
-        private String title;
-        private Float price;
-        private Double longitude;
-        private Double latitude;
-        private int uID;
+        public AsyncResponse delegate = null;
+
         @Override
-        protected String doInBackground(Price... parmam) {
-            mPrice = parmam[0];
-            title = mPrice.getTitle();
-            price = mPrice.getGasPrice();
-            longitude = mPrice.getLongitude();
-            latitude = mPrice.getLatitude();
+        protected String doInBackground(Price... param) {
+            Price price1 = param[0];
+            
+            String title = price1.getTitle();
+            float price = price1.getGasPrice();
+            double longitude = price1.getLongitude();
+            double latitude = price1.getLatitude();
+            
             try {
-                // POST Request
+                // put the values for the POST Request
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put("title", title);
                 postDataParams.put("price", price);
-                postDataParams.put("uID", uID);
                 postDataParams.put("longitude", longitude);
                 postDataParams.put("latitude", latitude);
 
-                return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php",postDataParams);
+                return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php", postDataParams);
             }
             catch(Exception e){
+
                 return "Exception: " + e.getMessage();
             }
         }
@@ -314,43 +310,10 @@ public class NewPriceFragment extends Fragment {
         protected void onPostExecute(String s) {
             if(s!=null){
                 Log.d("postWorked", s);
+                delegate.processFinish(s);
             }
         }
     }
-
-    // todo: dont delete this yet, using this as a reference
-
-//    private class PostTask extends AsyncTask<Price, Void, Void> {
-//        private Price mPrice;
-//
-//        @Override
-//        protected Void doInBackground(Price... param) {
-//            mPrice = param[0];
-//            PriceBackendFetcher fetchr = new PriceBackendFetcher();
-//            fetchr.postPrice(param[0]);
-//            return null;
-//        }
-//        @Override
-//        protected void onPostExecute(Void result) {
-//        }
-//    }
-//
-//    private class PostTask extends AsyncTask<Price, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Price... param) {
-//            mPrice = param[0];
-//            PriceBackendFetcher fetchr = new PriceBackendFetcher();
-//            fetchr.postTest();
-//            return null;
-//        }
-//        @Override
-//        protected void onPostExecute(Void result) {
-//        }
-//    }
-
-
-
 
     private boolean hasLocationPermission() {
         int result = ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);
