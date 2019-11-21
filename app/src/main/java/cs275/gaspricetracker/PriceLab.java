@@ -235,6 +235,8 @@ public class PriceLab {
                         p.setGasPrice(Float.parseFloat(subArr.get(2).toString()));
                         Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(subArr.get(3).toString());
                         p.setDate(date);
+                        p.setLongitude(Double.parseDouble(subArr.get(4).toString()));
+                        p.setLatitude(Double.parseDouble(subArr.get(5).toString()));
                         prices.add(p);
                     }
 

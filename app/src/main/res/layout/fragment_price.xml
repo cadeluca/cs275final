@@ -73,8 +73,10 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/dollar_sign"
+            android:layout_marginLeft="10dp"
             android:gravity="center"
+            android:text="@string/dollar_sign"
+            android:textSize="8pt"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <EditText
@@ -86,18 +88,33 @@
 
 
     </LinearLayout>
+
+    <TextView
+        style="?android:listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/location_field_label"/>
+
     <TextView
         android:id="@+id/readLocationView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/default_location"
+        android:layout_marginLeft="10dp"
         android:gravity="center" />
 
-    <Button
+    <TextView
+        style="?android:listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/date_field_label"/>
+
+    <TextView
         android:id="@+id/price_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
+
     <Button
         android:id="@+id/price_share"
         android:layout_width="match_parent"

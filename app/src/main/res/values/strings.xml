@@ -30,5 +30,7 @@
     <string name="price_sort">Sort with lower price</string>
     <string name="default_location">latitude: longitude:</string>
     <string name="added_price_success">Added price successfully!</string>
+    <string name="location_field_label">Location</string>
+    <string name="date_field_label">Date</string>
     <string name="default_order">Chronological order</string>
 </resources>
