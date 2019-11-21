@@ -76,9 +76,9 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         int negator = r.nextInt(100);
         double offset;
         if (negator > 49) {
-            offset = -1 * r.nextInt(100) * 0.0001;
+            offset = -1 * r.nextInt(100) * 0.00001;
         }
-        offset = r.nextInt(100) * 0.0001;
+        offset = r.nextInt(100) * 0.00001;
         return offset;
     }
 
