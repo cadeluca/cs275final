@@ -2,6 +2,7 @@ package cs275.gaspricetracker;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -27,10 +28,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class PriceLocatrFragment extends SupportMapFragment {
@@ -68,12 +69,9 @@ public class PriceLocatrFragment extends SupportMapFragment {
                     }
                 })
                 .build();
-        getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                mMap = googleMap;
-                updateUI();
-            }
+        getMapAsync(googleMap -> {
+            mMap = googleMap;
+            updateUI();
         });
     }
 
@@ -99,7 +97,6 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
     @Override
     public void onStart() {
@@ -140,24 +137,59 @@ public class PriceLocatrFragment extends SupportMapFragment {
         }
         LatLng itemPoint = new LatLng(mMapItem.getmLat(),
                 mMapItem.getmLon());
+
         LatLng myPoint = new LatLng(
                 mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude()
         );
-        BitmapDescriptor itemBitmap = BitmapDescriptorFactory.fromBitmap(mMapImage);
-        MarkerOptions itemMarker = new MarkerOptions()
-                .position(itemPoint)
-                .icon(itemBitmap);
-        MarkerOptions myMarker = new MarkerOptions()
-                .position(myPoint);
+
         mMap.clear();
-        mMap.addMarker(itemMarker);
+        // Price from list
+        List<Price> mPrices = PriceLab.get(getActivity()).getPrices();
+        File mPhotoFile;
+        if (mPrices.size() != 0) {
+            for ( Price mPrice: mPrices) {
+                String price = "$ " + mPrice.getGasPrice();
+                String price_title = mPrice.getTitle();
+                mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
+                BitmapDescriptor itemBitmap;
+                if (mPhotoFile == null || !mPhotoFile.exists()) {
+                    itemBitmap = BitmapDescriptorFactory.fromPath(mPhotoFile.getPath());
+                }
+                else{
+                    itemBitmap = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+                }
+                LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
+                Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
+
+
+                //  marker in blue
+                MarkerOptions itemMarker = new MarkerOptions()
+                        .position(mPricePosition)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                        .title(price_title)
+                        .snippet(price);
+                // add price marker to map
+                mMap.addMarker(itemMarker);
+            }
+        }
+        // My current location
+        MarkerOptions myMarker = new MarkerOptions()
+                .position(myPoint)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                .title("me");
+
+
+
+        // add marker into map
         mMap.addMarker(myMarker);
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(itemPoint)
+                //.include(itemPoint1)
                 .include(myPoint)
                 .build();
         int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
+        //int margin = 100;
         CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
         mMap.animateCamera(update);
     }
@@ -180,7 +212,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
         @Override
         protected Void doInBackground(Location... param) {
             mLocation = param[0];
-            FlickrFetchr fetchr = new FlickrFetchr();
+            PriceFetcher fetchr = new PriceFetcher();
             List<GalleryItem> items = fetchr.searchPhotos(param[0]);
             if (items.size() == 0) {
                 return null;

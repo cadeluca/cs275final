@@ -27,4 +27,9 @@
     <string name="dialog_question">Are you sure you want to delete this price?"</string>
     <string name="dollar_sign">$</string>
     <string name="search">Find a gas station near you</string>
+    <string name="price_sort">Sort with lower price</string>
+    <string name="default_location">Latitude: Longitude:</string>
+    <string name="added_price_success">Added price successfully!</string>
+    <string name="location_field_label">Location</string>
+    <string name="date_field_label">Date</string>
 </resources>

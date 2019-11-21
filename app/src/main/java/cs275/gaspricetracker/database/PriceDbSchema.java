@@ -7,8 +7,11 @@ public class PriceDbSchema {
         public static final class Cols {
             public static final String UUID = "uuid";
             public static final String TITLE = "title";
+            public static final String DATABASE_ID = "database_id";
             public static final String DATE = "date";
             public static final String PRICE = "price";
+            public static final String LATITUDE = "latitude";
+            public static final String LONGITUDE = "longitude";
         }
     }
 }

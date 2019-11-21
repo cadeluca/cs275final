@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FlickrFetchr {
-    private static final String TAG = "FlickrFetchr";
+public class PriceFetcher {
+    private static final String TAG = "PriceFetcher";
     private static final String API_KEY = "2093ccd60ae8751e44de505c041d8486";
     private static final String FETCH_RECENTS_METHOD = "flickr.photos.getRecent";
     private static final String SEARCH_METHOD = "flickr.photos.search";
@@ -120,4 +120,3 @@ public class FlickrFetchr {
     }
 
 }
-

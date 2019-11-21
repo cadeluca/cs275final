@@ -19,12 +19,20 @@ public class PriceBaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + PriceTable.NAME + "(" +
                 " _id integer primary key autoincrement, " + PriceTable.Cols.UUID + ", " + PriceTable.Cols.TITLE + ", " +
                 PriceTable.Cols.DATE + ", " +
-                PriceTable.Cols.PRICE +
+                PriceTable.Cols.PRICE + ", " +
+                PriceTable.Cols.LATITUDE + ", " +
+                PriceTable.Cols.LONGITUDE + ", " +
+                PriceTable.Cols.DATABASE_ID +
                 ")"
         );
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
+
+    public void syncDB(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + PriceTable.NAME);
+        onCreate(db);
     }
 }
