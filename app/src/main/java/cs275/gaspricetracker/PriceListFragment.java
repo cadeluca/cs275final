@@ -28,7 +28,7 @@ public class PriceListFragment extends Fragment {
     private RecyclerView mPriceRecyclerView;
     private PriceAdapter mAdapter;
     private boolean mSubtitleVisible;
-    private boolean mIsSorted;
+    private boolean mIsSort;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,9 +49,10 @@ public class PriceListFragment extends Fragment {
 
         if (savedInstanceState != null) {
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+            mIsSort = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
 
-        updateUI("");
+        updateUI();
 
         return view;
     }
@@ -59,11 +60,11 @@ public class PriceListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        updateUI("");
+        updateUI();
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
     }
@@ -79,13 +80,22 @@ public class PriceListFragment extends Fragment {
         } else {
             subtitleItem.setTitle(R.string.show_subtitle);
         }
+
+        MenuItem sortTitleItem =  menu.findItem(R.id.price_sort);
+        if (mIsSort) {
+            sortTitleItem.setTitle(R.string.default_order);
+        } else {
+            sortTitleItem.setTitle(R.string.price_sort);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.price_sort:
-                updateUI("price");
+                mIsSort = !mIsSort;
+                getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.new_price:
                 Intent intent = new Intent(getContext(), NewPriceActivity.class);
@@ -114,11 +124,11 @@ public class PriceListFragment extends Fragment {
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
-    private void updateUI(String sort) {
+    private void updateUI() {
         PriceLab priceLab = PriceLab.get(getActivity());
         List<Price> prices;
-        if (sort == "price") {
-            prices = priceLab.getPrices(sort);
+        if (mIsSort) {
+            prices = priceLab.getPrices("price");
         } else {
             prices = priceLab.getPrices();
         }
@@ -130,7 +140,6 @@ public class PriceListFragment extends Fragment {
             mAdapter.setPrices(prices);
             mAdapter.notifyDataSetChanged();
         }
-
         updateSubtitle();
     }
 
@@ -148,6 +157,7 @@ public class PriceListFragment extends Fragment {
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.price_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.price_date);
+
 //            mSolvedImageView = (ImageView) itemView.findViewById(R.id.price_solved);
         }
 
