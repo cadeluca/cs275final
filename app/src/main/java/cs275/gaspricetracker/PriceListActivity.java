@@ -10,5 +10,4 @@ public class PriceListActivity extends SingleFragmentActivity {
     protected Fragment createFragment() {
         return new PriceListFragment();
     }
-
 }

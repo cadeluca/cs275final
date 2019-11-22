@@ -142,9 +142,8 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
             Toast toast = Toast.makeText(getContext(), R.string.added_price_success, Toast.LENGTH_SHORT);
             toast.show();
 
-            // go back to main
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            startActivity(intent);
+            // go back to listFragment
+            getActivity().finish();
         });
         mPriceInput = v.findViewById(R.id.price_input);
         mPriceInput.addTextChangedListener(new TextWatcher() {
