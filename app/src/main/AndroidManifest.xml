@@ -44,6 +44,8 @@
         <activity
             android:name=".PricePagerActivity"
             android:parentActivityName=".PriceListActivity" />
+
+
         <activity android:name=".NewPriceActivity" />
         <activity android:name=".PriceListActivity" />
 

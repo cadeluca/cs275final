@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -144,7 +145,7 @@ public class PriceListFragment extends ListFragment {
                             for (int i = mAdapter.getCount() - 1; i >= 0; i--) {
                                 if (getListView().isItemChecked(i)) {
                                     priceLab.deletePrice(mAdapter.getItem(i));
-                                    Intent intent = new Intent(getActivity(), MainActivity.class);;
+                                    Intent intent = new Intent(getActivity(), PriceListActivity.class);;
                                     startActivity(intent);
                                 }
                             }
@@ -223,4 +224,6 @@ public class PriceListFragment extends ListFragment {
         }
         updateSubtitle();
     }
+
+
 }
