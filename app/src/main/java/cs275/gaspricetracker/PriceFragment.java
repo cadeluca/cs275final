@@ -208,8 +208,7 @@ public class PriceFragment extends Fragment {
         } else if (requestCode == REQUEST_DELETE) {
             new DeletePriceAsync().execute(mPrice);
             PriceLab.get(getActivity()).deletePrice(mPrice);
-            Intent intent = new Intent(getContext(), PriceListActivity.class);
-            startActivity(intent);
+            getActivity().finish();
         }
     }
 

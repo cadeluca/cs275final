@@ -39,6 +39,7 @@ public class PricePagerActivity extends AppCompatActivity {
 
         mViewPager = (ViewPager) findViewById(R.id.price_view_pager);
 
+        // Pager is not working for different sort
         if (isSorting) {
             mPrices = PriceLab.get(this).getPrices("prices");
         } else {
