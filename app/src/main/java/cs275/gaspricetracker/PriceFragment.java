@@ -204,11 +204,10 @@ public class PriceFragment extends Fragment {
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             updatePhotoView();
         } else if (requestCode == REQUEST_DELETE) {
+            new DeletePriceAsync().execute(mPrice);
             PriceLab.get(getActivity()).deletePrice(mPrice);
             Intent intent = new Intent(getContext(), PriceListActivity.class);
             startActivity(intent);
-            // todo: add async for call delete price in db
-            getActivity().finish();
         }
     }
 
@@ -252,6 +251,65 @@ public class PriceFragment extends Fragment {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
                     mPhotoFile.getPath(), getActivity());
             mPhotoView.setImageBitmap(bitmap);
+        }
+    }
+
+
+    private static class UpdatePriceAsync extends AsyncTask<Price,String,String> {
+
+        @Override
+        protected String doInBackground(Price... param) {
+            Price price1 = param[0];
+            int id = price1.getDatabaseId();
+            String title = price1.getTitle();
+            float price = price1.getGasPrice();
+            double longitude = price1.getLongitude();
+            double latitude = price1.getLatitude();
+            Log.d("postWorked", "this price's db id: "+id);
+            try {
+                // put the values for the POST Request
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("id", id);
+                postDataParams.put("title", title);
+                postDataParams.put("price", price);
+                postDataParams.put("longitude", longitude);
+                postDataParams.put("latitude", latitude);
+
+                return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/update.php", postDataParams);
+            }
+            catch(Exception e){
+
+                return "Exception: " + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s!=null){
+                Log.d("updateWorked", s);
+            }
+        }
+    }
+
+    private static class DeletePriceAsync extends AsyncTask<Price,String,String> {
+
+        @Override
+        protected String doInBackground(Price... param) {
+            Price price1 = param[0];
+            int id = price1.getDatabaseId();
+            try {
+                // delete the id
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("id", id);
+                return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/delete.php", postDataParams);
+            }
+            catch(Exception e){
+                return "Exception: " + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
         }
     }
 
