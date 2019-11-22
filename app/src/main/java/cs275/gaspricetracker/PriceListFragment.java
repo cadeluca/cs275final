@@ -29,25 +29,31 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-
-
-
-
 public class PriceListFragment extends ListFragment {
     private boolean mSubtitleVisible;
     private static final String TAG = "PriceListFragment";
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+    private static final String SAVED_SORT_TITLE = "sortTitle";
     private PriceAdapter mAdapter;
+    private boolean mIsSort;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_price_list, menu);
+
         MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
         if (mSubtitleVisible) {
             subtitleItem.setTitle(R.string.hide_subtitle);
         } else {
             subtitleItem.setTitle(R.string.show_subtitle);
+        }
+
+        MenuItem sortTitleItem =  menu.findItem(R.id.price_sort);
+        if (mIsSort) {
+            sortTitleItem.setTitle(R.string.default_order);
+        } else {
+            sortTitleItem.setTitle(R.string.price_sort);
         }
     }
 
@@ -55,7 +61,6 @@ public class PriceListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        mSubtitleVisible = false;
         setHasOptionsMenu(true);
         this.getActivity().setTitle(R.string.price_title);
     }
@@ -114,7 +119,9 @@ public class PriceListFragment extends ListFragment {
         View v = super.onCreateView(inflater, parent, savedInstanceState);
         if (savedInstanceState != null) {
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+            mIsSort = savedInstanceState.getBoolean(SAVED_SORT_TITLE);
         }
+
 
         ListView listView = (ListView)v.findViewById(android.R.id.list);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -183,11 +190,22 @@ public class PriceListFragment extends ListFragment {
     }
 
     @Override
+    public void onSaveInstanceState (Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
+        outState.putBoolean(SAVED_SORT_TITLE, mIsSort);
+    }
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_price:
                 Intent intent = new Intent(getContext(), NewPriceActivity.class);
                 startActivity(intent);
+                return true;
+            case R.id.price_sort:
+                mIsSort = !mIsSort;
+                getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
 
             case R.id.show_subtitle:
@@ -212,18 +230,19 @@ public class PriceListFragment extends ListFragment {
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
-    public void updateUI() {
+    private void updateUI() {
         PriceLab priceLab = PriceLab.get(getActivity());
-        List<Price> prices = priceLab.getPrices();
-        if (mAdapter == null) {
-            mAdapter = new PriceAdapter((List)prices);
-            setListAdapter(mAdapter);
+        List<Price> prices;
+        if (mIsSort) {
+            prices = priceLab.getPrices("price");
         } else {
-            mAdapter.setPrices(prices);
-            mAdapter.notifyDataSetChanged();
+            prices = priceLab.getPrices();
         }
+
+        mAdapter = new PriceAdapter(prices);
+        setListAdapter(mAdapter);
+
         updateSubtitle();
     }
-
 
 }
