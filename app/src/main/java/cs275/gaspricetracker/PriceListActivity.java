@@ -10,15 +10,5 @@ public class PriceListActivity extends SingleFragmentActivity {
     protected Fragment createFragment() {
         return new PriceListFragment();
     }
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK){
-            Intent intent = new Intent(PriceListActivity.this, MainActivity.class);;
-            startActivity(intent);
-            return true;
-        } else {
-            return super.dispatchKeyEvent(event);
-        }
 
-    }
 }
