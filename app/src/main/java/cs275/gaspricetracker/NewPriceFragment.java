@@ -271,7 +271,8 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
             int thisId = jo.getInt("thisId");
             Log.d("postWorked", "price id before set: "+mPrice.getDatabaseId());
             mPrice.setDatabaseId(thisId);
-            Log.d("postWorked", "price id after set: "+mPrice.getDatabaseId());
+            Log.d("postWorked", "price id after set to make sure current price has " +
+                    "the id in ref: "+mPrice.getDatabaseId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
