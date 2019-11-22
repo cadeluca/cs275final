@@ -1,5 +1,9 @@
 package cs275.gaspricetracker;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,8 +32,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.UUID;
+
+import static cs275.gaspricetracker.DeleteDialogFragment.EXTRA_DELETE;
 
 public class PriceListFragment extends ListFragment {
+
+
     private boolean mSubtitleVisible;
     private static final String TAG = "PriceListFragment";
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
@@ -68,7 +77,7 @@ public class PriceListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Price price = ((PriceAdapter)getListAdapter()).getItem(position);
-        Intent intent = PricePagerActivity.newIntent(getActivity(), price.getId());
+        Intent intent = PricePagerActivity.newIntent(getActivity(), price.getId(), mIsSort);
         startActivity(intent);
     }
 
@@ -244,5 +253,4 @@ public class PriceListFragment extends ListFragment {
 
         updateSubtitle();
     }
-
 }
