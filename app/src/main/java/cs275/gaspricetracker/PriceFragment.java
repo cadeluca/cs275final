@@ -38,6 +38,7 @@ import androidx.fragment.app.FragmentManager;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -227,7 +228,9 @@ public class PriceFragment extends Fragment {
     }
 
     private void updateDate() {
-        mDateButton.setText(mPrice.getDate().toString());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMM dd");
+        String dateString = simpleDateFormat.format(mPrice.getDate());
+        mDateButton.setText(dateString);
     }
 
     @Override
@@ -237,12 +240,11 @@ public class PriceFragment extends Fragment {
     }
 
     private String getPriceReport() {
-        String solvedString = null;
-        String dateFormat = "EEE, MMM dd";
-        String dateString = DateFormat.format(dateFormat, mPrice.getDate()).toString();
-        // todo:
-        String report = "temporary report string";
-        return report;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMM dd");
+        String dateString = simpleDateFormat.format(mPrice.getDate());
+        String report = getString(R.string.price_report);
+        String priceString = String.format("$%.2f", mPrice.getGasPrice());
+        return String.format(report, mPrice.getTitle(), priceString, dateString);
     }
 
     private void updatePhotoView() {

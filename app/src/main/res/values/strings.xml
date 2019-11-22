@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Gas Price Tracker</string>
-    <string name="price_title_hint">Enter the name of the gas station.</string>
+    <string name="price_title_hint">Enter station name</string>
     <string name="price_title_label">Gas Station Name</string>
     <string name="price_details_label">Price</string>
     <string name="date_picker_title">Date of price:</string>
@@ -11,10 +11,11 @@
     <string name="subtitle_format">%1$d prices</string>
     <string name="report_prices_text">Report prices</string>
     <string name="share_price_text">Share this price</string>
-    <string name="price_report">%1$s! The price was reported on %2$s. %3$s, and %4$s</string>
+    <string name="price_report">Wow, check out this sweet deal! %1$s has %2$s gas! This price was reported on %3$s. </string>
     <string name="price_report_subject">GasPriceTracker Price Report</string>
     <string name="send_report">Share this price via</string>
     <string name="price_title">Price Title</string>
+    <string name="price_header">Gas Prices</string>
     <string name="price_date">Price Date</string>
     <string name="view_prices_text">View Price List</string>
     <string name="price_hint">0.00</string>
@@ -33,4 +34,5 @@
     <string name="location_field_label">Location</string>
     <string name="date_field_label">Date</string>
     <string name="default_order">Chronological order</string>
+    <string name="price_placeholder">$p</string>
 </resources>

@@ -1,17 +1,10 @@
 package cs275.gaspricetracker;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,23 +14,14 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.ListFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.UUID;
-
-import static cs275.gaspricetracker.DeleteDialogFragment.EXTRA_DELETE;
 
 public class PriceListFragment extends ListFragment {
 
@@ -74,7 +58,7 @@ public class PriceListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        this.getActivity().setTitle(R.string.price_title);
+        this.getActivity().setTitle(R.string.price_header);
     }
 
     @Override
@@ -99,10 +83,17 @@ public class PriceListFragment extends ListFragment {
 
             Price p = getItem(position);
 
-            TextView titleTextView = (TextView)convertView.findViewById(R.id.price_title);
-            TextView dateTextView = (TextView)convertView.findViewById(R.id.price_date);
+            TextView titleTextView = convertView.findViewById(R.id.price_title);
+            TextView dateTextView = convertView.findViewById(R.id.price_date);
+            TextView priceTextView = convertView.findViewById(R.id.price_price);
             titleTextView.setText(p.getTitle());
-            dateTextView.setText(p.getDate().toString());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMMM dd");
+            String dateString = simpleDateFormat.format(p.getDate());
+            dateTextView.setText(dateString);
+
+            String priceString = String.format("$%.2f", p.getGasPrice());
+            priceTextView.setText(priceString);
+
             return convertView;
         }
         public void setPrices(List<Price> prices) {
@@ -135,7 +126,7 @@ public class PriceListFragment extends ListFragment {
         }
 
 
-        ListView listView = (ListView)v.findViewById(android.R.id.list);
+        ListView listView = v.findViewById(android.R.id.list);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             registerForContextMenu(listView);
         } else {
