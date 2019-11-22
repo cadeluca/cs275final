@@ -166,11 +166,10 @@ public class PriceListFragment extends ListFragment {
                                     Price deletePrice = mAdapter.getItem(i);
                                     priceLab.deletePrice(deletePrice);
                                     new PriceFragment.DeletePriceAsync().execute(deletePrice);
-                                    updateUI();
                                 }
                             }
                             mode.finish();
-                            mAdapter.notifyDataSetChanged();
+                            updateUI();
                             return true;
                         default:
                             return false;
