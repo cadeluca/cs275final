@@ -166,8 +166,7 @@ public class PriceListFragment extends ListFragment {
                                     Price deletePrice = mAdapter.getItem(i);
                                     priceLab.deletePrice(deletePrice);
                                     new PriceFragment.DeletePriceAsync().execute(deletePrice);
-                                    Intent intent = new Intent(getActivity(), PriceListActivity.class);;
-                                    startActivity(intent);
+                                    updateUI();
                                 }
                             }
                             mode.finish();
