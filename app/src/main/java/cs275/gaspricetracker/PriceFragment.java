@@ -104,6 +104,7 @@ public class PriceFragment extends Fragment {
         });
 
         mDateButton = v.findViewById(R.id.price_date);
+        mDateButton.setText(mPrice.getDate().toString());
         updateDate();
 
         mReadLocationView = (TextView) v.findViewById(R.id.readLocationView);
@@ -291,7 +292,7 @@ public class PriceFragment extends Fragment {
         }
     }
 
-    private static class DeletePriceAsync extends AsyncTask<Price,String,String> {
+    public static class DeletePriceAsync extends AsyncTask<Price,String,String> {
 
         @Override
         protected String doInBackground(Price... param) {

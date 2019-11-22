@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +24,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -160,7 +163,9 @@ public class PriceListFragment extends ListFragment {
                             PriceLab priceLab = PriceLab.get(getActivity());
                             for (int i = mAdapter.getCount() - 1; i >= 0; i--) {
                                 if (getListView().isItemChecked(i)) {
-                                    priceLab.deletePrice(mAdapter.getItem(i));
+                                    Price deletePrice = mAdapter.getItem(i);
+                                    priceLab.deletePrice(deletePrice);
+                                    new PriceFragment.DeletePriceAsync().execute(deletePrice);
                                     Intent intent = new Intent(getActivity(), PriceListActivity.class);;
                                     startActivity(intent);
                                 }
