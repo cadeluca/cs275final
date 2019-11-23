@@ -36,6 +36,7 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,6 +53,7 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
     PostPriceAsync mPostPriceAsync = new PostPriceAsync();
     private int mThisCreatedPriceId;
     private Button mSavePriceButton;
+    private TextInputLayout mTextInputLayout;
     private Price mPrice;
     private EditText mTitleField;
     private ImageButton mPhotoButton;
@@ -114,6 +116,9 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_new_price, container, false);
+
+        mTextInputLayout = v.findViewById(R.id.station_input);
+
         mTitleField = v.findViewById(R.id.price_title);
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -133,17 +138,29 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
 
         mSavePriceButton = v.findViewById(R.id.price_save);
         mSavePriceButton.setOnClickListener(view -> {
-            // post to database
-            mPostPriceAsync.execute(mPrice);
+            boolean validPrice = true;
 
-            // add the price to the PriceLab
-            PriceLab.get(getActivity()).addPrice(mPrice);
+            // check if the name is given
+            if (mTitleField.getText().toString().length() == 0) {
+                mTextInputLayout.setError(getString(R.string.station_input_error));
+                validPrice = false;
+            }
 
-            Toast toast = Toast.makeText(getContext(), R.string.added_price_success, Toast.LENGTH_SHORT);
-            toast.show();
+            if (validPrice) {
+                // post to database
+                mPostPriceAsync.execute(mPrice);
 
-            // go back to listFragment
-            getActivity().finish();
+                // add the price to the PriceLab
+                PriceLab.get(getActivity()).addPrice(mPrice);
+
+                Toast toast = Toast.makeText(getContext(), R.string.added_price_success, Toast.LENGTH_SHORT);
+                toast.show();
+
+                // go back to listFragment
+                getActivity().finish();
+            }
+
+
         });
         mPriceInput = v.findViewById(R.id.price_input);
         mPriceInput.addTextChangedListener(new TextWatcher() {
@@ -189,6 +206,8 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
 
         mPhotoView = v.findViewById(R.id.price_photo);
         updatePhotoView();
+
+
 
         mPhotoView.setOnClickListener(view -> {
             if (mPhotoFile != null && mPhotoFile.exists()) {

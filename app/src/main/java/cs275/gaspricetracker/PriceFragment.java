@@ -315,31 +315,4 @@ public class PriceFragment extends Fragment {
         protected void onPostExecute(String s) {
         }
     }
-
-    /**
-     * Takes in an input string and coverts it to a $_.__ formatted string
-     * @param digits the string (from charSequence) from a view/edit
-     * @return formatted string
-     */
-    private String addCurrencySign(String digits) {
-        String amount = "$";
-        // remove any non numeric chars
-        digits = digits.replace(".", "");
-
-        // Amount length greater than 2 means we need to add a decimal point
-        if (digits.length() > 2) {
-            String dollar = digits.substring(0, digits.length() - 2); // Pound part
-            String cents = digits.substring(digits.length() - 2); // Pence part
-            amount += dollar + "." + cents;
-        }
-        else if (digits.length() == 1) {
-            amount += "0.0" + digits;
-        }
-        else if (digits.length() == 2) {
-            amount += "0." + digits;
-        }
-
-        return amount;
-    }
-
 }

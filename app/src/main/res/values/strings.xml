@@ -35,4 +35,5 @@
     <string name="date_field_label">Date</string>
     <string name="default_order">Chronological order</string>
     <string name="price_placeholder">$p</string>
+    <string name="station_input_error">Gas station name required</string>
 </resources>
