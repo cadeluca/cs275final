@@ -153,7 +153,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 String price_title = mPrice.getTitle();
                 mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
                 BitmapDescriptor itemBitmap;
-                if (mPhotoFile == null || !mPhotoFile.exists()) {
+                if (mPhotoFile.exists()) {
                     itemBitmap = BitmapDescriptorFactory.fromPath(mPhotoFile.getPath());
                 }
                 else{
@@ -166,7 +166,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 //  marker in blue
                 MarkerOptions itemMarker = new MarkerOptions()
                         .position(mPricePosition)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                        .icon(itemBitmap)
                         .title(price_title)
                         .snippet(price);
                 // add price marker to map
