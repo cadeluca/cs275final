@@ -251,7 +251,8 @@ public class PriceFragment extends Fragment {
             mPhotoView.setImageDrawable(null);
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(), getActivity());
+                    mPhotoFile.getPath(),getActivity());
+
             mPhotoView.setImageBitmap(bitmap);
         }
     }

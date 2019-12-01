@@ -154,7 +154,10 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
                 BitmapDescriptor itemBitmap;
                 if (mPhotoFile.exists()) {
-                    itemBitmap = BitmapDescriptorFactory.fromPath(mPhotoFile.getPath());
+                    Bitmap bitmap = PictureUtils.getScaledBitmap(
+                            mPhotoFile.getPath(), getActivity());
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 500,500,true);
+                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
                 }
                 else{
                     itemBitmap = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
