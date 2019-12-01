@@ -19,6 +19,7 @@
 
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
+    Wyatt API Key:AIzaSyCt3MvS6j9n4DA_sWLAvmdATeZLvAV27_o
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDfwrDeotN3EvC2lRTyFWOChKAGzn3cqcM</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCt3MvS6j9n4DA_sWLAvmdATeZLvAV27_o</string>
 </resources>
