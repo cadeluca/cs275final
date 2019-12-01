@@ -26,6 +26,7 @@ public class PriceCursorWrapper extends CursorWrapper {
         double latitude = getDouble(getColumnIndex(Cols.LATITUDE));
         double longitude = getDouble(getColumnIndex(Cols.LONGITUDE));
         int databaseId = getInt(getColumnIndex(Cols.DATABASE_ID));
+        int hasPhoto = getInt(getColumnIndex(Cols.HAS_PHOTO));
         Price price = new Price(UUID.fromString(uuidString));
         price.setTitle(title);
         price.setDatabaseId(databaseId);
@@ -33,6 +34,7 @@ public class PriceCursorWrapper extends CursorWrapper {
         price.setGasPrice(gasPrice);
         price.setLongitude(longitude);
         price.setLatitude(latitude);
+        price.setHasPhoto(hasPhoto);
         return price;
     }
 }

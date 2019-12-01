@@ -14,6 +14,7 @@ public class Price {
     private double mLongitude;
     private float mGasPrice;
 
+    private boolean mHasPhoto;
 
     public Price() {
         this(UUID.randomUUID());
@@ -79,5 +80,18 @@ public class Price {
 
     public int getDatabaseId() {
         return this.mDatabaseId;
+    }
+
+    public boolean isHasPhoto() {
+        return mHasPhoto;
+    }
+
+    public void setHasPhoto(Integer hasPhoto) {
+        if (hasPhoto == 1)
+            mHasPhoto = true;
+        else if (hasPhoto == 0)
+            mHasPhoto = false;
+        else
+            mHasPhoto = false;
     }
 }

@@ -22,7 +22,8 @@ public class PriceBaseHelper extends SQLiteOpenHelper {
                 PriceTable.Cols.PRICE + ", " +
                 PriceTable.Cols.LATITUDE + ", " +
                 PriceTable.Cols.LONGITUDE + ", " +
-                PriceTable.Cols.DATABASE_ID +
+                PriceTable.Cols.DATABASE_ID + ", " +
+                PriceTable.Cols.HAS_PHOTO +
                 ")"
         );
     }
