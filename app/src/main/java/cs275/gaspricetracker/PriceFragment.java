@@ -6,10 +6,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -36,10 +38,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +68,8 @@ public class PriceFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
     private TextView mReadLocationView;
+    private Target saveFileTarget;
+    private File FILEPATH;
 
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
@@ -257,13 +263,63 @@ public class PriceFragment extends Fragment {
             String url = "https://ywu10.w3.uvm.edu/cs008/x.jpg";
             Picasso.get().load(url).into(mPhotoView);
         } else {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(),getActivity());
+//            Bitmap bitmap = PictureUtils.getScaledBitmap(
+//                    mPhotoFile.getPath(),getActivity());
+//
+//            mPhotoView.setImageBitmap(bitmap);
 
-            mPhotoView.setImageBitmap(bitmap);
+            Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    mPhotoView.setImageBitmap(bitmap);
+                }
+
+                @Override
+                public void onBitmapFailed(Exception e, Drawable d) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable d) {
+
+                }
+            };
+            Picasso.get().load("https://jtan5.w3.uvm.edu/cs008/Junda.jpg").into(target);
+
         }
     }
 
+//    private void updatePhotoFile() {
+
+//    }
+
+
+//    private void updatePhotoFile() {
+//        Picasso.get().load("https://ywu10.w3.uvm.edu/cs008/x.jpg").into(saveFileTarget);
+//
+//        saveFileTarget = new Target() {
+//            @Override
+//            public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from) {
+//                new Thread(new Runable() {
+//                    @Override
+//                    public void run() {
+//                        File file = new File(Environment.getExternalStorageDirectory().getPath() + "/" + FILEPATH);
+//                        try{
+//                            file.createNewFile();
+//                            FileOutputStream ostream = new FileOutputStream(file);
+//                            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, ostream);
+//                            ostream.close();
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                }).start();
+//            }
+//        }
+//    }
+//
+//
 
     private static class UpdatePriceAsync extends AsyncTask<Price,String,String> {
 
@@ -322,6 +378,12 @@ public class PriceFragment extends Fragment {
         protected void onPostExecute(String s) {
         }
     }
+
+
+
+
+
+
 
     /**
      * Takes in an input string and coverts it to a $_.__ formatted string

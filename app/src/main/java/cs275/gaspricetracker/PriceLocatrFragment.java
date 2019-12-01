@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,8 +28,10 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.IOException;
@@ -155,11 +158,38 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 String price_title = mPrice.getTitle();
                 mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
                 BitmapDescriptor itemBitmap;
+
+                LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
+                Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
+
                 if (mPhotoFile.exists()) {
-                    Bitmap bitmap = PictureUtils.getScaledBitmap(
-                            mPhotoFile.getPath(), getActivity());
-                    bitmap = Bitmap.createScaledBitmap(bitmap, 150,150,true);
-                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
+//                    Bitmap bitmap = PictureUtils.getScaledBitmap(
+//                        mPhotoFile.getPath(), getActivity());
+//                    bitmap = Bitmap.createScaledBitmap(bitmap, 150,150,true);
+//                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
+
+
+                    Picasso.get().load("https://jtan5.w3.uvm.edu/cs008/Junda.jpg").into(
+                            new Target() {
+                                @Override
+                                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                    Marker marker = mMap.addMarker(new MarkerOptions()
+                                            .anchor(0.0f, 1.0f)
+                                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                            .position(mPricePosition));
+                                    marker.setTag(mPricePosition);
+                                }
+
+                                @Override
+                                public void onBitmapFailed(Exception e, Drawable d) {
+
+                                }
+
+                                @Override
+                                public void onPrepareLoad(Drawable d) {
+
+                                }
+                            });
                 }
                 else{
                     itemBitmap = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
@@ -172,18 +202,18 @@ public class PriceLocatrFragment extends SupportMapFragment {
 //
 //                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
                 }
-                LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
-                Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
+                //LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
+                //Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
 
 
                 //  marker in blue
-                MarkerOptions itemMarker = new MarkerOptions()
-                        .position(mPricePosition)
-                        .icon(itemBitmap)
-                        .title(price_title)
-                        .snippet(price);
+//                MarkerOptions itemMarker = new MarkerOptions()
+//                        .position(mPricePosition)
+//                        .icon(itemBitmap)
+//                        .title(price_title)
+//                        .snippet(price);
                 // add price marker to map
-                mMap.addMarker(itemMarker);
+//                mMap.addMarker(itemMarker);
             }
         }
         // My current location
