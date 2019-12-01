@@ -1,11 +1,13 @@
 package cs275.gaspricetracker;
 
 import android.app.Activity;
+import android.content.Entity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,6 +19,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,17 +40,25 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.android.volley.toolbox.ByteArrayPool;
+import com.android.volley.toolbox.HttpResponse;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import okio.ByteString;
+
+import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
 
 public class PriceFragment extends Fragment {
@@ -260,31 +271,57 @@ public class PriceFragment extends Fragment {
     private void updatePhotoView() {
         if (mPhotoFile == null || !mPhotoFile.exists()) {
 //            mPhotoView.setImageDrawable(null);
+
+            //default image from server
             String url = "https://ywu10.w3.uvm.edu/cs008/x.jpg";
             Picasso.get().load(url).into(mPhotoView);
+
         } else {
-//            Bitmap bitmap = PictureUtils.getScaledBitmap(
-//                    mPhotoFile.getPath(),getActivity());
+
+            // local image take by camera
+            Bitmap bitmap = PictureUtils.getScaledBitmap(
+                    mPhotoFile.getPath(),getActivity());
+
+            mPhotoView.setImageBitmap(bitmap);
+
+
+            // upload took image to server
+
+            // encode image
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 4;
+            options.inPurgeable = true;
+            Bitmap bm = BitmapFactory.decodeFile(mPhotoFile.getPath(),options);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+
+            // bitmap object
+            byte[] byteImagePhoto = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
+
+            //TODO send encode string to server
+
+
+
+
+            // Show image from server
+//            Target target = new Target() {
+//                @Override
+//                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                    mPhotoView.setImageBitmap(bitmap);
+//                }
 //
-//            mPhotoView.setImageBitmap(bitmap);
-
-            Target target = new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    mPhotoView.setImageBitmap(bitmap);
-                }
-
-                @Override
-                public void onBitmapFailed(Exception e, Drawable d) {
-
-                }
-
-                @Override
-                public void onPrepareLoad(Drawable d) {
-
-                }
-            };
-            Picasso.get().load("https://jtan5.w3.uvm.edu/cs008/Junda.jpg").into(target);
+//                @Override
+//                public void onBitmapFailed(Exception e, Drawable d) {
+//
+//                }
+//
+//                @Override
+//                public void onPrepareLoad(Drawable d) {
+//
+//                }
+//            };
+//            Picasso.get().load("https://jtan5.w3.uvm.edu/cs008/Junda.jpg").into(target);
 
         }
     }

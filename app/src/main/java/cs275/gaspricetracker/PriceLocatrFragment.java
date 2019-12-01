@@ -162,7 +162,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
                 Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
 
-                if (mPhotoFile.exists()) {
+                if (mPhotoFile != null && mPhotoFile.exists()) {
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap(
 //                        mPhotoFile.getPath(), getActivity());
 //                    bitmap = Bitmap.createScaledBitmap(bitmap, 150,150,true);
@@ -193,6 +193,14 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 }
                 else{
                     itemBitmap = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+                    //  marker in blue
+                    MarkerOptions itemMarker = new MarkerOptions()
+                            .position(mPricePosition)
+                            .icon(itemBitmap)
+                            .title(price_title)
+                            .snippet(price);
+//                     add price marker to map
+                    mMap.addMarker(itemMarker);
 
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
 //
@@ -205,15 +213,6 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 //LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
                 //Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
 
-
-                //  marker in blue
-//                MarkerOptions itemMarker = new MarkerOptions()
-//                        .position(mPricePosition)
-//                        .icon(itemBitmap)
-//                        .title(price_title)
-//                        .snippet(price);
-                // add price marker to map
-//                mMap.addMarker(itemMarker);
             }
         }
         // My current location
