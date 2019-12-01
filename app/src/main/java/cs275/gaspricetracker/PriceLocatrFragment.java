@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -161,6 +163,14 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 }
                 else{
                     itemBitmap = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+
+//                    Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
+//
+//                    bitmap = Bitmap.createScaledBitmap(bitmap, 500,500,true);
+//
+//                    String url = "https://ywu10.w3.uvm.edu/cs008/x.jpg";
+//
+//                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
                 }
                 LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
                 Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());

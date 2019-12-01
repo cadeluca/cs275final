@@ -35,6 +35,8 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONObject;
 
 import java.io.File;
@@ -171,8 +173,11 @@ public class PriceFragment extends Fragment {
             }
             startActivityForResult(captureImage, REQUEST_PHOTO);
         });
-
+//
         mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
+//        String url = "https://ywu10.w3.uvm.edu/cs008/x.jpg";
+//        Picasso.get().load(url).into(mPhotoView);
+
         updatePhotoView();
 
         mPhotoView.setOnClickListener(view -> {
@@ -248,7 +253,9 @@ public class PriceFragment extends Fragment {
 
     private void updatePhotoView() {
         if (mPhotoFile == null || !mPhotoFile.exists()) {
-            mPhotoView.setImageDrawable(null);
+//            mPhotoView.setImageDrawable(null);
+            String url = "https://ywu10.w3.uvm.edu/cs008/x.jpg";
+            Picasso.get().load(url).into(mPhotoView);
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
                     mPhotoFile.getPath(),getActivity());
