@@ -175,7 +175,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                                     Marker marker = mMap.addMarker(new MarkerOptions()
                                             .anchor(0.0f, 1.0f)
-                                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                            .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, 150,150,true)))
                                             .position(mPricePosition));
                                     marker.setTag(mPricePosition);
                                 }
