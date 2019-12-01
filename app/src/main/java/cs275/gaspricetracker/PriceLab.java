@@ -184,6 +184,7 @@ public class PriceLab {
         values.put(PRICE, price.getGasPrice());
         values.put(LATITUDE, price.getLatitude());
         values.put(LONGITUDE, price.getLongitude());
+        values.put(HAS_PHOTO,price.getHasPhoto());
         return values;
     }
 

@@ -82,7 +82,7 @@ public class Price {
         return this.mDatabaseId;
     }
 
-    public boolean isHasPhoto() {
+    public boolean getHasPhoto() {
         return mHasPhoto;
     }
 
