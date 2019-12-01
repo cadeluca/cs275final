@@ -45,6 +45,13 @@ import com.android.volley.toolbox.HttpResponse;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
@@ -52,7 +59,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -99,6 +110,7 @@ public class PriceFragment extends Fragment {
         mPrice = PriceLab.get(getActivity()).getPrice(priceId);
         Log.d("postWorked", "this price id before calling async:"+mPrice.getDatabaseId());
         mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
+        new FetchItemTask().execute();
     }
 
     @Override
@@ -300,8 +312,7 @@ public class PriceFragment extends Fragment {
             String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
 
             //TODO send encode string to server
-
-
+            new UploadAsync().execute(encodedImage);
 
 
             // Show image from server
@@ -417,7 +428,44 @@ public class PriceFragment extends Fragment {
     }
 
 
+    private class FetchItemTask extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try{
+                String result = new PriceFetcher().getUrlString("http://jtan5.w3.uvm.edu/cs008/Junda.jpg");
+                Log.i("URL","Fetched contents of URL: " + result);
 
+            } catch (IOException ioe) {
+                Log.e("URL", "Failed to fetch URL" + ioe);
+            }
+            return null;
+        }
+    }
+
+    private class UploadAsync extends  AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... param) {
+            String encodedImage = param[0];
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+            pairs.add(new BasicNameValuePair("image", encodedImage));
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+                org.apache.http.HttpResponse response = client.execute(post);
+            } catch (UnsupportedEncodingException e) {
+                Log.i("upload URL",""+e);
+
+            } catch (ClientProtocolException e) {
+                Log.i("upload URL",""+e);
+            } catch (IOException e) {
+                Log.i("upload URL", ""+e);
+            }
+            return null;
+        }
+    }
 
 
 
