@@ -158,7 +158,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 if (mPhotoFile.exists()) {
                     Bitmap bitmap = PictureUtils.getScaledBitmap(
                             mPhotoFile.getPath(), getActivity());
-                    bitmap = Bitmap.createScaledBitmap(bitmap, 500,500,true);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 150,150,true);
                     itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
                 }
                 else{
