@@ -311,8 +311,12 @@ public class PriceFragment extends Fragment {
             byte[] byteImagePhoto = baos.toByteArray();
             String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
 
-            //TODO send encode string to server
-            new UploadAsync().execute(encodedImage);
+            // image title object
+            byte[] byteImageTitle = mPrice.getPhotoFilename().getBytes();
+            String encodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+
+            //send encode string to server
+            new UploadAsync().execute(encodedImage, encodeImageTitle);
 
 
             // Show image from server
@@ -447,11 +451,13 @@ public class PriceFragment extends Fragment {
         @Override
         protected Void doInBackground(String... param) {
             String encodedImage = param[0];
+            String encodeImageTitle = param[1];
             HttpClient client = new DefaultHttpClient();
             HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
             pairs.add(new BasicNameValuePair("image", encodedImage));
+            pairs.add(new BasicNameValuePair("title", encodeImageTitle));
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);

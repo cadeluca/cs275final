@@ -168,8 +168,8 @@ public class PriceLocatrFragment extends SupportMapFragment {
 //                    bitmap = Bitmap.createScaledBitmap(bitmap, 150,150,true);
 //                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
 
-
-                    Picasso.get().load("https://jtan5.w3.uvm.edu/cs008/Junda.jpg").into(
+                    // get picture from server
+                    Picasso.get().load("https://jtan5.w3.uvm.edu/cs275/"  + mPrice.getPhotoFilename()).into(
                             new Target() {
                                 @Override
                                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
