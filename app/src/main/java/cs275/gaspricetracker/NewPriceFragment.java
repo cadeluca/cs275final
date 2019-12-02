@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,12 +37,23 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.squareup.picasso.Target;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -58,6 +70,10 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
     private ImageView mPhotoView;
     // fixme: copy over from the regular price fragment all photo parts
     private File mPhotoFile;
+    private Target saveFileTarget;
+    private File FILEPATH;
+    private String mEncodeImageTitle;
+    private boolean mHasImage;
     private EditText mPriceInput;
     private TextView mLocationView;
     private static final int REQUEST_PHOTO= 2;
@@ -94,6 +110,13 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         mPrice = new Price();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
+
+        // image title object
+        byte[] byteImageTitle = mPrice.getPhotoFilename().getBytes();
+        mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+        new HasImageAsync().execute(mEncodeImageTitle);
+
 
         mClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(LocationServices.API)
@@ -193,7 +216,7 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         mPhotoView.setOnClickListener(view -> {
             if (mPhotoFile != null && mPhotoFile.exists()) {
                 FragmentManager manager = getFragmentManager();
-                ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
+                ImageViewFragment dialog = ImageViewFragment.newInstance(mPrice.getPhotoFilename());
                 dialog.show(manager, DIALOG_PHOTO);
             }
         });
@@ -329,6 +352,86 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
                 }
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+
+    private class ImageUploadAsync extends  AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... param) {
+            String encodedImage = param[0];
+            String encodedImageTitle = param[1];
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+            pairs.add(new BasicNameValuePair("image", encodedImage));
+            pairs.add(new BasicNameValuePair("title", encodedImageTitle));
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+                org.apache.http.HttpResponse response = client.execute(post);
+                Log.i("URL", ""+ response);
+            } catch (UnsupportedEncodingException e) {
+                Log.i("upload URL",""+e);
+
+            } catch (ClientProtocolException e) {
+                Log.i("upload URL",""+e);
+            } catch (IOException e) {
+                Log.i("upload URL", ""+e);
+            }
+            return null;
+        }
+    }
+
+    private class DeleteImageAsync extends  AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... param) {
+            String encodedImageTitle = param[0];
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+            pairs.add(new BasicNameValuePair("delete", encodedImageTitle));
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+                org.apache.http.HttpResponse response = client.execute(post);
+                Log.i("URL", ""+ response);
+            } catch (UnsupportedEncodingException e) {
+                Log.i("upload URL",""+e);
+
+            } catch (ClientProtocolException e) {
+                Log.i("upload URL",""+e);
+            } catch (IOException e) {
+                Log.i("upload URL", ""+e);
+            }
+            return null;
+        }
+    }
+
+    private class HasImageAsync extends  AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... param) {
+            mHasImage = true;
+            String encodedImageTitle = param[0];
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+            pairs.add(new BasicNameValuePair("hasImageTitle", encodedImageTitle));
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+                org.apache.http.HttpResponse response = client.execute(post);
+                Log.i("URL", "uploaded response: "+ response);
+            } catch (UnsupportedEncodingException e) {
+                Log.i("upload URL","unsopported "+e);
+
+            } catch (ClientProtocolException e) {
+                Log.i("upload URL","client protocol "+e);
+            } catch (IOException e) {
+                mHasImage = false;
+                Log.i("upload URL", "ioe "+e);
+            }
+            return null;
         }
     }
 

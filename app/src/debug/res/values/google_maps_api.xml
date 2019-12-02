@@ -21,6 +21,7 @@
     string in this file.
     Wyatt API Key:AIzaSyCt3MvS6j9n4DA_sWLAvmdATeZLvAV27_o
     Junda API key AIzaSyBSfzXFmYQ4zwd-6FKBz6-J-T_LnkOKy7w
+    Christian API key: AIzaSyA0qxI6R6WfxTJhXScs-8yjFkxxFNPv404
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBSfzXFmYQ4zwd-6FKBz6-J-T_LnkOKy7w</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false"></string>
 </resources>

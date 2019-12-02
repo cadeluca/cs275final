@@ -209,11 +209,8 @@ public class PriceFragment extends Fragment {
             }
             startActivityForResult(captureImage, REQUEST_PHOTO);
         });
-//
-        mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
-//        String url = "https://ywu10.w3.uvm.edu/cs008/x.jpg";
-//        Picasso.get().load(url).into(mPhotoView);
 
+        mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
         updatePhotoView();
 
         mPhotoView.setOnClickListener(view -> {
