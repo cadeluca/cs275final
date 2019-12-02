@@ -1,12 +1,11 @@
 package cs275.gaspricetracker;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
+
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
-import androidx.fragment.app.Fragment;
 
 public class NewPriceActivity extends SingleFragmentActivity {
     private static final int REQUEST_ERROR = 0;
@@ -25,12 +24,7 @@ public class NewPriceActivity extends SingleFragmentActivity {
         if (errorCode != ConnectionResult.SUCCESS) {
             Dialog errorDialog = apiAvailability
                     .getErrorDialog(this, errorCode, REQUEST_ERROR,
-                            new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface idalog) {
-                                    finish();
-                                }
-                            });
+                            dialog -> finish());
 
             errorDialog.show();
 
