@@ -92,6 +92,7 @@ public class PriceFragment extends Fragment {
     private TextView mReadLocationView;
     private Target saveFileTarget;
     private File FILEPATH;
+    private String mEncodeImageTitle;
 
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
@@ -241,6 +242,7 @@ public class PriceFragment extends Fragment {
             updatePhotoView();
         } else if (requestCode == REQUEST_DELETE) {
             new DeletePriceAsync().execute(mPrice);
+            new DeleteImageAsync().execute(mEncodeImageTitle);
             PriceLab.get(getActivity()).deletePrice(mPrice);
             getActivity().finish();
         }
@@ -281,12 +283,17 @@ public class PriceFragment extends Fragment {
     }
 
     private void updatePhotoView() {
-        if (mPhotoFile == null || !mPhotoFile.exists()) {
-//            mPhotoView.setImageDrawable(null);
+        if(mPrice.getHasPhoto()){
+            String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename();
+            Picasso.get().load(url).into(mPhotoView);
 
+        } else if (mPhotoFile == null || !mPhotoFile.exists()) {
+//            mPhotoView.setImageDrawable(null);
+            mPrice.setHasPhoto(0);
             //default image from server
             String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
             Picasso.get().load(url).into(mPhotoView);
+
 
         } else {
 
@@ -295,7 +302,7 @@ public class PriceFragment extends Fragment {
                     mPhotoFile.getPath(),getActivity());
 
             mPhotoView.setImageBitmap(bitmap);
-
+            mPrice.setHasPhoto(1);
 
             // upload took image to server
 
@@ -313,10 +320,10 @@ public class PriceFragment extends Fragment {
 
             // image title object
             byte[] byteImageTitle = mPrice.getPhotoFilename().getBytes();
-            String encodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+            mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
 
             //send encode string to server
-            new UploadAsync().execute(encodedImage, encodeImageTitle);
+            new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
 
 
             // Show image from server
@@ -446,18 +453,18 @@ public class PriceFragment extends Fragment {
         }
     }
 
-    private class UploadAsync extends  AsyncTask<String, Void, Void> {
+    private class ImageUploadAsync extends  AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... param) {
             String encodedImage = param[0];
-            String encodeImageTitle = param[1];
+            String encodedImageTitle = param[1];
             HttpClient client = new DefaultHttpClient();
             HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
             pairs.add(new BasicNameValuePair("image", encodedImage));
-            pairs.add(new BasicNameValuePair("title", encodeImageTitle));
+            pairs.add(new BasicNameValuePair("title", encodedImageTitle));
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
@@ -474,7 +481,30 @@ public class PriceFragment extends Fragment {
         }
     }
 
+    private class DeleteImageAsync extends  AsyncTask<String, Void, Void> {
 
+        @Override
+        protected Void doInBackground(String... param) {
+            String encodedImageTitle = param[0];
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+            pairs.add(new BasicNameValuePair("delete", encodedImageTitle));
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+                org.apache.http.HttpResponse response = client.execute(post);
+                Log.i("URL", ""+ response);
+            } catch (UnsupportedEncodingException e) {
+                Log.i("upload URL",""+e);
+
+            } catch (ClientProtocolException e) {
+                Log.i("upload URL",""+e);
+            } catch (IOException e) {
+                Log.i("upload URL", ""+e);
+            }
+            return null;
+        }
+    }
 
 
     /**

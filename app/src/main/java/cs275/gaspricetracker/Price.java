@@ -82,4 +82,16 @@ public class Price {
         return this.mDatabaseId;
     }
 
+    public boolean getHasPhoto() {
+        return mHasPhoto;
+    }
+
+    public void setHasPhoto(Integer hasPhoto) {
+        if (hasPhoto == 1)
+            mHasPhoto = true;
+        else if (hasPhoto == 0)
+            mHasPhoto = false;
+        else
+            mHasPhoto = false;
+    }
 }
