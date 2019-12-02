@@ -219,7 +219,7 @@ public class PriceFragment extends Fragment {
         mPhotoView.setOnClickListener(view -> {
             if (mPhotoFile != null && mPhotoFile.exists()) {
                 FragmentManager manager = getFragmentManager();
-                ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
+                ImageViewFragment dialog = ImageViewFragment.newInstance(mPrice.getPhotoFilename());
                 dialog.show(manager, DIALOG_PHOTO);
             }
         });
