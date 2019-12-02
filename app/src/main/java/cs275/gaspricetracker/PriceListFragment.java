@@ -1,8 +1,11 @@
 package cs275.gaspricetracker;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -20,7 +23,18 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.ListFragment;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PriceListFragment extends ListFragment {
@@ -157,6 +171,13 @@ public class PriceListFragment extends ListFragment {
                                     Price deletePrice = mAdapter.getItem(i);
                                     priceLab.deletePrice(deletePrice);
                                     new PriceFragment.DeletePriceAsync().execute(deletePrice);
+
+                                    // encode imageTitle for delete Image on Server
+                                    byte[] byteImageTitle = deletePrice.getPhotoFilename().getBytes();
+                                    String mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+
+                                    // delete from server
+                                    new DeleteImageAsync().execute(mEncodeImageTitle);
                                 }
                             }
                             mode.finish();
@@ -246,5 +267,30 @@ public class PriceListFragment extends ListFragment {
         setListAdapter(mAdapter);
 
         updateSubtitle();
+    }
+
+    private class DeleteImageAsync extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... param) {
+            String encodedImageTitle = param[0];
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+            pairs.add(new BasicNameValuePair("delete", encodedImageTitle));
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+                org.apache.http.HttpResponse response = client.execute(post);
+                Log.i("URL", ""+ response);
+            } catch (UnsupportedEncodingException e) {
+                Log.i("upload URL",""+e);
+
+            } catch (ClientProtocolException e) {
+                Log.i("upload URL",""+e);
+            } catch (IOException e) {
+                Log.i("upload URL", ""+e);
+            }
+            return null;
+        }
     }
 }

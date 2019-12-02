@@ -323,7 +323,7 @@ public class PriceFragment extends Fragment {
 //            mPhotoView.setImageBitmap(bitmap);
 //            mPrice.setHasPhoto(1);
 
-            // Show image from server
+        // Show image from server
 //            Target target = new Target() {
 //                @Override
 //                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
