@@ -22,5 +22,5 @@
     Wyatt API Key:AIzaSyCt3MvS6j9n4DA_sWLAvmdATeZLvAV27_o
     Junda API key AIzaSyBSfzXFmYQ4zwd-6FKBz6-J-T_LnkOKy7w
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">ADD_YOUR_KEY_HERE</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBSfzXFmYQ4zwd-6FKBz6-J-T_LnkOKy7w</string>
 </resources>

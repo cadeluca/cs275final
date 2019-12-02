@@ -93,6 +93,7 @@ public class PriceFragment extends Fragment {
     private Target saveFileTarget;
     private File FILEPATH;
     private String mEncodeImageTitle;
+    private boolean mHasImage;
 
     public static PriceFragment newInstance(UUID priceId) {
         Bundle args = new Bundle();
@@ -111,7 +112,12 @@ public class PriceFragment extends Fragment {
         mPrice = PriceLab.get(getActivity()).getPrice(priceId);
         Log.d("postWorked", "this price id before calling async:"+mPrice.getDatabaseId());
         mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
-        new FetchItemTask().execute();
+
+        // image title object
+        byte[] byteImageTitle = mPrice.getPhotoFilename().getBytes();
+        mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+        new HasImageAsync().execute(mEncodeImageTitle);
+
     }
 
     @Override
@@ -239,6 +245,23 @@ public class PriceFragment extends Fragment {
                     mPhotoFile);
             getActivity().revokeUriPermission(uri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            // upload took image to server
+            // encode image
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 4;
+            options.inPurgeable = true;
+            Bitmap bm = BitmapFactory.decodeFile(mPhotoFile.getPath(),options);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+
+            // bitmap object
+            byte[] byteImagePhoto = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
+
+            //send encode string to server
+            new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
+
             updatePhotoView();
         } else if (requestCode == REQUEST_DELETE) {
             new DeletePriceAsync().execute(mPrice);
@@ -283,48 +306,22 @@ public class PriceFragment extends Fragment {
     }
 
     private void updatePhotoView() {
-        if(mPrice.getHasPhoto()){
+        if (mHasImage) {
             String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename();
             Picasso.get().load(url).into(mPhotoView);
-
-        } else if (mPhotoFile == null || !mPhotoFile.exists()) {
-//            mPhotoView.setImageDrawable(null);
-            mPrice.setHasPhoto(0);
-            //default image from server
-            String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
-            Picasso.get().load(url).into(mPhotoView);
-
-
         } else {
+            //default image from server
+            String url1 = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
+            Picasso.get().load(url1).into(mPhotoView);
+        }
 
-            // local image take by camera
-            Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(),getActivity());
 
-            mPhotoView.setImageBitmap(bitmap);
-            mPrice.setHasPhoto(1);
-
-            // upload took image to server
-
-            // encode image
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 4;
-            options.inPurgeable = true;
-            Bitmap bm = BitmapFactory.decodeFile(mPhotoFile.getPath(),options);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 40, baos);
-
-            // bitmap object
-            byte[] byteImagePhoto = baos.toByteArray();
-            String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
-
-            // image title object
-            byte[] byteImageTitle = mPrice.getPhotoFilename().getBytes();
-            mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
-
-            //send encode string to server
-            new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
-
+//            // local image take by camera
+//            Bitmap bitmap = PictureUtils.getScaledBitmap(
+//                    mPhotoFile.getPath(),getActivity());
+//
+//            mPhotoView.setImageBitmap(bitmap);
+//            mPrice.setHasPhoto(1);
 
             // Show image from server
 //            Target target = new Target() {
@@ -345,7 +342,6 @@ public class PriceFragment extends Fragment {
 //            };
 //            Picasso.get().load("https://jtan5.w3.uvm.edu/cs008/Junda.jpg").into(target);
 
-        }
     }
 
 //    private void updatePhotoFile() {
@@ -501,6 +497,32 @@ public class PriceFragment extends Fragment {
                 Log.i("upload URL",""+e);
             } catch (IOException e) {
                 Log.i("upload URL", ""+e);
+            }
+            return null;
+        }
+    }
+
+    private class HasImageAsync extends  AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... param) {
+            mHasImage = true;
+            String encodedImageTitle = param[0];
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+            pairs.add(new BasicNameValuePair("hasImageTitle", encodedImageTitle));
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+                org.apache.http.HttpResponse response = client.execute(post);
+                Log.i("URL", "uploaded response: "+ response);
+            } catch (UnsupportedEncodingException e) {
+                Log.i("upload URL","unsopported "+e);
+
+            } catch (ClientProtocolException e) {
+                Log.i("upload URL","client protocol "+e);
+            } catch (IOException e) {
+                mHasImage = false;
+                Log.i("upload URL", "ioe "+e);
             }
             return null;
         }
