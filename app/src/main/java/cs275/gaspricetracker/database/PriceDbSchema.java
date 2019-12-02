@@ -12,7 +12,6 @@ public class PriceDbSchema {
             public static final String PRICE = "price";
             public static final String LATITUDE = "latitude";
             public static final String LONGITUDE = "longitude";
-            public static final String HAS_PHOTO = "has_photo";
         }
     }
 }
