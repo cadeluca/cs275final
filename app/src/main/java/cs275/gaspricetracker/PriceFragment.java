@@ -285,7 +285,7 @@ public class PriceFragment extends Fragment {
 //            mPhotoView.setImageDrawable(null);
 
             //default image from server
-            String url = "https://ywu10.w3.uvm.edu/cs008/x.jpg";
+            String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
             Picasso.get().load(url).into(mPhotoView);
 
         } else {
@@ -461,6 +461,7 @@ public class PriceFragment extends Fragment {
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
+                Log.i("URL", ""+ response);
             } catch (UnsupportedEncodingException e) {
                 Log.i("upload URL",""+e);
 

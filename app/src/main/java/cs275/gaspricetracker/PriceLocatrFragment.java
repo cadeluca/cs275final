@@ -176,6 +176,8 @@ public class PriceLocatrFragment extends SupportMapFragment {
                                     Marker marker = mMap.addMarker(new MarkerOptions()
                                             .anchor(0.0f, 1.0f)
                                             .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, 150,150,true)))
+                                            .title(price_title)
+                                            .snippet(price)
                                             .position(mPricePosition));
                                     marker.setTag(mPricePosition);
                                 }
