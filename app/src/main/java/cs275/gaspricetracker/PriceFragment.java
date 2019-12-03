@@ -287,25 +287,36 @@ public class PriceFragment extends Fragment {
     }
 
     private void updatePhotoView(Integer i) {
-        if(i == 2) {
-            mHasImage = true;
-            new HasImageAsync().execute(mEncodeImageTitle);
+        new HasImageAsync().execute(mEncodeImageTitle);
+//        if(i == 2) {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(
+                        mPhotoFile.getPath(), getActivity());
+            mPhotoView.setImageBitmap(bitmap);
             if (mHasImage) {
                 String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
                 Picasso.get().load(url).into(mPhotoView);
                 Log.i("123", "1");
-            } else {
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_app);
-                mPhotoView.setImageBitmap(bitmap);
-                Log.i("123", "2");
-
             }
-        } else {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(),getActivity());
+            if(mHasImage == false) {
+                String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
+                Picasso.get().load(url).into(mPhotoView);
+                Log.i("123", "2");
+            }
 
-            mPhotoView.setImageBitmap(bitmap);
-        }
+//        } else {
+//            if (mHasImage) {
+//                String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
+//                Picasso.get().load(url).into(mPhotoView);
+//                Log.i("123", "1");
+//            } else {
+////                Bitmap bitmap = PictureUtils.getScaledBitmap(
+////                        mPhotoFile.getPath(), getActivity());
+////                mPhotoView.setImageBitmap(bitmap);
+//                String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
+//                Picasso.get().load(url).into(mPhotoView);
+//                Log.i("123", "2");
+//            }
+//        }
     }
 
 
@@ -438,6 +449,7 @@ public class PriceFragment extends Fragment {
     private class HasImageAsync extends  AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... param) {
+            mHasImage = true;
             String encodedImageTitle = param[0];
             HttpClient client = new DefaultHttpClient();
             HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
