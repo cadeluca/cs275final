@@ -50,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,12 +126,15 @@ public class PriceFragment extends Fragment {
             }
         });
 
+        DecimalFormat df = new DecimalFormat("0.00");
+        df.setMaximumFractionDigits(2);
+
         mDateButton = v.findViewById(R.id.price_date);
         mDateButton.setText(mPrice.getDate().toString());
         updateDate();
 
         mReadLocationView = (TextView) v.findViewById(R.id.readLocationView);
-        mReadLocationView.setText("latitude: "+ mPrice.getLatitude() + " longitude: " + mPrice.getLongitude());
+        mReadLocationView.setText("latitude: "+ df.format(mPrice.getLatitude()) + " longitude: " + df.format(mPrice.getLongitude()));
 
         mSharePriceButton = (Button) v.findViewById(R.id.price_share);
         mSharePriceButton.setOnClickListener(v13 -> {
@@ -155,8 +159,10 @@ public class PriceFragment extends Fragment {
             toast.show();
         });
 
+
+
         mPriceInput = (EditText) v.findViewById(R.id.price_input);
-        mPriceInput.setText(Float.toString(mPrice.getGasPrice()));
+        mPriceInput.setText(df.format(mPrice.getGasPrice()));
         mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
