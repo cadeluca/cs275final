@@ -194,7 +194,7 @@ public class PriceFragment extends Fragment {
         });
 
         mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
-        updatePhotoView(0);
+        updatePhotoView();
 
         mPhotoView.setOnClickListener(view -> {
             if (mPhotoFile != null && mPhotoFile.exists()) {
@@ -243,7 +243,7 @@ public class PriceFragment extends Fragment {
             if(mPrice.getPhotoFilename2() != "IMG_0.jpg") {
                 new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
             }
-            updatePhotoView(2);
+            updatePhotoView();
         } else if (requestCode == REQUEST_DELETE) {
             new DeletePriceAsync().execute(mPrice);
             new DeleteImageAsync().execute(mEncodeImageTitle);
@@ -286,37 +286,21 @@ public class PriceFragment extends Fragment {
         return String.format(report, mPrice.getTitle(), priceString, dateString);
     }
 
-    private void updatePhotoView(Integer i) {
+    private void updatePhotoView() {
         new HasImageAsync().execute(mEncodeImageTitle);
-//        if(i == 2) {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(
-                        mPhotoFile.getPath(), getActivity());
-            mPhotoView.setImageBitmap(bitmap);
-            if (mHasImage) {
-                String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
-                Picasso.get().load(url).into(mPhotoView);
-                Log.i("123", "1");
-            }
-            if(mHasImage == false) {
-                String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
-                Picasso.get().load(url).into(mPhotoView);
-                Log.i("123", "2");
-            }
-
-//        } else {
-//            if (mHasImage) {
-//                String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
-//                Picasso.get().load(url).into(mPhotoView);
-//                Log.i("123", "1");
-//            } else {
-////                Bitmap bitmap = PictureUtils.getScaledBitmap(
-////                        mPhotoFile.getPath(), getActivity());
-////                mPhotoView.setImageBitmap(bitmap);
-//                String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
-//                Picasso.get().load(url).into(mPhotoView);
-//                Log.i("123", "2");
-//            }
-//        }
+        Bitmap bitmap = PictureUtils.getScaledBitmap(
+                    mPhotoFile.getPath(), getActivity());
+        mPhotoView.setImageBitmap(bitmap);
+        if (mHasImage) {
+            String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
+            Picasso.get().load(url).into(mPhotoView);
+            Log.i("123", "1");
+        }
+        if(!mHasImage) {
+            String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
+            Picasso.get().load(url).into(mPhotoView);
+            Log.i("123", "2");
+        }
     }
 
 
