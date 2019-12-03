@@ -127,9 +127,9 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
             String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
 
             //send encode string to server
-            if(mPrice.getPhotoFilename2() != "IMG_0.jpg") {
+//            if(mPrice.getPhotoFilename2() != "IMG_0.jpg") {
                 new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
-            }
+//            }
             updatePhotoView();
         }
     }
@@ -343,12 +343,12 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         @Override
         protected String doInBackground(Price... param) {
             Price price1 = param[0];
-            
+
             String title = price1.getTitle();
             float price = price1.getGasPrice();
             double longitude = price1.getLongitude();
             double latitude = price1.getLatitude();
-            
+
             try {
                 // put the values for the POST Request
                 JSONObject postDataParams = new JSONObject();

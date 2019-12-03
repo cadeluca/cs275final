@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,8 +33,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PriceLocatrFragment extends SupportMapFragment {
@@ -48,7 +59,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
     private Bitmap mMapImage;
     private GalleryItem mMapItem;
     private Location mCurrentLocation;
-
+    private boolean mHasImage;
     public static PriceLocatrFragment newInstance() {
         return new PriceLocatrFragment();
     }
@@ -149,6 +160,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
         // Price from list
         List<Price> mPrices = PriceLab.get(getActivity()).getPrices();
         File mPhotoFile;
+
         if (mPrices.size() != 0) {
             for ( Price mPrice: mPrices) {
                 String price = "$ " + mPrice.getGasPrice();
@@ -158,15 +170,17 @@ public class PriceLocatrFragment extends SupportMapFragment {
 
                 LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
                 Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
-
-                if (mPhotoFile != null && mPhotoFile.exists()) {
+                byte[] byteImageTitle = mPrice.getPhotoFilename2().getBytes();
+                String encodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+                new HasImageAsync().execute(encodeImageTitle);
+                if (mHasImage) {
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap(
 //                        mPhotoFile.getPath(), getActivity());
 //                    bitmap = Bitmap.createScaledBitmap(bitmap, 150,150,true);
 //                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
 
                     // get picture from server
-                    Picasso.get().load("https://jtan5.w3.uvm.edu/cs275/"  + mPrice.getPhotoFilename()).into(
+                    Picasso.get().load("https://jtan5.w3.uvm.edu/cs275/"  + mPrice.getPhotoFilename2()).into(
                             new Target() {
                                 @Override
                                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -275,6 +289,31 @@ public class PriceLocatrFragment extends SupportMapFragment {
             mCurrentLocation = mLocation;
 
             updateUI();
+        }
+    }
+    private class HasImageAsync extends  AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... param) {
+            mHasImage = true;
+            String encodedImageTitle = param[0];
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
+            List< NameValuePair > pairs = new ArrayList<NameValuePair>();
+            pairs.add(new BasicNameValuePair("hasImageTitle", encodedImageTitle));
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+                org.apache.http.HttpResponse response = client.execute(post);
+                Log.i("URL", "uploaded response: "+ response);
+            } catch (UnsupportedEncodingException e) {
+                Log.i("upload URL","unsopported "+e);
+
+            } catch (ClientProtocolException e) {
+                Log.i("upload URL","client protocol "+e);
+            } catch (IOException e) {
+                mHasImage = false;
+                Log.i("upload URL", "ioe "+e);
+            }
+            return null;
         }
     }
 }
