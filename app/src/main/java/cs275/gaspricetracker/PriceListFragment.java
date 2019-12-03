@@ -173,7 +173,7 @@ public class PriceListFragment extends ListFragment {
                                     new PriceFragment.DeletePriceAsync().execute(deletePrice);
 
                                     // encode imageTitle for delete Image on Server
-                                    byte[] byteImageTitle = deletePrice.getPhotoFilename().getBytes();
+                                    byte[] byteImageTitle = deletePrice.getPhotoFilename2().getBytes();
                                     String mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
 
                                     // delete from server

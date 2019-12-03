@@ -1,10 +1,12 @@
 package cs275.gaspricetracker;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -49,6 +51,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -60,6 +63,7 @@ import java.util.Random;
 
 public class NewPriceFragment extends Fragment implements AsyncResponse {
     private static final String DIALOG_PHOTO = "DialogPhoto";
+    private static final int REQUEST_PHOTO = 1;
     PostPriceAsync mPostPriceAsync = new PostPriceAsync();
     private int mThisCreatedPriceId;
     private Button mSavePriceButton;
@@ -75,7 +79,6 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
     private boolean mHasImage;
     private EditText mPriceInput;
     private TextView mLocationView;
-    private static final int REQUEST_PHOTO= 2;
     private static final String TAG = "NewLocatrFragment";
     private static final String[] LOCATION_PERMISSIONS = new String[] {
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -97,6 +100,41 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         return offset;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == REQUEST_PHOTO) {
+            Uri uri = FileProvider.getUriForFile(getActivity(),
+                    "cs275.gaspricetracker.fileprovider",
+                    mPhotoFile);
+            getActivity().revokeUriPermission(uri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            // upload took image to server
+            // encode image
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 4;
+            options.inPurgeable = true;
+            Bitmap bm = BitmapFactory.decodeFile(mPhotoFile.getPath(),options);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+
+            // bitmap object
+            byte[] byteImagePhoto = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
+
+            //send encode string to server
+            if(mPrice.getPhotoFilename2() != "IMG_0") {
+                new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
+            }
+            updatePhotoView();
+        }
+    }
+
+
     public static NewPriceFragment newInstance() {
         return new NewPriceFragment();
     }
@@ -114,7 +152,6 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         // image title object
         byte[] byteImageTitle = mPrice.getPhotoFilename().getBytes();
         mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
-        new HasImageAsync().execute(mEncodeImageTitle);
 
 
         mClient = new GoogleApiClient.Builder(getActivity())
@@ -383,30 +420,6 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         }
     }
 
-    private class DeleteImageAsync extends  AsyncTask<String, Void, Void> {
-
-        @Override
-        protected Void doInBackground(String... param) {
-            String encodedImageTitle = param[0];
-            HttpClient client = new DefaultHttpClient();
-            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
-            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-            pairs.add(new BasicNameValuePair("delete", encodedImageTitle));
-            try {
-                post.setEntity(new UrlEncodedFormEntity(pairs));
-                org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", ""+ response);
-            } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL",""+e);
-
-            } catch (ClientProtocolException e) {
-                Log.i("upload URL",""+e);
-            } catch (IOException e) {
-                Log.i("upload URL", ""+e);
-            }
-            return null;
-        }
-    }
 
     private class HasImageAsync extends  AsyncTask<String, Void, Void> {
         @Override

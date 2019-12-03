@@ -241,8 +241,9 @@ public class PriceFragment extends Fragment {
             String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
 
             //send encode string to server
-            new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
-
+            if(mPrice.getPhotoFilename2() != "IMG_0") {
+                new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
+            }
             updatePhotoView();
         } else if (requestCode == REQUEST_DELETE) {
             new DeletePriceAsync().execute(mPrice);
@@ -299,8 +300,7 @@ public class PriceFragment extends Fragment {
 
         } else {
             Log.i("123", "TEST3");
-            Bitmap bitmap = PictureUtils.getScaledBitmap(
-            mPhotoFile.getPath(),getActivity());
+            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(),getActivity());
             mPhotoView.setImageBitmap(bitmap);
         }
 
