@@ -100,7 +100,6 @@ public class PriceFragment extends Fragment {
         // image title object
         byte[] byteImageTitle = mPrice.getPhotoFilename2().getBytes();
         mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
-        new HasImageAsync().execute(mEncodeImageTitle);
 
     }
 
@@ -195,7 +194,7 @@ public class PriceFragment extends Fragment {
         });
 
         mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
-        updatePhotoView();
+        updatePhotoView(0);
 
         mPhotoView.setOnClickListener(view -> {
             if (mPhotoFile != null && mPhotoFile.exists()) {
@@ -241,10 +240,10 @@ public class PriceFragment extends Fragment {
             String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
 
             //send encode string to server
-            if(mPrice.getPhotoFilename2() != "IMG_0") {
+            if(mPrice.getPhotoFilename2() != "IMG_0.jpg") {
                 new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
             }
-            updatePhotoView();
+            updatePhotoView(2);
         } else if (requestCode == REQUEST_DELETE) {
             new DeletePriceAsync().execute(mPrice);
             new DeleteImageAsync().execute(mEncodeImageTitle);
@@ -287,83 +286,28 @@ public class PriceFragment extends Fragment {
         return String.format(report, mPrice.getTitle(), priceString, dateString);
     }
 
-    private void updatePhotoView() {
-        if (mHasImage) {
-            String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
-            Picasso.get().load(url).into(mPhotoView);
-            Log.i("123", "1");
+    private void updatePhotoView(Integer i) {
+        if(i == 2) {
+            mHasImage = true;
+            new HasImageAsync().execute(mEncodeImageTitle);
+            if (mHasImage) {
+                String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
+                Picasso.get().load(url).into(mPhotoView);
+                Log.i("123", "1");
+            } else {
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_app);
+                mPhotoView.setImageBitmap(bitmap);
+                Log.i("123", "2");
 
-        } else if (mPhotoFile == null || !mPhotoFile.exists()) {
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_app);
-            mPhotoView.setImageBitmap(bitmap);
-            Log.i("123", "2");
-
+            }
         } else {
-            Log.i("123", "TEST3");
-            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(),getActivity());
+            Bitmap bitmap = PictureUtils.getScaledBitmap(
+                    mPhotoFile.getPath(),getActivity());
+
             mPhotoView.setImageBitmap(bitmap);
         }
-
-
-//            // local image take by camera
-//            Bitmap bitmap = PictureUtils.getScaledBitmap(
-//                    mPhotoFile.getPath(),getActivity());
-//
-//            mPhotoView.setImageBitmap(bitmap);
-//            mPrice.setHasPhoto(1);
-
-        // Show image from server
-//            Target target = new Target() {
-//                @Override
-//                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                    mPhotoView.setImageBitmap(bitmap);
-//                }
-//
-//                @Override
-//                public void onBitmapFailed(Exception e, Drawable d) {
-//
-//                }
-//
-//                @Override
-//                public void onPrepareLoad(Drawable d) {
-//
-//                }
-//            };
-//            Picasso.get().load("https://jtan5.w3.uvm.edu/cs008/Junda.jpg").into(target);
-
     }
 
-//    private void updatePhotoFile() {
-
-//    }
-
-
-//    private void updatePhotoFile() {
-//        Picasso.get().load("https://ywu10.w3.uvm.edu/cs008/x.jpg").into(saveFileTarget);
-//
-//        saveFileTarget = new Target() {
-//            @Override
-//            public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from) {
-//                new Thread(new Runable() {
-//                    @Override
-//                    public void run() {
-//                        File file = new File(Environment.getExternalStorageDirectory().getPath() + "/" + FILEPATH);
-//                        try{
-//                            file.createNewFile();
-//                            FileOutputStream ostream = new FileOutputStream(file);
-//                            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, ostream);
-//                            ostream.close();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                }).start();
-//            }
-//        }
-//    }
-//
-//
 
     private static class UpdatePriceAsync extends AsyncTask<Price,String,String> {
 
@@ -494,7 +438,6 @@ public class PriceFragment extends Fragment {
     private class HasImageAsync extends  AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... param) {
-            mHasImage = true;
             String encodedImageTitle = param[0];
             HttpClient client = new DefaultHttpClient();
             HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");

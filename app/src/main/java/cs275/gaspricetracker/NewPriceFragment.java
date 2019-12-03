@@ -127,7 +127,7 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
             String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
 
             //send encode string to server
-            if(mPrice.getPhotoFilename2() != "IMG_0") {
+            if(mPrice.getPhotoFilename2() != "IMG_0.jpg") {
                 new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
             }
             updatePhotoView();
@@ -150,7 +150,7 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
 
         // image title object
-        byte[] byteImageTitle = mPrice.getPhotoFilename().getBytes();
+        byte[] byteImageTitle = mPrice.getPhotoFilename2().getBytes();
         mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
 
 
@@ -252,7 +252,7 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         mPhotoView.setOnClickListener(view -> {
             if (mPhotoFile != null && mPhotoFile.exists()) {
                 FragmentManager manager = getFragmentManager();
-                ImageViewFragment dialog = ImageViewFragment.newInstance(mPrice.getPhotoFilename());
+                ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
                 dialog.show(manager, DIALOG_PHOTO);
             }
         });
@@ -419,32 +419,4 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
             return null;
         }
     }
-
-
-    private class HasImageAsync extends  AsyncTask<String, Void, Void> {
-        @Override
-        protected Void doInBackground(String... param) {
-            mHasImage = true;
-            String encodedImageTitle = param[0];
-            HttpClient client = new DefaultHttpClient();
-            HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
-            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-            pairs.add(new BasicNameValuePair("hasImageTitle", encodedImageTitle));
-            try {
-                post.setEntity(new UrlEncodedFormEntity(pairs));
-                org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", "uploaded response: "+ response);
-            } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL","unsopported "+e);
-
-            } catch (ClientProtocolException e) {
-                Log.i("upload URL","client protocol "+e);
-            } catch (IOException e) {
-                mHasImage = false;
-                Log.i("upload URL", "ioe "+e);
-            }
-            return null;
-        }
-    }
-
 }
