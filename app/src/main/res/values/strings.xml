@@ -36,4 +36,6 @@
     <string name="default_order">Chronological order</string>
     <string name="price_placeholder">$p</string>
     <string name="title_activity_maps2">Map</string>
+    <string name="location_info">Location Info</string>
+    <string name="location_desc">Tap the location button in the app bar top right to pin this price to your location.</string>
 </resources>
