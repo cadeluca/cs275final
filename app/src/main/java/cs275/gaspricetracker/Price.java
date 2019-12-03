@@ -70,8 +70,12 @@ public class Price {
         this.mGasPrice = gasPrice;
     }
 
-    public String getPhotoFilename() {
+    public String getPhotoFilename2() {
         return "IMG_" + getDatabaseId() + ".jpg";
+    }
+
+    public String getPhotoFilename() {
+        return "IMG_" + getId().toString() + ".jpg";
     }
 
     public void setDatabaseId(int dbId) {

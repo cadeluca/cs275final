@@ -98,7 +98,7 @@ public class PriceFragment extends Fragment {
         mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
 
         // image title object
-        byte[] byteImageTitle = mPrice.getPhotoFilename().getBytes();
+        byte[] byteImageTitle = mPrice.getPhotoFilename2().getBytes();
         mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
         new HasImageAsync().execute(mEncodeImageTitle);
 
@@ -200,7 +200,7 @@ public class PriceFragment extends Fragment {
         mPhotoView.setOnClickListener(view -> {
             if (mPhotoFile != null && mPhotoFile.exists()) {
                 FragmentManager manager = getFragmentManager();
-                ImageViewFragment dialog = ImageViewFragment.newInstance(mPrice.getPhotoFilename());
+                ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
                 dialog.show(manager, DIALOG_PHOTO);
             }
         });
@@ -288,12 +288,20 @@ public class PriceFragment extends Fragment {
 
     private void updatePhotoView() {
         if (mHasImage) {
-            String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename();
+            String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
             Picasso.get().load(url).into(mPhotoView);
+            Log.i("123", "1");
+
+        } else if (mPhotoFile == null || !mPhotoFile.exists()) {
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_app);
+            mPhotoView.setImageBitmap(bitmap);
+            Log.i("123", "2");
+
         } else {
-            //default image from server
-            String url1 = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
-            Picasso.get().load(url1).into(mPhotoView);
+            Log.i("123", "TEST3");
+            Bitmap bitmap = PictureUtils.getScaledBitmap(
+            mPhotoFile.getPath(),getActivity());
+            mPhotoView.setImageBitmap(bitmap);
         }
 
 

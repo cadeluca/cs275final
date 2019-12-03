@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
@@ -18,9 +16,9 @@ public class ImageViewFragment extends DialogFragment {
 
     private ImageView mPhotoView;
 
-    public static ImageViewFragment newInstance(String photoFilename) {
+    public static ImageViewFragment newInstance(String photoPath) {
         Bundle args = new Bundle();
-        args.putString(ARG_PHOTO, photoFilename);
+        args.putString(ARG_PHOTO, photoPath);
 
         ImageViewFragment fragment = new ImageViewFragment();
         fragment.setArguments(args);
@@ -29,17 +27,14 @@ public class ImageViewFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String photoFilename = getArguments().getString(ARG_PHOTO);
+        String photoPath = getArguments().getString(ARG_PHOTO);
 
         View v = LayoutInflater.from(getActivity())
                 .inflate(R.layout.dialog_image, null);
 
         mPhotoView = (ImageView) v.findViewById(R.id.photo_zoom);
-        Bitmap bitmap = PictureUtils.getScaledBitmap(photoFilename, getActivity());
-
-        String url = "https://jtan5.w3.uvm.edu/cs275/" + photoFilename;
-        Picasso.get().load(url).into(mPhotoView);
-        //mPhotoView.setImageBitmap(bitmap);
+        Bitmap bitmap = PictureUtils.getScaledBitmap(photoPath, getActivity());
+        mPhotoView.setImageBitmap(bitmap);
 
         return new AlertDialog.Builder(getActivity())
                 .setView(v).create();
