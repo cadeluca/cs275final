@@ -250,9 +250,13 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         updatePhotoView();
 
         mPhotoView.setOnClickListener(view -> {
-            if (mPhotoFile != null && mPhotoFile.exists()) {
+            if (mHasImage) {
                 FragmentManager manager = getFragmentManager();
-                ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath());
+                ImageViewFragment dialog = ImageViewFragment.newInstance(mPrice.getPhotoFilename2(), "downloadImage");
+                dialog.show(manager, DIALOG_PHOTO);
+            } else {
+                FragmentManager manager = getFragmentManager();
+                ImageViewFragment dialog = ImageViewFragment.newInstance(mPhotoFile.getPath(), "local");
                 dialog.show(manager, DIALOG_PHOTO);
             }
         });
