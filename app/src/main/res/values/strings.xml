@@ -41,4 +41,5 @@
     <string name="new_price_fragment_header">Report New Gas Price</string>
     <string name="edit_price_success">Edited price successfully!</string>
     <string name="priceimage_content_description">priceImage</string>
+    <string name="optional_image_hint">Optionally upload a photo to represent the gas station.</string>
 </resources>
