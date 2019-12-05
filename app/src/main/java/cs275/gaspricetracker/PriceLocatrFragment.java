@@ -131,26 +131,32 @@ public class PriceLocatrFragment extends SupportMapFragment {
         mClient.disconnect();
     }
 
+    /**
+     * Activate search task based on location calling on location services
+     */
     private void findImage() {
         LocationRequest request = LocationRequest.create();
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         request.setNumUpdates(1);
         request.setInterval(0);
         LocationServices.FusedLocationApi
-                .requestLocationUpdates(mClient, request, new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        Log.i(TAG, "Got a fix: " + location);
-                        new SearchTask().execute(location);
-                    }
+                .requestLocationUpdates(mClient, request, location -> {
+                    Log.i(TAG, "Got a fix: " + location);
+                    new SearchTask().execute(location);
                 });
     }
 
+    /**
+     * @return bool for permission check result
+     */
     private boolean hasLocationPermission() {
-        int result = ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);
+        int result = ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), LOCATION_PERMISSIONS[0]);
         return result == PackageManager.PERMISSION_GRANTED;
     }
 
+    /**
+     * UI update method for setting elements (prices, user) on map
+     */
     private void updateUI() {
         if (mMap == null || mMapImage == null) {
             return;
@@ -250,6 +256,9 @@ public class PriceLocatrFragment extends SupportMapFragment {
         }
     }
 
+    /**
+     * Async task for search for price bitmap image
+     */
     private class SearchTask extends AsyncTask<Location, Void, Void> {
         private GalleryItem mGalleryItem;
         private Bitmap mBitmap;
@@ -279,11 +288,13 @@ public class PriceLocatrFragment extends SupportMapFragment {
             mMapImage = mBitmap;
             mMapItem = mGalleryItem;
             mCurrentLocation = mLocation;
-
             updateUI();
         }
     }
 
+    /**
+     * Async task for image checking with encoded image title
+     */
     private class HasImageAsync extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... param) {
@@ -296,15 +307,14 @@ public class PriceLocatrFragment extends SupportMapFragment {
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", "uploaded response: " + response);
+                Log.d("URL", "uploaded response: " + response);
             } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL", "unsopported " + e);
-
+                Log.d("upload URL", "unsopported " + e);
             } catch (ClientProtocolException e) {
-                Log.i("upload URL", "client protocol " + e);
+                Log.d("upload URL", "client protocol " + e);
             } catch (IOException e) {
                 mHasImage = false;
-                Log.i("upload URL", "ioe " + e);
+                Log.d("upload URL", "ioe " + e);
             }
             return null;
         }

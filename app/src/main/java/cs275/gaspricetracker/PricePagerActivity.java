@@ -15,14 +15,14 @@ import java.util.UUID;
 
 public class PricePagerActivity extends AppCompatActivity {
 
-    private static final String EXTRA_CRIME_ID = "cs275.gaspricetracker.price_id";
+    private static final String EXTRA_PRICE_ID = "cs275.gaspricetracker.price_id";
     private static final String EXTRA_IS_SORTING = "cs275.gaspricetracker.is_sorting";
     private ViewPager mViewPager;
     private List<Price> mPrices;
 
     public static Intent newIntent(Context packageContext, UUID priceId, boolean is_sorting) {
         Intent intent = new Intent(packageContext, PricePagerActivity.class);
-        intent.putExtra(EXTRA_CRIME_ID, priceId);
+        intent.putExtra(EXTRA_PRICE_ID, priceId);
         intent.putExtra(EXTRA_IS_SORTING, is_sorting);
         return intent;
     }
@@ -33,13 +33,13 @@ public class PricePagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_price_pager);
 
         UUID priceId = (UUID) getIntent()
-                .getSerializableExtra(EXTRA_CRIME_ID);
+                .getSerializableExtra(EXTRA_PRICE_ID);
         boolean isSorting = (boolean) getIntent()
                 .getSerializableExtra(EXTRA_IS_SORTING);
 
         mViewPager = findViewById(R.id.price_view_pager);
 
-        // Pager is not working for different sort
+        // check if we have requested the sort type
         if (isSorting) {
             mPrices = PriceLab.get(this).getPrices("prices");
         } else {
@@ -55,6 +55,10 @@ public class PricePagerActivity extends AppCompatActivity {
                 return PriceFragment.newInstance(price.getId());
             }
 
+            /**
+             * Count prices
+             * @return count of prices
+             */
             @Override
             public int getCount() {
                 return mPrices.size();

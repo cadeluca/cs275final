@@ -1,7 +1,5 @@
 package cs275.gaspricetracker.database;
 
-// todo: add the other fields needed
-
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
@@ -18,6 +16,10 @@ public class PriceCursorWrapper extends CursorWrapper {
         super(cursor);
     }
 
+    /**
+     * Retriev fields from the db and map the values to a new price
+     * @return the price
+     */
     public Price getPrice() {
         String uuidString = getString(getColumnIndex(Cols.UUID));
         String title = getString(getColumnIndex(Cols.TITLE));

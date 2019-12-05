@@ -40,4 +40,5 @@
     <string name="location_desc">Tap the location button in the app bar top right to pin this price to your location.</string>
     <string name="new_price_fragment_header">Report New Gas Price</string>
     <string name="edit_price_success">Edited price successfully!</string>
+    <string name="priceimage_content_description">priceImage</string>
 </resources>

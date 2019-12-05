@@ -5,18 +5,57 @@
     android:layout_margin="0dp"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/price_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32px"
+        android:layout_marginTop="48px"
+        android:layout_marginRight="32px"
+        android:text="@string/submit_price" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_margin="16dp"
+        android:layout_marginLeft="48px"
+        android:layout_marginRight="48px"
         android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/price_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/price_hint"
+            android:inputType="numberDecimal" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/dollar_sign"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/price_camera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_camera" />
 
             <ImageView
                 android:id="@+id/price_photo"
@@ -26,12 +65,6 @@
                 android:cropToPadding="true"
                 android:scaleType="centerInside" />
 
-            <ImageButton
-                android:id="@+id/price_camera"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_camera" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -39,12 +72,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
-
-            <TextView
-                style="?android:listSeparatorTextViewStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/price_title_label" />
 
             <EditText
                 android:id="@+id/price_title"
@@ -54,10 +81,16 @@
                 android:inputType="text" />
 
             <TextView
+                style="?android:listSeparatorTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28px"
+                android:text="@string/price_title_label" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="16px"
+                android:layout_marginTop="28px"
                 android:layout_marginRight="16px"
                 android:text="Optionally upload a photo to represent the gas station." />
 
@@ -70,64 +103,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="32px"
-        android:layout_marginRight="32px"
-        android:text="@string/price_details_label" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="48px"
-        android:layout_marginRight="48px"
-        android:orientation="horizontal">
-
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/dollar_sign"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-        <EditText
-            android:id="@+id/price_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/price_hint"
-            android:inputType="numberDecimal" />
-
-    </LinearLayout>
-
-    <TextView
-        style="?android:listSeparatorTextViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="32px"
         android:layout_marginTop="32px"
         android:layout_marginRight="32px"
         android:text="@string/location_info" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="48px"
         android:layout_marginRight="48px"
         android:text="@string/location_desc" />
+
     <TextView
         android:id="@+id/newLocationView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:gravity="center"
-        android:layout_marginLeft="32px"
-        android:layout_marginRight="32px"/>
-
-    <Button
-        android:id="@+id/price_save"
-        android:layout_marginTop="48px"
         android:layout_marginLeft="32px"
         android:layout_marginRight="32px"
+        android:gravity="center"
+        android:text="" />
+
+    <TextView
+        style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/submit_price" />
+        android:layout_marginLeft="32px"
+        android:layout_marginRight="32px"
+        android:text="@string/price_details_label" />
 
 </LinearLayout>

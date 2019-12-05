@@ -32,6 +32,10 @@ public class PriceBaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
+    /**
+     * Drop and reproduce db using prices synced from remote db
+     * @param db ref to drop
+     */
     public void syncDB(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + PriceTable.NAME);
         onCreate(db);
