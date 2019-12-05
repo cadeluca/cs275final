@@ -367,6 +367,7 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
                 postDataParams.put("price", price);
                 postDataParams.put("longitude", longitude);
                 postDataParams.put("latitude", latitude);
+//                postDataParams.put("uuid", "1");
 
                 // call through request handler
                 return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php", postDataParams);
