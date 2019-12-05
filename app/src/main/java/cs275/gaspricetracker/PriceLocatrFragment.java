@@ -46,10 +46,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Map fragment for displaying prices and user
+ */
 public class PriceLocatrFragment extends SupportMapFragment {
     private static final String TAG = "LocatrFragment";
-    private static final String[] LOCATION_PERMISSIONS = new String[] {
+    private static final String[] LOCATION_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
     };
@@ -60,6 +64,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
     private GalleryItem mMapItem;
     private Location mCurrentLocation;
     private boolean mHasImage;
+
     public static PriceLocatrFragment newInstance() {
         return new PriceLocatrFragment();
     }
@@ -76,6 +81,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                     public void onConnected(Bundle bundle) {
                         getActivity().invalidateOptionsMenu();
                     }
+
                     @Override
                     public void onConnectionSuspended(int i) {
 
@@ -95,10 +101,11 @@ public class PriceLocatrFragment extends SupportMapFragment {
         MenuItem searchItem = menu.findItem(R.id.action_locate);
         searchItem.setEnabled(mClient.isConnected());
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_locate :
+            case R.id.action_locate:
                 if (hasLocationPermission()) {
                     findImage();
                 } else {
@@ -114,7 +121,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
     @Override
     public void onStart() {
         super.onStart();
-        getActivity().invalidateOptionsMenu();
+        Objects.requireNonNull(getActivity()).invalidateOptionsMenu();
         mClient.connect();
     }
 
@@ -162,31 +169,26 @@ public class PriceLocatrFragment extends SupportMapFragment {
         File mPhotoFile;
 
         if (mPrices.size() != 0) {
-            for ( Price mPrice: mPrices) {
+            for (Price mPrice : mPrices) {
                 String price = "$ " + mPrice.getGasPrice();
                 String price_title = mPrice.getTitle();
                 mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
                 BitmapDescriptor itemBitmap;
 
-                LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
+                LatLng mPricePosition = new LatLng(mPrice.getLatitude(), mPrice.getLongitude());
                 Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
                 byte[] byteImageTitle = mPrice.getPhotoFilename2().getBytes();
-                String encodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+                String encodeImageTitle = Base64.encodeToString(byteImageTitle, Base64.DEFAULT);
                 new HasImageAsync().execute(encodeImageTitle);
                 if (mHasImage) {
-//                    Bitmap bitmap = PictureUtils.getScaledBitmap(
-//                        mPhotoFile.getPath(), getActivity());
-//                    bitmap = Bitmap.createScaledBitmap(bitmap, 150,150,true);
-//                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
-
                     // get picture from server
-                    Picasso.get().load("https://jtan5.w3.uvm.edu/cs275/"  + mPrice.getPhotoFilename2()).into(
+                    Picasso.get().load("https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2()).into(
                             new Target() {
                                 @Override
                                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                                     Marker marker = mMap.addMarker(new MarkerOptions()
                                             .anchor(0.0f, 1.0f)
-                                            .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, 150,150,true)))
+                                            .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, 150, 150, true)))
                                             .title(price_title)
                                             .snippet(price)
                                             .position(mPricePosition));
@@ -203,8 +205,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
 
                                 }
                             });
-                }
-                else{
+                } else {
                     itemBitmap = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
                     //  marker in blue
                     MarkerOptions itemMarker = new MarkerOptions()
@@ -214,18 +215,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                             .snippet(price);
 //                     add price marker to map
                     mMap.addMarker(itemMarker);
-
-//                    Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
-//
-//                    bitmap = Bitmap.createScaledBitmap(bitmap, 500,500,true);
-//
-//                    String url = "https://ywu10.w3.uvm.edu/cs008/x.jpg";
-//
-//                    itemBitmap = BitmapDescriptorFactory.fromBitmap(bitmap);
                 }
-                //LatLng mPricePosition = new LatLng (mPrice.getLatitude(), mPrice.getLongitude());
-                //Log.i("map", mPrice.getLatitude() + "  " + mPrice.getLongitude());
-
             }
         }
         // My current location
@@ -233,7 +223,6 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 .position(myPoint)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                 .title("me");
-
 
 
         // add marker into map
@@ -253,17 +242,19 @@ public class PriceLocatrFragment extends SupportMapFragment {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_LOCATION_PERMISSIONS:
-                if(hasLocationPermission()) {
+                if (hasLocationPermission()) {
                     findImage();
                 }
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
     private class SearchTask extends AsyncTask<Location, Void, Void> {
         private GalleryItem mGalleryItem;
         private Bitmap mBitmap;
         private Location mLocation;
+
         @Override
         protected Void doInBackground(Location... param) {
             mLocation = param[0];
@@ -282,6 +273,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void result) {
             mMapImage = mBitmap;
@@ -291,27 +283,28 @@ public class PriceLocatrFragment extends SupportMapFragment {
             updateUI();
         }
     }
-    private class HasImageAsync extends  AsyncTask<String, Void, Void> {
+
+    private class HasImageAsync extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... param) {
             mHasImage = true;
             String encodedImageTitle = param[0];
             HttpClient client = new DefaultHttpClient();
             HttpPost post = new HttpPost("http://jtan5.w3.uvm.edu/cs275/uploadImage.php");
-            List< NameValuePair > pairs = new ArrayList<NameValuePair>();
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
             pairs.add(new BasicNameValuePair("hasImageTitle", encodedImageTitle));
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", "uploaded response: "+ response);
+                Log.i("URL", "uploaded response: " + response);
             } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL","unsopported "+e);
+                Log.i("upload URL", "unsopported " + e);
 
             } catch (ClientProtocolException e) {
-                Log.i("upload URL","client protocol "+e);
+                Log.i("upload URL", "client protocol " + e);
             } catch (IOException e) {
                 mHasImage = false;
-                Log.i("upload URL", "ioe "+e);
+                Log.i("upload URL", "ioe " + e);
             }
             return null;
         }

@@ -30,6 +30,9 @@ import java.util.UUID;
 
 import static cs275.gaspricetracker.database.PriceDbSchema.PriceTable.Cols.*;
 
+/**
+ * Handler class for storing prices and performing all actions (queries, CRUD ops, displaying, etc.)
+ */
 public class PriceLab {
     private static PriceLab sPriceLab;
     private Context mContext;
@@ -44,6 +47,11 @@ public class PriceLab {
         return sPriceLab;
     }
 
+    /**
+     * Create a new PriceLab that will live throughout the app
+     *
+     * @param context application context
+     */
     private PriceLab(Context context) {
         mContext = context.getApplicationContext();
         mHelper = new PriceBaseHelper(mContext);
@@ -52,21 +60,35 @@ public class PriceLab {
         new GetPricesAsync().execute();
     }
 
+    /**
+     * Add price to local db
+     *
+     * @param p price to add
+     */
     public void addPrice(Price p) {
         ContentValues values = getContentValues(p);
-        Log.i("myTag", "add price called");
         mDatabase.insert(PriceTable.NAME, null, values);
     }
 
-    public void deletePrice (Price p) {
+    /**
+     * Delete price from local db
+     *
+     * @param p price to delete
+     */
+    public void deletePrice(Price p) {
         mDatabase.delete(
                 PriceDbSchema.PriceTable.NAME,
                 PriceDbSchema.PriceTable.Cols.UUID + " = ?",
-                new String[] {p.getId().toString()}
+                new String[]{p.getId().toString()}
         );
     }
 
 
+    /**
+     * Get all prices stored in the local db
+     *
+     * @return list collection of price
+     */
     public List<Price> getPrices() {
         List<Price> prices = new ArrayList<>();
         try (PriceCursorWrapper cursor = queryPrices(null, null, null)) {
@@ -79,6 +101,11 @@ public class PriceLab {
         return prices;
     }
 
+    /**
+     * @param sort sort type; we only have one additional sort type after standard
+     *             but others could be set as constants and used
+     * @return list collection of price
+     */
     // get a List of sorted prices.
     public List<Price> getPrices(String sort) {
         List<Price> prices = new ArrayList<>();
@@ -92,11 +119,17 @@ public class PriceLab {
         return prices;
     }
 
+    /**
+     * Retrieve price by UUID from lcoal db
+     *
+     * @param id UUID of price
+     * @return the price
+     */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public Price getPrice(UUID id) {
         try (PriceCursorWrapper cursor = queryPrices(
                 PriceTable.Cols.UUID + " = ?",
-                new String[]{id.toString() }, ""
+                new String[]{id.toString()}, ""
         )) {
             if (cursor.getCount() == 0) {
                 return null;
@@ -106,23 +139,40 @@ public class PriceLab {
         }
     }
 
+    /**
+     * Retrieve attached photo per price
+     *
+     * @param price price
+     * @return new file from photo file path and name
+     */
     public File getPhotoFile(Price price) {
         File filesDir = mContext.getFilesDir();
         return new File(filesDir, price.getPhotoFilename());
     }
 
+    /**
+     * Update price in local db
+     *
+     * @param price price to add
+     */
     public void updatePrice(Price price) {
         String uuidString = price.getId().toString();
         ContentValues values = getContentValues(price);
         mDatabase.update(PriceTable.NAME, values,
                 PriceTable.Cols.UUID + " = ?",
                 new String[]{uuidString});
-        Log.d("myTag", "update price called");
     }
 
+    /**
+     * @param whereClause optional where clause
+     * @param whereArgs   optional where args
+     * @param sort        optional sort type; we only have only one additional type,
+     *                    if not given sort is default
+     * @return PriceCursorWrapper with cursor
+     */
     private PriceCursorWrapper queryPrices(String whereClause, String[] whereArgs, String sort) {
         Cursor cursor;
-        // sort in price
+        // sort by price
         if (sort == "price") {
             cursor = mDatabase.query(
                     PriceTable.NAME,
@@ -134,7 +184,6 @@ public class PriceLab {
                     PRICE
             );
         }
-
         // default list order
         else {
             cursor = mDatabase.query(
@@ -147,21 +196,27 @@ public class PriceLab {
                     null
             );
         }
-
         return new PriceCursorWrapper(cursor);
-
     }
+
+    /**
+     * Sync the lcoal db form remote db
+     *
+     * @param prices prices to sync
+     */
     public void syncPrices(ArrayList<Price> prices) {
         mHelper.syncDB(mDatabase);
         for (Price p : prices) {
-            Log.d("postWorked", "this price id from inside syncProces:"+p.getDatabaseId());
             ContentValues values = getContentValues(p);
-            // todo: consider removing these logs since we know these work
-            Log.d("getDb", "add price called from sync prices called");
             mDatabase.insert(PriceTable.NAME, null, values);
         }
     }
 
+    /**
+     * @param whereClause optional where clause
+     * @param whereArgs   optional where args
+     * @return PriceCursorWrapper with cursor
+     */
     private PriceCursorWrapper queryPrices(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 PriceTable.NAME,
@@ -170,16 +225,21 @@ public class PriceLab {
                 whereArgs,
                 null, // groupBy
                 null, // having
-                null  // orderBy   //Tablename.cols.
+                null  // orderBy   // Tablename.cols.
         );
         return new PriceCursorWrapper(cursor);
     }
 
+    /**
+     * Fetch content values of price
+     * @param price price to grab from
+     * @return ContentValues of price
+     */
     private static ContentValues getContentValues(Price price) {
         ContentValues values = new ContentValues();
         values.put(UUID, price.getId().toString());
         values.put(TITLE, price.getTitle());
-        values.put(DATABASE_ID,price.getDatabaseId());
+        values.put(DATABASE_ID, price.getDatabaseId());
         values.put(DATE, price.getDate().getTime());
         values.put(PRICE, price.getGasPrice());
         values.put(LATITUDE, price.getLatitude());
@@ -188,8 +248,12 @@ public class PriceLab {
         return values;
     }
 
-    public class GetPricesAsync extends AsyncTask<Void,String,String> {
+    /**
+     * Async task to retrieve all prices from remote db
+     */
+    public class GetPricesAsync extends AsyncTask<Void, String, String> {
         private String res;
+
         @Override
         protected String doInBackground(Void... param) {
             try {
@@ -197,17 +261,15 @@ public class PriceLab {
                 res = RequestHandler.sendGet("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php");
                 Log.d("getDb", res);
                 return res;
-            }
-            catch(Exception e){
-                return "Exception: " + e.getMessage();
+            } catch (Exception e) {
+                return "GET Exception: " + e.getMessage();
             }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected void onPostExecute(String s) {
-            if(s!=null){
-                // todo: consider removing these logs since we know these work
+            if (s != null) {
                 ArrayList<Price> prices = new ArrayList<>();
                 final JSONArray[] priceArray = new JSONArray[1];
                 try {
@@ -216,22 +278,22 @@ public class PriceLab {
                         Object value = null;
                         try {
                             value = j.get(key);
-                            // todo: if value is null this throws an exception and crashes; it is null if the database php file encounters a db error
                             priceArray[0] = (JSONArray) value;
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        String val = ("Key: " + key + " Value: "+ value);
-                        Log.d("jsonTest", val);
+                        String val = ("Key: " + key + " Value: " + value);
+                        Log.d("GET_PRICE_JSON", val);
 
                     });
 
-                    for(int n = 0; n < priceArray[0].length(); n++) {
+                    // parse the JSON; for reach item create a price, set its values,
+                    // and load the prices into the PriceLab singleton for
+                    for (int n = 0; n < priceArray[0].length(); n++) {
                         JSONArray subArr = (JSONArray) priceArray[0].get(n);
                         Price p = new Price();
                         p.setDatabaseId(Integer.parseInt(subArr.get(0).toString()));
-                        Log.d("postWorked","set db id to: "+p.getDatabaseId());
                         p.setTitle(subArr.get(1).toString());
                         p.setGasPrice(Float.parseFloat(subArr.get(2).toString()));
                         Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(subArr.get(3).toString());
@@ -241,16 +303,14 @@ public class PriceLab {
                         prices.add(p);
                     }
 
-                }catch (JSONException err){
-                    Log.d("Error", err.toString());
+                } catch (JSONException err) {
+                    Log.d("SYNC Error", err.toString());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
 
-                Log.d("getDb", s);
-                Log.d("getDb", "start syncPrices");
+                // begin the sync with the new loaded data
                 syncPrices(prices);
-                Log.d("getDb", "end syncPrices");
             }
         }
     }

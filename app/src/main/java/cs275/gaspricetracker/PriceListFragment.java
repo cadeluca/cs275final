@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PriceListFragment extends ListFragment {
-
-
     private boolean mSubtitleVisible;
     private static final String TAG = "PriceListFragment";
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
@@ -52,6 +50,7 @@ public class PriceListFragment extends ListFragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_price_list, menu);
 
+        // price count subtitle option
         MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
         if (mSubtitleVisible) {
             subtitleItem.setTitle(R.string.hide_subtitle);
@@ -59,7 +58,8 @@ public class PriceListFragment extends ListFragment {
             subtitleItem.setTitle(R.string.show_subtitle);
         }
 
-        MenuItem sortTitleItem =  menu.findItem(R.id.price_sort);
+        // sorting option
+        MenuItem sortTitleItem = menu.findItem(R.id.price_sort);
         if (mIsSort) {
             sortTitleItem.setTitle(R.string.default_order);
         } else {
@@ -77,11 +77,14 @@ public class PriceListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Price price = ((PriceAdapter)getListAdapter()).getItem(position);
+        Price price = ((PriceAdapter) getListAdapter()).getItem(position);
         Intent intent = PricePagerActivity.newIntent(getActivity(), price.getId(), mIsSort);
         startActivity(intent);
     }
 
+    /**
+     * PriceAdapter to bridge between UI and data
+     */
     private class PriceAdapter extends ArrayAdapter<Price> {
         private List<Price> mPrices;
 
@@ -110,6 +113,11 @@ public class PriceListFragment extends ListFragment {
 
             return convertView;
         }
+
+        /**
+         * @param prices new prices to set; typically have a getter
+         *               and setter but we dont need the setter
+         */
         public void setPrices(List<Price> prices) {
             mPrices = prices;
         }
@@ -120,6 +128,7 @@ public class PriceListFragment extends ListFragment {
         super.onResume();
         updateUI();
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -139,7 +148,6 @@ public class PriceListFragment extends ListFragment {
             mIsSort = savedInstanceState.getBoolean(SAVED_SORT_TITLE);
         }
 
-
         ListView listView = v.findViewById(android.R.id.list);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             registerForContextMenu(listView);
@@ -150,7 +158,7 @@ public class PriceListFragment extends ListFragment {
                     // Required, but not used in this implementation
                 }
 
-                //ActionMode.Callback methods
+                // ActionMode.Callback methods
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     MenuInflater inflater = mode.getMenuInflater();
                     inflater.inflate(R.menu.list_item_context, menu);
@@ -174,7 +182,7 @@ public class PriceListFragment extends ListFragment {
 
                                     // encode imageTitle for delete Image on Server
                                     byte[] byteImageTitle = deletePrice.getPhotoFilename2().getBytes();
-                                    String mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+                                    String mEncodeImageTitle = Base64.encodeToString(byteImageTitle, Base64.DEFAULT);
 
                                     // delete from server
                                     new DeleteImageAsync().execute(mEncodeImageTitle);
@@ -199,9 +207,9 @@ public class PriceListFragment extends ListFragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int position = info.position;
-        PriceAdapter mAdapter = (PriceAdapter)getListAdapter();
+        PriceAdapter mAdapter = (PriceAdapter) getListAdapter();
         Price price = mAdapter.getItem(position);
 
         switch (item.getItemId()) {
@@ -214,11 +222,12 @@ public class PriceListFragment extends ListFragment {
     }
 
     @Override
-    public void onSaveInstanceState (Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
         outState.putBoolean(SAVED_SORT_TITLE, mIsSort);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -242,6 +251,9 @@ public class PriceListFragment extends ListFragment {
         }
     }
 
+    /**
+     * update the subtitle with the price count from the price lab and update visibility boolean
+     */
     private void updateSubtitle() {
         PriceLab priceLab = PriceLab.get(getActivity());
         int priceCount = priceLab.getPrices().size();
@@ -250,10 +262,13 @@ public class PriceListFragment extends ListFragment {
         if (!mSubtitleVisible) {
             subtitle = null;
         }
-        AppCompatActivity activity = (AppCompatActivity)getActivity();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
+    /**
+     * update method for adapter link, sorting check, and subtitle update
+     */
     private void updateUI() {
         PriceLab priceLab = PriceLab.get(getActivity());
         List<Price> prices;
@@ -269,6 +284,9 @@ public class PriceListFragment extends ListFragment {
         updateSubtitle();
     }
 
+    /**
+     * Async task for deleting images from Junda's server using image title
+     */
     private class DeleteImageAsync extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -281,14 +299,13 @@ public class PriceListFragment extends ListFragment {
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", ""+ response);
+                Log.d("URL", "" + response);
             } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL",""+e);
-
+                Log.d("upload URL", "" + e);
             } catch (ClientProtocolException e) {
-                Log.i("upload URL",""+e);
+                Log.d("upload URL", "" + e);
             } catch (IOException e) {
-                Log.i("upload URL", ""+e);
+                Log.d("upload URL", "" + e);
             }
             return null;
         }
