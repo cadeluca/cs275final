@@ -1,6 +1,5 @@
 package cs275.gaspricetracker;
 
-import android.net.Uri;
 
 public class GalleryItem {
     private String mCaption;
@@ -8,17 +7,9 @@ public class GalleryItem {
     private String mUrl;
     private double mLat;
     private double mLon;
-    private String mOwner;
-    public String getmCaption() {
-        return mCaption;
-    }
 
     public void setmCaption(String mCaption) {
         this.mCaption = mCaption;
-    }
-
-    public String getmId() {
-        return mId;
     }
 
     public void setmId(String mId) {
@@ -48,23 +39,13 @@ public class GalleryItem {
     public void setmLon(double mLon) {
         this.mLon = mLon;
     }
-    public String getOwner() {
-        return mOwner;
-    }
 
-    public void setOwner(String owner) {
-        mOwner = owner;
-    }
-    public Uri getPhotoPageUri() {
-        return Uri.parse("http://www.flickr.com/photos/")
-                .buildUpon()
-                .appendPath(mOwner)
-                .appendPath(mId)
-                .build();
-    }
     @Override
     public String toString() {
         return mCaption;
     }
 
+    public String getmId() {
+        return mId;
+    }
 }

@@ -35,7 +35,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -54,6 +53,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -62,7 +62,6 @@ public class PriceFragment extends Fragment {
     private static final String ARG_PRICE_ID = "price_id";
     private static final String DIALOG_PHOTO = "DialogPhoto";
     private static final String DIALOG_DELETE = "dialog_delete";
-    private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_PHOTO = 2;
     private static final int REQUEST_DELETE = 3;
     private Price mPrice;
@@ -75,8 +74,6 @@ public class PriceFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
     private TextView mReadLocationView;
-    private Target saveFileTarget;
-    private File FILEPATH;
     private String mEncodeImageTitle;
     private boolean mHasImage;
 
@@ -95,12 +92,11 @@ public class PriceFragment extends Fragment {
         setHasOptionsMenu(true);
         UUID priceId = (UUID) getArguments().getSerializable(ARG_PRICE_ID);
         mPrice = PriceLab.get(getActivity()).getPrice(priceId);
-        Log.d("postWorked", "this price id before calling async:"+mPrice.getDatabaseId());
         mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
 
         // image title object
         byte[] byteImageTitle = mPrice.getPhotoFilename2().getBytes();
-        mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+        mEncodeImageTitle = Base64.encodeToString(byteImageTitle, Base64.DEFAULT);
 
     }
 
@@ -108,7 +104,7 @@ public class PriceFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_price, container, false);
-        mTitleField = (EditText) v.findViewById(R.id.price_title);
+        mTitleField = v.findViewById(R.id.price_title);
         mTitleField.setText(mPrice.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -126,17 +122,22 @@ public class PriceFragment extends Fragment {
             }
         });
 
+        // formatting for price, long, and lat
         DecimalFormat df = new DecimalFormat("0.00");
         df.setMaximumFractionDigits(2);
 
+        // date reported
         mDateButton = v.findViewById(R.id.price_date);
         mDateButton.setText(mPrice.getDate().toString());
         updateDate();
 
-        mReadLocationView = (TextView) v.findViewById(R.id.readLocationView);
-        mReadLocationView.setText("latitude: "+ df.format(mPrice.getLatitude()) + " longitude: " + df.format(mPrice.getLongitude()));
+        // format and display the long and lat
+        mReadLocationView = v.findViewById(R.id.readLocationView);
+        String locationStr = "latitude: " + df.format(mPrice.getLatitude()) + " longitude: " + df.format(mPrice.getLongitude());
+        mReadLocationView.setText(locationStr);
 
-        mSharePriceButton = (Button) v.findViewById(R.id.price_share);
+        // share functionality if you want to let friends know about the price
+        mSharePriceButton = v.findViewById(R.id.price_share);
         mSharePriceButton.setOnClickListener(v13 -> {
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
@@ -147,21 +148,20 @@ public class PriceFragment extends Fragment {
             PriceFragment.this.startActivity(i);
         });
 
-        mSaveEditsButton = (Button) v.findViewById(R.id.price_edit);
+        // save edits is how you commit your changes when editing a price; otherwise edits are abandoned
+        mSaveEditsButton = v.findViewById(R.id.price_edit);
         mSaveEditsButton.setOnClickListener(view -> {
-            Log.d("myTag", "Clicked saved edits");
-            Log.d("postWorked", "this price id before calling async:"+mPrice.getDatabaseId());
-            // post to database
+            Log.d("EDIT_PRICE", "Clicked saved edits");
+            // post update to database
             new UpdatePriceAsync().execute(mPrice);
-
             PriceLab.get(getActivity()).updatePrice(mPrice);
-            Toast toast = Toast.makeText(getContext(), "Edited price successfully!", Toast.LENGTH_SHORT);
+            Toast toast;
+            toast = Toast.makeText(getContext(), R.string.edit_price_success, Toast.LENGTH_SHORT);
             toast.show();
         });
 
-
-
-        mPriceInput = (EditText) v.findViewById(R.id.price_input);
+        // price value
+        mPriceInput = v.findViewById(R.id.price_input);
         mPriceInput.setText(df.format(mPrice.getGasPrice()));
         mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -177,9 +177,10 @@ public class PriceFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
             }
         });
-        PackageManager packageManager = getActivity().getPackageManager();
+        PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
 
-        mPhotoButton = (ImageButton) v.findViewById(R.id.price_camera);
+        // photo optional functionality; request and capture image
+        mPhotoButton = v.findViewById(R.id.price_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null &&
                 captureImage.resolveActivity(packageManager) != null;
@@ -199,9 +200,8 @@ public class PriceFragment extends Fragment {
             startActivityForResult(captureImage, REQUEST_PHOTO);
         });
 
-        mPhotoView = (ImageView) v.findViewById(R.id.price_photo);
+        mPhotoView = v.findViewById(R.id.price_photo);
         updatePhotoView();
-
         mPhotoView.setOnClickListener(view -> {
             if (mHasImage) {
                 FragmentManager manager = getFragmentManager();
@@ -220,7 +220,6 @@ public class PriceFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("myTag", "on pause called");
     }
 
     @Override
@@ -228,43 +227,44 @@ public class PriceFragment extends Fragment {
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-
+        // taking a photo
         if (requestCode == REQUEST_PHOTO) {
-            Uri uri = FileProvider.getUriForFile(getActivity(),
+            Uri uri = FileProvider.getUriForFile(Objects.requireNonNull(getActivity()),
                     "cs275.gaspricetracker.fileprovider",
                     mPhotoFile);
             getActivity().revokeUriPermission(uri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-            // upload took image to server
-            // encode image
+            // upload took image to server; encode image
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4;
             options.inPurgeable = true;
-            Bitmap bm = BitmapFactory.decodeFile(mPhotoFile.getPath(),options);
+            Bitmap bm = BitmapFactory.decodeFile(mPhotoFile.getPath(), options);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bm.compress(Bitmap.CompressFormat.JPEG, 40, baos);
 
             // bitmap object
             byte[] byteImagePhoto = baos.toByteArray();
-            String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
+            String encodedImage = Base64.encodeToString(byteImagePhoto, Base64.DEFAULT);
 
-            //send encode string to server
-            if(mPrice.getPhotoFilename2() != "IMG_0.jpg") {
+            // send encode string to server
+            if (!mPrice.getPhotoFilename2().equals("IMG_0.jpg")) {
                 new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
             }
             updatePhotoView();
         } else if (requestCode == REQUEST_DELETE) {
+            // delete the image and the price
             new DeletePriceAsync().execute(mPrice);
             new DeleteImageAsync().execute(mEncodeImageTitle);
             PriceLab.get(getActivity()).deletePrice(mPrice);
-            getActivity().finish();
+            Objects.requireNonNull(getActivity()).finish();
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
+            // deleting the price with confirmation dialog
             case R.id.delete_price:
                 FragmentManager manager = getFragmentManager();
                 DeleteDialogFragment dialog = new DeleteDialogFragment();
@@ -276,6 +276,9 @@ public class PriceFragment extends Fragment {
         }
     }
 
+    /**
+     * update the date output using data formatting
+     */
     private void updateDate() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMM dd");
         String dateString = simpleDateFormat.format(mPrice.getDate());
@@ -288,6 +291,9 @@ public class PriceFragment extends Fragment {
         inflater.inflate(R.menu.fragment_price, menu);
     }
 
+    /**
+     * @return the price report formatted string with our price info
+     */
     private String getPriceReport() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMM dd");
         String dateString = simpleDateFormat.format(mPrice.getDate());
@@ -296,17 +302,20 @@ public class PriceFragment extends Fragment {
         return String.format(report, mPrice.getTitle(), priceString, dateString);
     }
 
+    /**
+     * upload or update the image of this price if id alreayd present
+     */
     private void updatePhotoView() {
         new HasImageAsync().execute(mEncodeImageTitle);
         Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(), getActivity());
+                mPhotoFile.getPath(), getActivity());
         mPhotoView.setImageBitmap(bitmap);
         if (mHasImage) {
             String url = "https://jtan5.w3.uvm.edu/cs275/" + mPrice.getPhotoFilename2();
             Picasso.get().load(url).into(mPhotoView);
             Log.i("123", "1");
         }
-        if(!mHasImage) {
+        if (!mHasImage) {
             String url = "https://jtan5.w3.uvm.edu/cs275/default.jpg";
             Picasso.get().load(url).into(mPhotoView);
             Log.i("123", "2");
@@ -314,7 +323,10 @@ public class PriceFragment extends Fragment {
     }
 
 
-    private static class UpdatePriceAsync extends AsyncTask<Price,String,String> {
+    /**
+     * PUT request AsyncTask using database price id to update a price in SQL db given new data
+     */
+    private static class UpdatePriceAsync extends AsyncTask<Price, String, String> {
 
         @Override
         protected String doInBackground(Price... param) {
@@ -324,9 +336,8 @@ public class PriceFragment extends Fragment {
             float price = price1.getGasPrice();
             double longitude = price1.getLongitude();
             double latitude = price1.getLatitude();
-            Log.d("postWorked", "this price's db id: "+id);
             try {
-                // put the values for the POST Request
+                // put the values for the PUT Request
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put("id", id);
                 postDataParams.put("title", title);
@@ -335,35 +346,35 @@ public class PriceFragment extends Fragment {
                 postDataParams.put("latitude", latitude);
 
                 return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/update.php", postDataParams);
-            }
-            catch(Exception e){
-
-                return "Exception: " + e.getMessage();
+            } catch (Exception e) {
+                return "PUT Exception: " + e.getMessage();
             }
         }
 
         @Override
         protected void onPostExecute(String s) {
-            if(s!=null){
-                Log.d("updateWorked", s);
+            if (s != null) {
+                Log.d("PUT update successful", s);
             }
         }
     }
 
-    public static class DeletePriceAsync extends AsyncTask<Price,String,String> {
+    /**
+     * Delete the price using the price database id through DELETE with AsyncTask
+     */
+    public static class DeletePriceAsync extends AsyncTask<Price, String, String> {
 
         @Override
         protected String doInBackground(Price... param) {
             Price price1 = param[0];
             int id = price1.getDatabaseId();
             try {
-                // delete the id
+                // load the id to delete
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put("id", id);
                 return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/delete.php", postDataParams);
-            }
-            catch(Exception e){
-                return "Exception: " + e.getMessage();
+            } catch (Exception e) {
+                return "DELETE Exception: " + e.getMessage();
             }
         }
 
@@ -373,12 +384,15 @@ public class PriceFragment extends Fragment {
     }
 
 
-    private class FetchItemTask extends AsyncTask<Void,Void,Void> {
+    /**
+     * Async task to retrieve URL content; part of progress towards image handling but currently unused
+     */
+    private class FetchItemTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            try{
+            try {
                 String result = new PriceFetcher().getUrlString("http://jtan5.w3.uvm.edu/cs008/Junda.jpg");
-                Log.i("URL","Fetched contents of URL: " + result);
+                Log.i("URL", "Fetched contents of URL: " + result);
 
             } catch (IOException ioe) {
                 Log.e("URL", "Failed to fetch URL" + ioe);
@@ -387,7 +401,10 @@ public class PriceFragment extends Fragment {
         }
     }
 
-    private class ImageUploadAsync extends  AsyncTask<String, Void, Void> {
+    /**
+     * Async task to upload our bitmap image to Junda's server storage with image and title pair
+     */
+    private class ImageUploadAsync extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... param) {
@@ -402,20 +419,22 @@ public class PriceFragment extends Fragment {
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", ""+ response);
+                Log.d("URL", "" + response);
             } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL",""+e);
-
+                Log.d("upload URL", "" + e);
             } catch (ClientProtocolException e) {
-                Log.i("upload URL",""+e);
+                Log.d("upload URL", "" + e);
             } catch (IOException e) {
-                Log.i("upload URL", ""+e);
+                Log.d("upload URL", "" + e);
             }
             return null;
         }
     }
 
-    private class DeleteImageAsync extends  AsyncTask<String, Void, Void> {
+    /**
+     * Async task to delete image from Junda's server storage
+     */
+    private class DeleteImageAsync extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... param) {
@@ -427,20 +446,22 @@ public class PriceFragment extends Fragment {
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", ""+ response);
+                Log.d("URL", "" + response);
             } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL",""+e);
-
+                Log.d("upload URL", "" + e);
             } catch (ClientProtocolException e) {
-                Log.i("upload URL",""+e);
+                Log.d("upload URL", "" + e);
             } catch (IOException e) {
-                Log.i("upload URL", ""+e);
+                Log.d("upload URL", "" + e);
             }
             return null;
         }
     }
 
-    private class HasImageAsync extends  AsyncTask<String, Void, Void> {
+    /**
+     * Async task to check for image presence
+     */
+    private class HasImageAsync extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... param) {
             mHasImage = true;
@@ -452,45 +473,16 @@ public class PriceFragment extends Fragment {
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", "uploaded response: "+ response);
+                Log.d("URL", "uploaded response: " + response);
             } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL","unsopported "+e);
-
+                Log.d("upload URL", "unsopported " + e);
             } catch (ClientProtocolException e) {
-                Log.i("upload URL","client protocol "+e);
+                Log.d("upload URL", "client protocol " + e);
             } catch (IOException e) {
                 mHasImage = false;
-                Log.i("upload URL", "ioe "+e);
+                Log.d("upload URL", "ioe " + e);
             }
             return null;
         }
     }
-
-
-    /**
-     * Takes in an input string and coverts it to a $_.__ formatted string
-     * @param digits the string (from charSequence) from a view/edit
-     * @return formatted string
-     */
-    private String addCurrencySign(String digits) {
-        String amount = "$";
-        // remove any non numeric chars
-        digits = digits.replace(".", "");
-
-        // Amount length greater than 2 means we need to add a decimal point
-        if (digits.length() > 2) {
-            String dollar = digits.substring(0, digits.length() - 2); // Pound part
-            String cents = digits.substring(digits.length() - 2); // Pence part
-            amount += dollar + "." + cents;
-        }
-        else if (digits.length() == 1) {
-            amount += "0.0" + digits;
-        }
-        else if (digits.length() == 2) {
-            amount += "0." + digits;
-        }
-
-        return amount;
-    }
-
 }

@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -27,7 +28,7 @@ public class RequestHandler {
         conn.setDoOutput(true);
 
         OutputStream os = conn.getOutputStream();
-        BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(os, "UTF-8"));
+        BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(os, StandardCharsets.UTF_8));
         writer.write(encodeParams(postDataParams));
         writer.flush();
         writer.close();
@@ -37,7 +38,7 @@ public class RequestHandler {
         if (responseCode == HttpsURLConnection.HTTP_OK) {
 
             BufferedReader in=new BufferedReader( new InputStreamReader(conn.getInputStream()));
-            StringBuffer sb = new StringBuffer("");
+            StringBuffer sb = new StringBuffer();
             String line="";
             while((line = in.readLine()) != null) {
                 sb.append(line);

@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 
+/**
+ * Utility for scaling our images given either an activity or target width/height
+ */
 public class PictureUtils {
     public static Bitmap getScaledBitmap(String path, Activity activity) {
         Point size = new Point();
@@ -19,7 +22,7 @@ public class PictureUtils {
         BitmapFactory.decodeFile(path, options);
         float srcWidth = options.outWidth;
         float srcHeight = options.outHeight;
-        // Figure out how much to scale down by
+        // scaling down
         int inSampleSize = 1;
         if (srcHeight > destHeight || srcWidth > destWidth) {
             float heightScale = srcHeight / destHeight;

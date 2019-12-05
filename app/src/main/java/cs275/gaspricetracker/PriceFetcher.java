@@ -20,7 +20,6 @@ import java.util.List;
 public class PriceFetcher {
     private static final String TAG = "PriceFetcher";
     private static final String API_KEY = "2093ccd60ae8751e44de505c041d8486";
-    private static final String FETCH_RECENTS_METHOD = "flickr.photos.getRecent";
     private static final String SEARCH_METHOD = "flickr.photos.search";
     private static final Uri ENDPOINT = Uri.parse("https://api.flickr.com/services/rest/")
             .buildUpon()
@@ -58,18 +57,18 @@ public class PriceFetcher {
         List<GalleryItem> items = new ArrayList<>();
         try {
             String jsonString = getUrlString(url);
-            Log.i(TAG, "received JSON: " + jsonString);
+            Log.d(TAG, "received JSON: " + jsonString);
             JSONObject jsonBody = new JSONObject(jsonString);
             parseItems(items, jsonBody);
         } catch (IOException ioe) {
-            Log.e(TAG, "Failed to fetch items", ioe);
+            Log.d(TAG, "Failed to fetch items", ioe);
         } catch (JSONException je) {
-            Log.e(TAG, "Failed to parse JSON", je);
+            Log.d(TAG, "Failed to parse JSON", je);
         }
         return items;
     }
     private void parseItems(List<GalleryItem>items, JSONObject jsonBody)
-            throws IOException, JSONException {
+            throws JSONException {
         JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
         JSONArray photoJsonArray = photosJsonObject.getJSONArray("photo");
         for (int i = 0; i < photoJsonArray.length(); i++) {
@@ -86,32 +85,17 @@ public class PriceFetcher {
             items.add(item);
         }
     }
-    private String buildUrl (String method, String query) {
-        Uri.Builder uriBuilder = ENDPOINT.buildUpon()
-                .appendQueryParameter("method", method);
-        if (method.equals(SEARCH_METHOD)) {
-            uriBuilder.appendQueryParameter("text", query);
 
-        }
-        return uriBuilder.build().toString();
-    }
-
+    /**
+     * @param location to be used in URL for long and lat coords
+     * @return build on endpoint with location contents
+     */
     private String buildUrl(Location location) {
         return ENDPOINT.buildUpon()
                 .appendQueryParameter("method", SEARCH_METHOD)
                 .appendQueryParameter("lat", "" + location.getLatitude())
                 .appendQueryParameter("lon", "" + location.getLongitude())
                 .build().toString();
-    }
-
-
-    public List<GalleryItem> fetchRecentPhotos() {
-        String url = buildUrl(FETCH_RECENTS_METHOD, null);
-        return downloadGalleryItems(url);
-    }
-    public List<GalleryItem> searchPhotos(String query) {
-        String url = buildUrl (SEARCH_METHOD, query);
-        return downloadGalleryItems(url);
     }
 
     public List<GalleryItem> searchPhotos(Location location) {

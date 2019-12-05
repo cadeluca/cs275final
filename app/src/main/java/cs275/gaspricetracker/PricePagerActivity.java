@@ -37,7 +37,7 @@ public class PricePagerActivity extends AppCompatActivity {
         boolean isSorting = (boolean) getIntent()
                 .getSerializableExtra(EXTRA_IS_SORTING);
 
-        mViewPager = (ViewPager) findViewById(R.id.price_view_pager);
+        mViewPager = findViewById(R.id.price_view_pager);
 
         // Pager is not working for different sort
         if (isSorting) {

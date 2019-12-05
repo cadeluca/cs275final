@@ -9,6 +9,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 public class NewPriceActivity extends SingleFragmentActivity {
     private static final int REQUEST_ERROR = 0;
+
     @Override
     protected Fragment createFragment() {
         return NewPriceFragment.newInstance();
@@ -18,6 +19,7 @@ public class NewPriceActivity extends SingleFragmentActivity {
     protected void onResume() {
         super.onResume();
 
+        // check google api status to attach to fragment
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int errorCode = apiAvailability.isGooglePlayServicesAvailable(this);
 
@@ -27,8 +29,6 @@ public class NewPriceActivity extends SingleFragmentActivity {
                             dialog -> finish());
 
             errorDialog.show();
-
         }
     }
-
 }

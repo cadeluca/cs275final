@@ -11,6 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 
+/**
+ * Main Fragment has is our launch screen with the three buttons:
+ *  Price Map -> view the map of prices
+ *  View -> view the list of prices
+ *  Report -> directly report a price
+ */
 public class MainFragment extends Fragment {
 
     private Button mViewButton;
@@ -31,20 +37,20 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mPriceMapButton  = v.findViewById(R.id.view_map);
+        mPriceMapButton = v.findViewById(R.id.view_map);
         mPriceMapButton.setOnClickListener(v1 -> {
             Intent intent = new Intent(getActivity(), PriceLocatrActivity.class);
             startActivity(intent);
         });
 
         mViewButton = v.findViewById(R.id.view_prices);
-        mViewButton.setOnClickListener(v1 -> {
+        mViewButton.setOnClickListener(v2 -> {
             Intent intent = new Intent(getActivity(), PriceListActivity.class);
             startActivity(intent);
         });
 
         mReportButton = v.findViewById(R.id.report_prices);
-        mReportButton.setOnClickListener(v2 -> {
+        mReportButton.setOnClickListener(v3 -> {
             Intent intent = new Intent(getContext(), NewPriceActivity.class);
             startActivity(intent);
         });

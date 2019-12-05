@@ -39,7 +39,6 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.squareup.picasso.Target;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -63,32 +62,35 @@ import java.util.Random;
 
 public class NewPriceFragment extends Fragment implements AsyncResponse {
     private static final String DIALOG_PHOTO = "DialogPhoto";
+    private static final String TAG = "NewLocatrFragment";
+    private static final String[] LOCATION_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+    };
+
+    private static final int REQUEST_LOCATION_PERMISSIONS = 0;
     private static final int REQUEST_PHOTO = 1;
-    PostPriceAsync mPostPriceAsync = new PostPriceAsync();
-    private int mThisCreatedPriceId;
+
+    private PostPriceAsync mPostPriceAsync = new PostPriceAsync();
     private Button mSavePriceButton;
     private Price mPrice;
     private EditText mTitleField;
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
-    // fixme: copy over from the regular price fragment all photo parts
     private File mPhotoFile;
-    private Target saveFileTarget;
-    private File FILEPATH;
     private String mEncodeImageTitle;
-    private boolean mHasImage;
     private EditText mPriceInput;
     private TextView mLocationView;
-    private static final String TAG = "NewLocatrFragment";
-    private static final String[] LOCATION_PERMISSIONS = new String[] {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-    };
-    private static final int REQUEST_LOCATION_PERMISSIONS = 0;
     private GoogleApiClient mClient;
     private Location mCurrentLocation;
+    private boolean mHasImage;
 
-    // testing for add offset, get a different random position for each price
+    /**
+     * For this course, we are providing an offset of coordinates since the emulator location
+     * is the same (not using the walker); get a different random position for each price
+     *
+     * @return offset double
+     */
     private double getOffset() {
         Random r = new Random();
         int negator = r.nextInt(100);
@@ -106,30 +108,28 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
             return;
         }
 
+        // Photo request
         if (requestCode == REQUEST_PHOTO) {
-            Uri uri = FileProvider.getUriForFile(getActivity(),
+            Uri uri = FileProvider.getUriForFile(Objects.requireNonNull(getActivity()),
                     "cs275.gaspricetracker.fileprovider",
                     mPhotoFile);
             getActivity().revokeUriPermission(uri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-            // upload took image to server
-            // encode image
+            // upload took image to server and encode image
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4;
             options.inPurgeable = true;
-            Bitmap bm = BitmapFactory.decodeFile(mPhotoFile.getPath(),options);
+            Bitmap bm = BitmapFactory.decodeFile(mPhotoFile.getPath(), options);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bm.compress(Bitmap.CompressFormat.JPEG, 40, baos);
 
             // bitmap object
             byte[] byteImagePhoto = baos.toByteArray();
-            String encodedImage = Base64.encodeToString(byteImagePhoto,Base64.DEFAULT);
+            String encodedImage = Base64.encodeToString(byteImagePhoto, Base64.DEFAULT);
 
-            //send encode string to server
-//            if(mPrice.getPhotoFilename2() != "IMG_0.jpg") {
-                new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
-//            }
+            // send encode string to server
+            new ImageUploadAsync().execute(encodedImage, mEncodeImageTitle);
             updatePhotoView();
         }
     }
@@ -141,9 +141,10 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // attach our PostPriceAsync to this fragment
         mPostPriceAsync.delegate = this;
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        Objects.requireNonNull(Objects.requireNonNull(activity).getSupportActionBar()).setTitle("Report New Gas Price");
+        Objects.requireNonNull(Objects.requireNonNull(activity).getSupportActionBar()).setTitle(getString(R.string.new_price_fragment_header));
         mPrice = new Price();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -151,9 +152,9 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
 
         // image title object
         byte[] byteImageTitle = mPrice.getPhotoFilename2().getBytes();
-        mEncodeImageTitle = Base64.encodeToString(byteImageTitle,Base64.DEFAULT);
+        mEncodeImageTitle = Base64.encodeToString(byteImageTitle, Base64.DEFAULT);
 
-
+        // maps api client
         mClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -161,9 +162,9 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
                     public void onConnected(Bundle bundle) {
                         Objects.requireNonNull(getActivity()).invalidateOptionsMenu();
                     }
+
                     @Override
                     public void onConnectionSuspended(int i) {
-
                     }
                 })
                 .build();
@@ -174,6 +175,7 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_new_price, container, false);
         mTitleField = v.findViewById(R.id.price_title);
+        // only need the onTextChanged
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -186,25 +188,23 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
 
         mSavePriceButton = v.findViewById(R.id.price_save);
         mSavePriceButton.setOnClickListener(view -> {
-            // post to database
+            // post to database and add to price lab
             mPostPriceAsync.execute(mPrice);
-
-            // add the price to the PriceLab
             PriceLab.get(getActivity()).addPrice(mPrice);
 
+            // display success and return to list
             Toast toast = Toast.makeText(getContext(), R.string.added_price_success, Toast.LENGTH_SHORT);
             toast.show();
-
-            // go back to listFragment
-            getActivity().finish();
+            Objects.requireNonNull(getActivity()).finish();
         });
+
         mPriceInput = v.findViewById(R.id.price_input);
+        // only need the onTextChanged
         mPriceInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -221,12 +221,15 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
             public void afterTextChanged(Editable editable) {
             }
         });
-        mLocationView = (TextView) v.findViewById(R.id.newLocationView);
-        // todo: investigate this IDE warning
-        mLocationView.setText("latitude: "+ mPrice.getLatitude() + " longitude: " + mPrice.getLongitude() );
-        PackageManager packageManager = getActivity().getPackageManager();
 
-        mPhotoButton = (ImageButton) v.findViewById(R.id.price_camera);
+        // text for location string
+        mLocationView = v.findViewById(R.id.newLocationView);
+        String longLat = "latitude: " + mPrice.getLatitude() + " longitude: " + mPrice.getLongitude();
+        mLocationView.setText(longLat);
+        PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
+
+        // Provide photo option
+        mPhotoButton = v.findViewById(R.id.price_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null &&
                 captureImage.resolveActivity(packageManager) != null;
@@ -284,18 +287,17 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_locate :
-                if (hasLocationPermission()) {
-                    findImage();
-                } else {
-                    requestPermissions(LOCATION_PERMISSIONS,
-                            REQUEST_LOCATION_PERMISSIONS);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        // set the price location on click of this button
+        if (item.getItemId() == R.id.action_locate) {
+            if (hasLocationPermission()) {
+                findImage();
+            } else {
+                requestPermissions(LOCATION_PERMISSIONS,
+                        REQUEST_LOCATION_PERMISSIONS);
+            }
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -311,6 +313,9 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         mClient.disconnect();
     }
 
+    /**
+     * Submit a location high accuracy request to then set the long and lat values for the price
+     */
     private void findImage() {
         LocationRequest request = LocationRequest.create();
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -319,12 +324,11 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         LocationServices.FusedLocationApi
                 .requestLocationUpdates(mClient, request, location -> {
                     mCurrentLocation = location;
-                    Log.i(TAG, "Got a fix: " + location);
-                    // testing for adding offset
+                    Log.d(TAG, "Got a fix: " + location);
+                    // using the adding offset here
                     mPrice.setLatitude(mCurrentLocation.getLatitude() + getOffset());
                     mPrice.setLongitude(mCurrentLocation.getLongitude() + getOffset());
                 });
-
     }
 
     @Override
@@ -332,71 +336,74 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
         try {
             JSONObject jo = new JSONObject(output);
             int thisId = jo.getInt("thisId");
-            Log.d("postWorked", "price id before set: "+mPrice.getDatabaseId());
+            Log.d("postWorked", "price id before set: " + mPrice.getDatabaseId());
             mPrice.setDatabaseId(thisId);
             Log.d("postWorked", "price id after set to make sure current price has " +
-                    "the id in ref: "+mPrice.getDatabaseId());
+                    "the id in ref: " + mPrice.getDatabaseId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private static class PostPriceAsync extends AsyncTask<Price,String,String> {
+    /**
+     * Async POST task that submits the singular created price to the database
+     */
+    private static class PostPriceAsync extends AsyncTask<Price, String, String> {
+        // start with a null delegate
         public AsyncResponse delegate = null;
 
         @Override
         protected String doInBackground(Price... param) {
             Price price1 = param[0];
-
             String title = price1.getTitle();
             float price = price1.getGasPrice();
             double longitude = price1.getLongitude();
             double latitude = price1.getLatitude();
 
             try {
-                // put the values for the POST Request
+                // load the values for the POST request into params
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put("title", title);
                 postDataParams.put("price", price);
                 postDataParams.put("longitude", longitude);
                 postDataParams.put("latitude", latitude);
 
+                // call through request handler
                 return RequestHandler.sendPost("https://cadeluca.w3.uvm.edu/gasPriceTrackerTest/saveName.php", postDataParams);
-            }
-            catch(Exception e){
-
-                return "Exception: " + e.getMessage();
+            } catch (Exception e) {
+                return "POST Exception: " + e.getMessage();
             }
         }
 
         @Override
         protected void onPostExecute(String s) {
-            if(s!=null){
-                Log.d("postWorked", s);
+            if (s != null) {
+                Log.d("POST_PRICE_ASYNC", s);
                 delegate.processFinish(s);
             }
         }
     }
 
     private boolean hasLocationPermission() {
-        int result = ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);
+        int result = ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), LOCATION_PERMISSIONS[0]);
         return result == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_LOCATION_PERMISSIONS:
-                if(hasLocationPermission()) {
-                    findImage();
-                }
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_LOCATION_PERMISSIONS) {
+            if (hasLocationPermission()) {
+                findImage();
+            }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 
-    private class ImageUploadAsync extends  AsyncTask<String, Void, Void> {
+    /**
+     * Upload image to server Async task with image and title pair values
+     */
+    private class ImageUploadAsync extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... param) {
@@ -411,14 +418,13 @@ public class NewPriceFragment extends Fragment implements AsyncResponse {
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
                 org.apache.http.HttpResponse response = client.execute(post);
-                Log.i("URL", ""+ response);
+                Log.d("URL", "" + response);
             } catch (UnsupportedEncodingException e) {
-                Log.i("upload URL",""+e);
-
+                Log.d("upload URL", "" + e);
             } catch (ClientProtocolException e) {
-                Log.i("upload URL",""+e);
+                Log.d("upload URL", "" + e);
             } catch (IOException e) {
-                Log.i("upload URL", ""+e);
+                Log.d("upload URL", "" + e);
             }
             return null;
         }

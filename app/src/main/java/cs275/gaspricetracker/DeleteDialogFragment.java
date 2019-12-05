@@ -25,7 +25,8 @@ public class DeleteDialogFragment extends DialogFragment {
                 )
                 .create();
     }
-    private void sendResult(int resultCode, String string){
+
+    private void sendResult(int resultCode, String string) {
         if (getTargetFragment() == null) {
             return;
         }
