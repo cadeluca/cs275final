@@ -6,7 +6,7 @@ Our project use google map services for getting your android device's location. 
 
 ## Team members
 * Ideas from professor Jason Hibbeler
-App developers:
+* App developers:
 * Christian DeLuca 
 * Junda Tan
 * Wyatt Wu
