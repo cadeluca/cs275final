@@ -23,5 +23,5 @@
     Junda API key AIzaSyDfwrDeotN3EvC2lRTyFWOChKAGzn3cqcM
     Christian API key: AIzaSyA0qxI6R6WfxTJhXScs-8yjFkxxFNPv404
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDfwrDeotN3EvC2lRTyFWOChKAGzn3cqcM</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">ADD_YOUR_KEY_HERE</string>
 </resources>

@@ -163,6 +163,8 @@ public class PriceLocatrFragment extends SupportMapFragment {
         }
         LatLng itemPoint = new LatLng(mMapItem.getmLat(),
                 mMapItem.getmLon());
+        Double myLatitude = mCurrentLocation.getLatitude();
+        Double myLongitude = mCurrentLocation.getLongitude();
 
         LatLng myPoint = new LatLng(
                 mCurrentLocation.getLatitude(),
@@ -179,6 +181,11 @@ public class PriceLocatrFragment extends SupportMapFragment {
                 String price = "$ " + mPrice.getGasPrice();
                 String price_title = mPrice.getTitle();
                 mPhotoFile = PriceLab.get(getActivity()).getPhotoFile(mPrice);
+
+                Double priceLatitude = mPrice.getLatitude();
+                Double priceLongitude = mPrice.getLongitude();
+                Double distance = Math.sqrt(Math.pow(priceLatitude-myLatitude, 2) + Math.pow(priceLongitude-myLongitude, 2));
+
                 BitmapDescriptor itemBitmap;
 
                 LatLng mPricePosition = new LatLng(mPrice.getLatitude(), mPrice.getLongitude());
@@ -196,7 +203,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                                             .anchor(0.0f, 1.0f)
                                             .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, 150, 150, true)))
                                             .title(price_title)
-                                            .snippet(price)
+                                            .snippet(price + " Distance from you" + String.format("%.2f",distance*111) + "km")
                                             .position(mPricePosition));
                                     marker.setTag(mPricePosition);
                                 }
@@ -218,7 +225,7 @@ public class PriceLocatrFragment extends SupportMapFragment {
                             .position(mPricePosition)
                             .icon(itemBitmap)
                             .title(price_title)
-                            .snippet(price);
+                            .snippet(price + " Distance from you " + String.format("%.2f",distance*111) + "km");
 //                     add price marker to map
                     mMap.addMarker(itemMarker);
                 }
