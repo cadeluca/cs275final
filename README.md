@@ -2,7 +2,7 @@
 CS 275 Mobile Application Development I - Final Project. Gas-price tracker application for Android.
 
 ## Reminder
-Our project use google map services for getting your android device's location. If you want to install this app on your own and use map services, please add your google map api key in app/src/debug/res/values folder.
+Our project use google map services for getting your android device's location. If you want to install this app on your own and use map services, please add your google map api key on google_maps_api.xml file under app/src/debug/res/values folder.
 
 ## Team members
 * Ideas from professor Jason Hibbeler
